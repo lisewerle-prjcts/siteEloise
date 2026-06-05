@@ -1,0 +1,161 @@
+/* Shared strings: meta, nav, footer, newsletter, common CTAs, locations */
+window.I18N = window.I18N || { fr: {}, de: {}, en: {} };
+
+Object.assign(window.I18N.fr, {
+  'brand.name': 'Eloïse Werle',
+  'brand.sub': 'Massage & Yoga',
+
+  'meta.title.home': 'Eloïse Werle — Massage & Yoga · Soins bien-être',
+  'meta.title.services': 'Les soins — Eloïse Werle · Massage & Yoga',
+  'meta.title.about': 'À propos — Eloïse Werle · Massage & Yoga',
+  'meta.title.booking': 'Prendre rendez-vous — Eloïse Werle',
+  'meta.title.contact': 'Contact — Eloïse Werle · Massage & Yoga',
+
+  'nav.home': 'Accueil',
+  'nav.services': 'Les soins',
+  'nav.about': 'À propos',
+  'nav.booking': 'Rendez-vous',
+  'nav.contact': 'Contact',
+
+  'cta.book': 'Prendre rendez-vous',
+  'cta.book.short': 'Réserver',
+  'cta.discover': 'Découvrir les soins',
+  'cta.services': 'Voir tous les soins',
+  'cta.about': 'Faire connaissance',
+  'cta.contact': 'Me contacter',
+  'cta.learn': 'En savoir plus',
+  'cta.book.this': 'Réserver ce soin',
+
+  'common.from': 'à partir de',
+  'common.perHour': '/ heure',
+  'common.benefits': 'Bienfaits',
+  'common.duration': 'Durée',
+  'common.gift': 'Offrir en carte-cadeau',
+
+  'loc.sucy.city': 'Sucy-en-Brie',
+  'loc.sucy.region': 'Val-de-Marne, France',
+  'loc.chesnay.city': 'Le Chesnay',
+  'loc.chesnay.region': 'Yvelines, France',
+  'loc.wehingen.city': 'Wehingen',
+  'loc.wehingen.region': 'Bade-Wurtemberg, Allemagne',
+
+  'footer.tagline': 'Réharmoniser le corps et l\u2019esprit, pour vivre en parfaite symbiose.',
+  'footer.nav': 'Navigation',
+  'footer.care': 'Les soins',
+  'footer.places': 'Lieux de pratique',
+  'footer.news': 'Lettre du bien-être',
+  'footer.news.text': 'Rituels, créneaux et inspirations douces, une fois par saison.',
+  'footer.rights': 'Tous droits réservés.',
+  'footer.legal': 'Mentions légales',
+  'footer.made': 'Massothérapeute & professeure de yoga certifiée',
+
+  'news.placeholder': 'Votre adresse e-mail',
+  'news.submit': 'S\u2019inscrire',
+  'news.done': 'Merci ! À très bientôt.',
+});
+
+Object.assign(window.I18N.de, {
+  'brand.name': 'Eloïse Werle',
+  'brand.sub': 'Massage & Yoga',
+
+  'meta.title.home': 'Eloïse Werle — Massage & Yoga · Wohlfühl-Behandlungen',
+  'meta.title.services': 'Behandlungen — Eloïse Werle · Massage & Yoga',
+  'meta.title.about': 'Über mich — Eloïse Werle · Massage & Yoga',
+  'meta.title.booking': 'Termin buchen — Eloïse Werle',
+  'meta.title.contact': 'Kontakt — Eloïse Werle · Massage & Yoga',
+
+  'nav.home': 'Start',
+  'nav.services': 'Behandlungen',
+  'nav.about': 'Über mich',
+  'nav.booking': 'Termin',
+  'nav.contact': 'Kontakt',
+
+  'cta.book': 'Termin buchen',
+  'cta.book.short': 'Buchen',
+  'cta.discover': 'Behandlungen entdecken',
+  'cta.services': 'Alle Behandlungen ansehen',
+  'cta.about': 'Mich kennenlernen',
+  'cta.contact': 'Kontakt aufnehmen',
+  'cta.learn': 'Mehr erfahren',
+  'cta.book.this': 'Diese Behandlung buchen',
+
+  'common.from': 'ab',
+  'common.perHour': '/ Stunde',
+  'common.benefits': 'Wirkung',
+  'common.duration': 'Dauer',
+  'common.gift': 'Als Gutschein verschenken',
+
+  'loc.sucy.city': 'Sucy-en-Brie',
+  'loc.sucy.region': 'Val-de-Marne, Frankreich',
+  'loc.chesnay.city': 'Le Chesnay',
+  'loc.chesnay.region': 'Yvelines, Frankreich',
+  'loc.wehingen.city': 'Wehingen',
+  'loc.wehingen.region': 'Baden-Württemberg, Deutschland',
+
+  'footer.tagline': 'Körper und Geist wieder in Einklang bringen — für ein Leben in vollkommener Symbiose.',
+  'footer.nav': 'Navigation',
+  'footer.care': 'Behandlungen',
+  'footer.places': 'Praxisorte',
+  'footer.news': 'Wohlfühl-Brief',
+  'footer.news.text': 'Rituale, freie Termine und sanfte Impulse — einmal pro Saison.',
+  'footer.rights': 'Alle Rechte vorbehalten.',
+  'footer.legal': 'Impressum',
+  'footer.made': 'Zertifizierte Massagetherapeutin & Yogalehrerin',
+
+  'news.placeholder': 'Ihre E-Mail-Adresse',
+  'news.submit': 'Abonnieren',
+  'news.done': 'Danke! Bis bald.',
+});
+
+Object.assign(window.I18N.en, {
+  'brand.name': 'Eloïse Werle',
+  'brand.sub': 'Massage & Yoga',
+
+  'meta.title.home': 'Eloïse Werle — Massage & Yoga · Wellbeing care',
+  'meta.title.services': 'The treatments — Eloïse Werle · Massage & Yoga',
+  'meta.title.about': 'About — Eloïse Werle · Massage & Yoga',
+  'meta.title.booking': 'Book a session — Eloïse Werle',
+  'meta.title.contact': 'Contact — Eloïse Werle · Massage & Yoga',
+
+  'nav.home': 'Home',
+  'nav.services': 'Treatments',
+  'nav.about': 'About',
+  'nav.booking': 'Booking',
+  'nav.contact': 'Contact',
+
+  'cta.book': 'Book a session',
+  'cta.book.short': 'Book',
+  'cta.discover': 'Explore the treatments',
+  'cta.services': 'See all treatments',
+  'cta.about': 'Get to know me',
+  'cta.contact': 'Get in touch',
+  'cta.learn': 'Learn more',
+  'cta.book.this': 'Book this treatment',
+
+  'common.from': 'from',
+  'common.perHour': '/ hour',
+  'common.benefits': 'Benefits',
+  'common.duration': 'Duration',
+  'common.gift': 'Give as a gift card',
+
+  'loc.sucy.city': 'Sucy-en-Brie',
+  'loc.sucy.region': 'Val-de-Marne, France',
+  'loc.chesnay.city': 'Le Chesnay',
+  'loc.chesnay.region': 'Yvelines, France',
+  'loc.wehingen.city': 'Wehingen',
+  'loc.wehingen.region': 'Baden-Württemberg, Germany',
+
+  'footer.tagline': 'Bringing body and mind back into harmony — to live in perfect symbiosis.',
+  'footer.nav': 'Navigation',
+  'footer.care': 'Treatments',
+  'footer.places': 'Where I practise',
+  'footer.news': 'Wellbeing letter',
+  'footer.news.text': 'Rituals, open slots and gentle inspiration — once each season.',
+  'footer.rights': 'All rights reserved.',
+  'footer.legal': 'Legal notice',
+  'footer.made': 'Certified massage therapist & yoga teacher',
+
+  'news.placeholder': 'Your email address',
+  'news.submit': 'Subscribe',
+  'news.done': 'Thank you! See you soon.',
+});

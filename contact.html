@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — Eloïse Werle</title>
+<meta name="description" content="Contactez Eloïse Werle, massothérapeute et professeure de yoga. Sucy-en-Brie, Le Chesnay et Wehingen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+.ct-hero{ padding-block: clamp(40px,6vw,76px) clamp(20px,3vw,40px); }
+.ct-grid{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(32px,5vw,72px); align-items:start; }
+@media (max-width:880px){ .ct-grid{ grid-template-columns:1fr; } }
+.ct-hero h1{ font-family:var(--display); font-weight:400; font-size:clamp(2.5rem,5.4vw,4.4rem); line-height:1.02; margin:14px 0 18px; }
+.ct-hero p.intro{ color:var(--ink-2); font-size:clamp(1.06rem,1.6vw,1.28rem); max-width:44ch; }
+.ct-info{ margin-top:34px; display:grid; gap:2px; }
+.ct-info a, .ct-info div{ display:flex; justify-content:space-between; gap:18px; padding:16px 0; border-top:1px solid var(--line);
+  align-items:baseline; }
+.ct-info .k{ font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; font-weight:700; color:var(--ink-3); }
+.ct-info .v{ font-family:var(--display); font-size:1.25rem; text-align:right; color:var(--ink); }
+.ct-info a:hover .v{ color:var(--accent); }
+
+/* form card */
+.form-card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:clamp(26px,3.4vw,40px); }
+.form-card h2{ font-family:var(--display); font-weight:400; font-size:clamp(1.6rem,3vw,2.2rem); }
+.form-card .sub{ color:var(--ink-2); margin:6px 0 22px; font-size:.96rem; }
+.cform{ display:grid; gap:16px; }
+.field{ display:flex; flex-direction:column; gap:7px; }
+.field label{ font-size:.82rem; font-weight:600; color:var(--ink-2); }
+.field input,.field textarea{ font-family:var(--body); font-size:1rem; color:var(--ink); background:var(--cream);
+  border:1px solid var(--line); border-radius:12px; padding:13px 15px; transition:.2s; }
+.field textarea{ resize:vertical; min-height:130px; }
+.field input:focus,.field textarea:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent); }
+.field.err input,.field.err textarea{ border-color:#C0533C; }
+.field .msg{ font-size:.78rem; color:#C0533C; display:none; }
+.field.err .msg{ display:block; }
+.cform .row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+@media (max-width:520px){ .cform .row2{ grid-template-columns:1fr; } }
+.cdone{ display:none; text-align:center; padding:18px 0; }
+.cdone.show{ display:block; }
+.cdone .done__seal{ width:66px;height:66px;border-radius:50%;margin:0 auto 18px;display:grid;place-items:center;background:var(--sage-deep);color:#F4F2E6; }
+.cdone h3{ font-family:var(--display); font-weight:400; font-size:1.7rem; }
+.cdone p{ color:var(--ink-2); margin:10px auto 0; max-width:36ch; }
+
+.ct-places{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(18px,2.4vw,28px); }
+@media (max-width:760px){ .ct-places{ grid-template-columns:1fr; } }
+</style>
+</head>
+<body data-page="contact" data-theme="light" data-anim="subtle">
+
+<main>
+  <!-- HERO + FORM -->
+  <section class="ct-hero" data-screen-label="Contact — en-tête">
+    <div class="wrap">
+      <div class="ct-grid">
+        <div class="reveal">
+          <span class="eyebrow" data-i18n="ct.hero.eyebrow">Contact</span>
+          <h1 data-i18n="ct.hero.title">Écrivons-nous.</h1>
+          <p class="intro" data-i18n="ct.hero.text">Une question sur un soin, une demande particulière ? Je vous réponds avec plaisir.</p>
+          <div class="ct-info">
+            <a href="mailto:eloiserose.werle@gmail.com">
+              <span class="k" data-i18n="ct.info.email">E-mail</span>
+              <span class="v">eloiserose.werle@gmail.com</span></a>
+            <a href="tel:+33608044818">
+              <span class="k" data-i18n="ct.info.phone">Téléphone</span>
+              <span class="v">+33 6 08 04 48 18</span></a>
+            <a href="https://eloisewerle.my.canva.site/" target="_blank" rel="noopener">
+              <span class="k" data-i18n="ct.info.web">En ligne</span>
+              <span class="v" data-i18n="ct.info.web.val">Mon univers bien-être</span></a>
+            <div>
+              <span class="k" data-i18n="ct.info.langs">Langues</span>
+              <span class="v" data-i18n="ct.info.langs.val">Français · Deutsch · English</span></div>
+          </div>
+        </div>
+
+        <div class="form-card reveal" data-d="1">
+          <form class="cform" id="cform" novalidate>
+            <div>
+              <h2 data-i18n="ct.form.title">Envoyez-moi un message</h2>
+              <p class="sub" data-i18n="ct.form.sub">Je réponds généralement sous 24 h.</p>
+            </div>
+            <div class="row2">
+              <div class="field" data-field="name">
+                <label data-i18n="ct.f.name">Votre nom</label>
+                <input type="text" name="name">
+                <span class="msg" data-i18n="ct.f.req">Ce champ est requis</span>
+              </div>
+              <div class="field" data-field="email">
+                <label data-i18n="ct.f.email">Votre e-mail</label>
+                <input type="email" name="email">
+                <span class="msg" data-i18n="ct.f.reqmail">Adresse e-mail non valide</span>
+              </div>
+            </div>
+            <div class="field" data-field="subject">
+              <label data-i18n="ct.f.subject">Sujet</label>
+              <input type="text" name="subject" data-i18n-ph="ct.f.subject.ph" placeholder="Soin, lieu, carte-cadeau…">
+            </div>
+            <div class="field" data-field="message">
+              <label data-i18n="ct.f.message">Votre message</label>
+              <textarea name="message"></textarea>
+              <span class="msg" data-i18n="ct.f.req">Ce champ est requis</span>
+            </div>
+            <button type="submit" class="btn btn-primary" data-i18n="ct.f.send">Envoyer le message</button>
+          </form>
+          <div class="cdone" id="cdone">
+            <div class="done__seal"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><path d="M5 12.5l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <h3 data-i18n="ct.done.title">Message envoyé !</h3>
+            <p data-i18n="ct.done.text">Merci, votre message m’est bien parvenu.</p>
+            <button type="button" class="btn btn-ghost" id="cagain" style="margin-top:18px" data-i18n="ct.done.again">Écrire un autre message</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLACES -->
+  <section class="section bg-cream2" data-screen-label="Contact — lieux">
+    <div class="wrap">
+      <div class="head head--center reveal" style="margin-bottom:clamp(34px,5vw,52px)">
+        <span class="eyebrow" data-i18n="ct.places.eyebrow">Lieux de pratique</span>
+        <h2 data-i18n="ct.places.title">Où je vous reçois.</h2>
+        <p class="lead" data-i18n="ct.places.text">Je partage mon activité entre la France et l’Allemagne, au fil des saisons.</p>
+      </div>
+      <div class="ct-places" data-places></div>
+    </div>
+  </section>
+
+  <!-- BOOK CTA -->
+  <section class="section" data-screen-label="Contact — réserver">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <span class="eyebrow" data-i18n="nav.booking">Rendez-vous</span>
+        <h2 data-i18n="ct.book.title">Vous préférez réserver directement ?</h2>
+        <p class="lead" data-i18n="ct.book.text">Le module de rendez-vous vous laisse choisir le soin, le lieu et le créneau en quelques instants.</p>
+        <div class="cta-row" style="justify-content:center">
+          <a class="btn btn-primary" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="js/store.js"></script>
+<script src="js/strings-common.js"></script>
+<script src="js/strings-admin.js"></script>
+<script src="js/strings-contact.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script>
+/* contact form (demo) */
+(function(){
+  var form = document.getElementById('cform');
+  if(!form) return;
+  var T = function(k){ return window.t ? window.t(k) : k; };
+  function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    var ok = true;
+    [['name', function(v){return v.trim();}], ['email', emailOk], ['message', function(v){return v.trim();}]]
+    .forEach(function(p){
+      var wrap = form.querySelector('[data-field="'+p[0]+'"]');
+      var input = wrap.querySelector('input,textarea');
+      var good = p[1](input.value);
+      wrap.classList.toggle('err', !good);
+      if(!good) ok = false;
+    });
+    if(!ok) return;
+    form.style.display = 'none';
+    document.getElementById('cdone').classList.add('show');
+  });
+  form.querySelectorAll('input,textarea').forEach(function(el){
+    el.addEventListener('input', function(){ var w = el.closest('[data-field]'); if(w) w.classList.remove('err'); });
+  });
+  document.getElementById('cagain').addEventListener('click', function(){
+    document.getElementById('cdone').classList.remove('show');
+    form.reset(); form.style.display = 'grid';
+  });
+})();
+</script>
+<script src="js/tweaks.js"></script>
+</body>
+</html>

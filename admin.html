@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Espace Eloïse — Administration</title>
+<meta name="description" content="Espace privé d'Eloïse Werle.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/admin.css">
+</head>
+<body data-page="admin">
+
+<main>
+  <section class="adm-hero">
+    <div class="wrap">
+      <span class="eyebrow" data-i18n="adm.login.title">Espace privé</span>
+      <h1 data-i18n="adm.title">Espace Eloïse</h1>
+      <p class="intro" data-i18n="adm.sub">Votre tableau de bord — dates, abonnés, avis et Instagram.</p>
+      <div class="adm-proto">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 11v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="7.6" r="1.1" fill="currentColor"/></svg>
+        <span data-i18n="adm.proto">Prototype — les données sont enregistrées dans ce navigateur uniquement. L’envoi des e-mails s’ouvre dans votre messagerie.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- LOGIN GATE -->
+  <div id="adm-gate" class="wrap">
+    <div class="adm-gate">
+      <svg class="lock" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></svg>
+      <h2 data-i18n="adm.login.title">Espace privé</h2>
+      <p data-i18n="adm.login.text">Entrez votre code d’accès pour gérer votre activité.</p>
+      <form>
+        <input type="password" name="code" autocomplete="off" data-i18n-ph="adm.login.ph" placeholder="Code d’accès" autofocus>
+        <div class="err"></div>
+        <button class="btn btn-primary" type="submit" data-i18n="adm.login.btn">Entrer</button>
+        <div class="hint"></div>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <section id="adm-app" class="section--tight" hidden>
+    <div class="wrap">
+      <div class="adm-bar">
+        <div class="adm-tabs">
+          <button class="adm-tab" data-tab="dates"><span data-i18n="adm.tab.dates">Mes dates</span></button>
+          <button class="adm-tab" data-tab="subs"><span data-i18n="adm.tab.subs">Abonnés</span></button>
+          <button class="adm-tab" data-tab="reviews"><span data-i18n="adm.tab.reviews">Avis</span><span class="badge" style="display:none">0</span></button>
+          <button class="adm-tab" data-tab="soins"><span data-i18n="adm.tab.soins">Mes soins</span></button>
+          <button class="adm-tab" data-tab="places"><span data-i18n="adm.tab.places">Lieux</span></button>
+          <button class="adm-tab" data-tab="insta"><span data-i18n="adm.tab.insta">Instagram</span></button>
+        </div>
+        <button class="adm-logout" data-i18n="adm.logout">Quitter</button>
+      </div>
+
+      <div class="adm-panel" data-panel="dates"></div>
+      <div class="adm-panel" data-panel="subs"></div>
+      <div class="adm-panel" data-panel="reviews"></div>
+      <div class="adm-panel" data-panel="soins"></div>
+      <div class="adm-panel" data-panel="places"></div>
+      <div class="adm-panel" data-panel="insta"></div>
+    </div>
+  </section>
+</main>
+
+<script src="js/store.js"></script>
+<script src="js/strings-common.js"></script>
+<script src="js/strings-admin.js"></script>
+<script src="js/strings-home.js"></script>
+<script src="js/strings-services.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/tweaks.js"></script>
+</body>
+</html>

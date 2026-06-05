@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Les soins — Eloïse Werle</title>
+<meta name="description" content="Massages thaï, balinais, deep tissue, drainage lymphatique, ayurvédique et yoga personnalisé. Détail des soins et de leurs bienfaits.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+.page-hero{ padding-top: clamp(48px,8vw,96px); padding-bottom: clamp(36px,5vw,60px); }
+.page-hero .inner{ max-width: 60ch; }
+.page-hero h1{ font-family:var(--display); font-weight:400; font-size:clamp(2.4rem,5.4vw,4.4rem);
+  line-height:1.04; margin:16px 0 22px; }
+.page-hero p{ color:var(--ink-2); font-size:clamp(1.06rem,1.6vw,1.28rem); max-width:52ch; }
+.jump{ display:flex; gap:10px; flex-wrap:wrap; margin-top:30px; }
+.jump a{ padding:9px 18px; border:1px solid var(--line); border-radius:999px; font-size:.86rem; font-weight:600;
+  color:var(--ink-2); transition:.3s; }
+.jump a:hover{ border-color:var(--accent); color:var(--accent); }
+
+.svc-detail{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(32px,6vw,84px); align-items:center;
+  padding-block: clamp(48px,7vw,96px); scroll-margin-top:90px; }
+.svc-detail + .svc-detail{ border-top:1px solid var(--line); }
+.svc-detail__media{ position:relative; aspect-ratio:4/4.6; border-radius:var(--radius); overflow:hidden; box-shadow:var(--shadow-soft); }
+.svc-detail--rev .svc-detail__media{ order:2; }
+.svc-detail__media img{ width:100%; height:100%; object-fit:cover; }
+.svc-detail__media .num{ position:absolute; top:18px; left:20px; font-family:var(--display); font-style:italic;
+  color:#FBF5ED; font-size:1.1rem; text-shadow:0 2px 14px rgba(0,0,0,.4); }
+.svc-detail h2{ font-family:var(--display); font-weight:400; font-size:clamp(2rem,4vw,3rem); line-height:1.06; margin:10px 0 18px; }
+.svc-detail .tag{ font-size:.74rem; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+.svc-detail .long{ color:var(--ink-2); font-size:1.06rem; }
+.variants{ display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+.variants span{ padding:7px 14px; background:var(--cream-2); border-radius:999px; font-size:.82rem; color:var(--ink-2); }
+.ben-label{ font-size:.7rem; letter-spacing:.2em; text-transform:uppercase; color:var(--ink-3); font-weight:700; margin:26px 0 12px; }
+.ben-list{ display:grid; gap:11px; }
+.ben-list li{ position:relative; padding-left:26px; color:var(--ink); font-size:1rem; }
+.ben-list li::before{ content:''; position:absolute; left:0; top:8px; width:8px; height:8px; border-radius:50%;
+  background:var(--accent); box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent); }
+.note{ margin-top:16px; font-size:.9rem; color:var(--ink-2); font-style:italic; }
+.price-row{ margin-top:28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
+.price-row .p{ font-family:var(--display); font-size:1.55rem; }
+.price-row .p small{ font-family:var(--body); font-size:.84rem; color:var(--ink-2); }
+
+/* benefits band */
+.benband-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:clamp(16px,2vw,26px) clamp(28px,4vw,56px);
+  margin-top:clamp(34px,5vw,52px); }
+@media (max-width:680px){ .benband-grid{ grid-template-columns:1fr; } }
+.benband-item{ display:flex; gap:16px; align-items:baseline; border-top:1px solid rgba(244,242,230,.25); padding-top:16px; }
+.benband-item .i{ font-family:var(--display); font-style:italic; opacity:.7; font-size:.95rem; min-width:1.6em; }
+.benband-item p{ font-size:1.04rem; opacity:.95; }
+
+/* pricing */
+.price-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2vw,24px); }
+@media (max-width:760px){ .price-grid{ grid-template-columns:1fr; } }
+.price-card{ background:var(--paper); border:1px solid var(--line); border-radius:var(--radius); padding:clamp(26px,3vw,38px);
+  display:flex; flex-direction:column; gap:8px; transition:.4s; }
+.price-card:hover{ border-color:var(--accent-soft); transform:translateY(-5px); box-shadow:var(--shadow-soft); }
+.price-card h3{ font-family:var(--body); font-weight:700; font-size:.78rem; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); }
+.price-card .amt{ font-family:var(--display); font-size:clamp(2.4rem,4vw,3.2rem); line-height:1; margin-top:8px; }
+.price-card .amt small{ font-family:var(--body); font-size:.9rem; color:var(--ink-2); letter-spacing:0; }
+.price-card .d{ color:var(--ink-2); font-size:.95rem; margin-top:4px; }
+
+@media (max-width:860px){
+  .svc-detail{ grid-template-columns:1fr; }
+  .svc-detail--rev .svc-detail__media{ order:0; }
+  .svc-detail__media{ aspect-ratio:4/3.4; max-width:560px; }
+}
+</style>
+</head>
+<body data-page="services" data-theme="light" data-anim="subtle">
+
+<main>
+  <!-- HERO -->
+  <section class="page-hero bg-cream2" data-screen-label="Services — en-tête">
+    <div class="wrap">
+      <div class="inner reveal">
+        <span class="eyebrow" data-i18n="sv.hero.eyebrow">Les soins</span>
+        <h1 data-i18n="sv.hero.title">Des soins pensés pour votre corps et votre esprit.</h1>
+        <p data-i18n="sv.hero.text">Massages thérapeutiques et yoga personnalisé. Chaque séance s’adapte à vos besoins du moment.</p>
+        <div class="jump">
+          <a href="#thai" data-i18n="sv.hero.jump.massage">Massages</a>
+          <a href="#drainage" data-i18n="sv.hero.jump.drainage">Drainage</a>
+          <a href="#yoga" data-i18n="sv.hero.jump.yoga">Yoga</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICE BLOCKS -->
+  <div class="wrap">
+
+    <!-- Thaï -->
+    <article class="svc-detail" id="thai" data-screen-label="Soin — Thaï Yoga Massage">
+      <div class="svc-detail__media reveal"><span class="num">01</span><img src="assets/thai-etirement.png" alt="Thaï Yoga Massage"></div>
+      <div class="reveal" data-d="1">
+        <span class="tag" data-i18n="svc.thai.tag">Étirements & énergie</span>
+        <h2 data-i18n="svc.thai.name">Thaï Yoga Massage</h2>
+        <p class="long" data-i18n="sv.thai.long"></p>
+        <div class="ben-label" data-i18n="sv.bienfaits.label">Bienfaits</div>
+        <ul class="ben-list">
+          <li data-i18n="sv.thai.b1"></li><li data-i18n="sv.thai.b2"></li>
+          <li data-i18n="sv.thai.b3"></li><li data-i18n="sv.thai.b4"></li>
+        </ul>
+        <div class="price-row">
+          <span class="p">60&nbsp;€ <small data-i18n="common.perHour">/ heure</small></span>
+          <a class="btn btn-primary" href="reservation.html?service=thai" data-i18n="cta.book.this">Réserver ce soin</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Balinais -->
+    <article class="svc-detail svc-detail--rev" id="balinais" data-screen-label="Soin — Massage Balinais">
+      <div class="svc-detail__media reveal"><span class="num">02</span><img src="assets/soin-mains.png" alt="Massage Balinais"></div>
+      <div class="reveal" data-d="1">
+        <span class="tag" data-i18n="svc.bali.tag">Enveloppant & circulatoire</span>
+        <h2 data-i18n="svc.bali.name">Massage Balinais</h2>
+        <p class="long" data-i18n="sv.bali.long"></p>
+        <div class="ben-label" data-i18n="sv.bienfaits.label">Bienfaits</div>
+        <ul class="ben-list">
+          <li data-i18n="sv.bali.b1"></li><li data-i18n="sv.bali.b2"></li>
+          <li data-i18n="sv.bali.b3"></li><li data-i18n="sv.bali.b4"></li>
+        </ul>
+        <div class="price-row">
+          <span class="p">60&nbsp;€ <small data-i18n="common.perHour">/ heure</small></span>
+          <a class="btn btn-primary" href="reservation.html?service=balinais" data-i18n="cta.book.this">Réserver ce soin</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Deep Tissue -->
+    <article class="svc-detail" id="deep" data-screen-label="Soin — Deep Tissue">
+      <div class="svc-detail__media reveal"><span class="num">03</span><img src="assets/relaxation.png" alt="Massage Deep Tissue"></div>
+      <div class="reveal" data-d="1">
+        <span class="tag" data-i18n="svc.deep.tag">Tensions profondes</span>
+        <h2 data-i18n="svc.deep.name">Deep Tissue</h2>
+        <p class="long" data-i18n="sv.deep.long"></p>
+        <div class="ben-label" data-i18n="sv.bienfaits.label">Bienfaits</div>
+        <ul class="ben-list">
+          <li data-i18n="sv.deep.b1"></li><li data-i18n="sv.deep.b2"></li>
+          <li data-i18n="sv.deep.b3"></li><li data-i18n="sv.deep.b4"></li>
+        </ul>
+        <div class="price-row">
+          <span class="p">60&nbsp;€ <small data-i18n="common.perHour">/ heure</small></span>
+          <a class="btn btn-primary" href="reservation.html?service=deep" data-i18n="cta.book.this">Réserver ce soin</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Drainage -->
+    <article class="svc-detail svc-detail--rev" id="drainage" data-screen-label="Soin — Drainage lymphatique">
+      <div class="svc-detail__media reveal"><span class="num">04</span><img src="assets/drainage-visage.png" alt="Drainage lymphatique"></div>
+      <div class="reveal" data-d="1">
+        <span class="tag" data-i18n="svc.lymph.tag">Détox & légèreté</span>
+        <h2 data-i18n="svc.lymph.name">Drainage lymphatique</h2>
+        <p class="long" data-i18n="sv.drain.long"></p>
+        <div class="variants">
+          <span data-i18n="sv.drain.variant1">Drainage balinais · poudre de talc</span>
+          <span data-i18n="sv.drain.variant2">Drainage Academy · à l’huile</span>
+        </div>
+        <div class="ben-label" data-i18n="sv.bienfaits.label">Bienfaits</div>
+        <ul class="ben-list">
+          <li data-i18n="sv.drain.b1"></li><li data-i18n="sv.drain.b2"></li>
+          <li data-i18n="sv.drain.b3"></li><li data-i18n="sv.drain.b4"></li>
+        </ul>
+        <p class="note" data-i18n="sv.drain.note"></p>
+        <div class="price-row">
+          <span class="p">70&nbsp;€ <small data-i18n="common.perHour">/ heure</small></span>
+          <a class="btn btn-primary" href="reservation.html?service=drainage" data-i18n="cta.book.this">Réserver ce soin</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Ayurvédique -->
+    <article class="svc-detail" id="ayurvedique" data-screen-label="Soin — Ayurvédique & Abhyanga">
+      <div class="svc-detail__media reveal"><span class="num">05</span><img src="assets/thai-dos.png" alt="Massage Ayurvédique et Abhyanga"></div>
+      <div class="reveal" data-d="1">
+        <span class="tag" data-i18n="svc.ayur.tag">Chaleureux & nourrissant</span>
+        <h2 data-i18n="svc.ayur.name">Ayurvédique & Abhyanga</h2>
+        <p class="long" data-i18n="sv.ayur.long"></p>
+        <div class="ben-label" data-i18n="sv.bienfaits.label">Bienfaits</div>
+        <ul class="ben-list">
+          <li data-i18n="sv.ayur.b1"></li><li data-i18n="sv.ayur.b2"></li>
+          <li data-i18n="sv.ayur.b3"></li><li data-i18n="sv.ayur.b4"></li>
+        </ul>
+        <div class="price-row">
+          <span class="p">60&nbsp;€ <small data-i18n="common.perHour">/ heure</small></span>
+          <a class="btn btn-primary" href="reservation.html?service=ayurvedique" data-i18n="cta.book.this">Réserver ce soin</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Yoga -->
+    <article class="svc-detail svc-detail--rev" id="yoga" data-screen-label="Soin — Yoga personnalisé">
+      <div class="svc-detail__media reveal"><span class="num">06</span><img src="assets/yoga-equilibre.png" alt="Yoga personnalisé"></div>
+      <div class="reveal" data-d="1">
+        <span class="tag" data-i18n="svc.yoga.tag">Mobilité & souffle</span>
+        <h2 data-i18n="svc.yoga.name">Yoga personnalisé</h2>
+        <p class="long" data-i18n="sv.yoga.long"></p>
+        <div class="ben-label" data-i18n="sv.bienfaits.label">Bienfaits</div>
+        <ul class="ben-list">
+          <li data-i18n="sv.yoga.b1"></li><li data-i18n="sv.yoga.b2"></li>
+          <li data-i18n="sv.yoga.b3"></li><li data-i18n="sv.yoga.b4"></li>
+        </ul>
+        <div class="price-row">
+          <span class="p">60&nbsp;€ <small data-i18n="common.perHour">/ heure</small></span>
+          <a class="btn btn-primary" href="reservation.html?service=yoga" data-i18n="cta.book.this">Réserver ce soin</a>
+        </div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- BENEFITS BAND -->
+  <section class="section bg-clay" data-screen-label="Services — bienfaits">
+    <div class="wrap">
+      <div class="head reveal" style="max-width:30ch">
+        <span class="eyebrow" data-i18n="sv.ben.eyebrow">Les bienfaits du massage</span>
+        <h2 style="font-size:clamp(2rem,4.4vw,3.4rem)" data-i18n="sv.ben.title">Ce que le toucher répare en vous.</h2>
+      </div>
+      <div class="benband-grid">
+        <div class="benband-item reveal"><span class="i">01</span><p data-i18n="sv.ben.1"></p></div>
+        <div class="benband-item reveal" data-d="1"><span class="i">02</span><p data-i18n="sv.ben.2"></p></div>
+        <div class="benband-item reveal"><span class="i">03</span><p data-i18n="sv.ben.3"></p></div>
+        <div class="benband-item reveal" data-d="1"><span class="i">04</span><p data-i18n="sv.ben.4"></p></div>
+        <div class="benband-item reveal"><span class="i">05</span><p data-i18n="sv.ben.5"></p></div>
+        <div class="benband-item reveal" data-d="1"><span class="i">06</span><p data-i18n="sv.ben.6"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="section" data-screen-label="Services — tarifs">
+    <div class="wrap">
+      <div class="head head--center reveal" style="margin-bottom:clamp(34px,5vw,52px)">
+        <span class="eyebrow" data-i18n="sv.price.eyebrow">Tarifs</span>
+        <h2 data-i18n="sv.price.title">Des tarifs clairs, sans surprise.</h2>
+      </div>
+      <div class="price-grid">
+        <div class="price-card reveal">
+          <h3 data-i18n="sv.price.massage.t">Massages</h3>
+          <div class="amt" data-i18n="sv.price.massage.p">60 €</div>
+          <span style="color:var(--ink-2);font-size:.9rem" data-i18n="sv.price.massage.u">/ heure</span>
+          <p class="d" data-i18n="sv.price.massage.d">+ 15 € par tranche de 15 min.</p>
+        </div>
+        <div class="price-card reveal" data-d="1">
+          <h3 data-i18n="sv.price.drain.t">Drainage lymphatique</h3>
+          <div class="amt" data-i18n="sv.price.drain.p">70 €</div>
+          <span style="color:var(--ink-2);font-size:.9rem" data-i18n="sv.price.drain.u">/ heure</span>
+          <p class="d" data-i18n="sv.price.drain.d">Visage ou corps. Prévoir 2 h pour les deux.</p>
+        </div>
+        <div class="price-card reveal" data-d="2">
+          <h3 data-i18n="sv.price.yoga.t">Cours de yoga</h3>
+          <div class="amt" data-i18n="sv.price.yoga.p">60 €</div>
+          <span style="color:var(--ink-2);font-size:.9rem" data-i18n="sv.price.yoga.u">/ heure</span>
+          <p class="d" data-i18n="sv.price.yoga.d">En privé ou en petit groupe.</p>
+        </div>
+      </div>
+      <div class="center" style="margin-top:clamp(36px,5vw,52px)">
+        <a class="btn btn-primary reveal" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/store.js"></script>
+<script src="js/strings-common.js"></script>
+<script src="js/strings-admin.js"></script>
+<script src="js/strings-home.js"></script>
+<script src="js/strings-services.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script src="js/tweaks.js"></script>
+</body>
+</html>

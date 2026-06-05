@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eloïse Werle — Massage & Yoga</title>
+<meta name="description" content="Eloïse Werle, massothérapeute et professeure de yoga certifiée. Massages thérapeutiques et yoga personnalisé en France et en Allemagne.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="css/site.css">
+<link rel="stylesheet" href="css/components.css">
+<style>
+/* ---------- HERO variants ---------- */
+.hero-A, .hero-B, .hero-C{ display:none; }
+body[data-hero="A"] .hero-A{ display:grid; }
+body[data-hero="B"] .hero-B{ display:block; }
+body[data-hero="C"] .hero-C{ display:block; }
+
+/* A — full bleed */
+.hero-A{ position:relative; min-height:min(94vh,920px); align-content:end; isolation:isolate; }
+.hero-A__bg{ position:absolute; inset:0; z-index:-1; }
+.hero-A__bg img{ width:100%; height:100%; object-fit:cover; object-position:50% 42%; }
+.hero-A .wrap{ position:relative; z-index:2; padding-bottom: clamp(54px,9vh,110px); padding-top: clamp(40px,8vh,90px); }
+.hero-A__content{ color:#FBF5ED; max-width:760px; }
+.hero-A .eyebrow{ color:#F0D9C6; }
+.hero-A h1{ color:#fff; font-family:var(--display); font-weight:400;
+  font-size:clamp(2.7rem,7vw,5.6rem); line-height:1.02; margin:18px 0 22px; max-width:16ch;
+  text-shadow:0 2px 30px rgba(20,12,4,.4); }
+.hero-A p{ color:#F4ECE0; font-size:clamp(1.06rem,1.7vw,1.32rem); max-width:46ch; text-shadow:0 1px 16px rgba(20,12,4,.4); }
+.hero-A .cta-row{ margin-top:34px; }
+
+/* B — editorial split */
+.hero-B__grid{ display:grid; grid-template-columns:1.04fr .96fr; gap:clamp(34px,6vw,86px);
+  align-items:center; min-height:min(86vh,840px); padding-block:clamp(48px,7vw,96px); }
+.hero-B h1{ font-family:var(--display); font-weight:400; font-size:clamp(2.6rem,5.4vw,4.8rem);
+  line-height:1.03; margin:20px 0 24px; }
+.hero-B p{ color:var(--ink-2); font-size:clamp(1.06rem,1.6vw,1.3rem); max-width:46ch; }
+.hero-B .cta-row{ margin-top:34px; }
+.hero-B__media{ position:relative; aspect-ratio:3/3.7; border-radius:999px 999px var(--radius) var(--radius);
+  overflow:hidden; box-shadow:var(--shadow); }
+.hero-B__media img{ width:100%; height:100%; object-fit:cover; object-position:50% 30%; }
+.hero-B__media .badge{ position:absolute; left:50%; bottom:22px; transform:translateX(-50%);
+  background:var(--paper); color:var(--ink); padding:9px 18px; border-radius:999px; font-size:.78rem;
+  letter-spacing:.14em; text-transform:uppercase; font-weight:600; border:1px solid var(--line); white-space:nowrap; }
+@media (max-width:860px){ .hero-B__grid{ grid-template-columns:1fr; } .hero-B__media{ aspect-ratio:3/3.2; max-width:520px; } }
+
+/* C — centered minimal */
+.hero-C{ text-align:center; }
+.hero-C__inner{ padding-top:clamp(56px,9vh,118px); display:grid; justify-items:center; gap:24px; }
+.hero-C h1{ font-family:var(--display); font-weight:400; font-size:clamp(2.8rem,7.4vw,6rem); line-height:1.0; max-width:15ch; }
+.hero-C p{ color:var(--ink-2); font-size:clamp(1.08rem,1.7vw,1.34rem); max-width:50ch; }
+.hero-C .cta-row{ justify-content:center; margin-top:6px; }
+.hero-C__strip{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,2vw,26px);
+  margin-top:clamp(40px,6vw,72px); width:100%; }
+.hero-C__strip .media{ aspect-ratio:3/3.6; border-radius:999px 999px var(--radius) var(--radius); }
+.hero-C__strip .media:nth-child(2){ transform:translateY(clamp(14px,3vw,38px)); }
+@media (max-width:620px){ .hero-C__strip{ grid-template-columns:1fr; max-width:360px; } .hero-C__strip .media:nth-child(2){ transform:none; } }
+
+/* credo strip */
+.credo{ text-align:center; display:grid; gap:16px; justify-items:center; }
+.credo .kicker{ font-size:.72rem; letter-spacing:.26em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+.credo blockquote{ font-family:var(--display); font-style:italic; font-weight:300;
+  font-size:clamp(1.7rem,4vw,3rem); line-height:1.28; max-width:24ch; margin:0; }
+.credo .sign{ display:flex; align-items:center; gap:12px; color:var(--ink-2); font-size:.92rem; }
+.credo .sign::before{ content:''; width:34px; height:1px; background:var(--line); }
+
+/* yoga media */
+.yoga-media{ aspect-ratio:4/4.4; }
+@media (max-width:860px){ .yoga-media{ aspect-ratio:4/3.2; } }
+</style>
+</head>
+<body data-page="home" data-hero="A" data-theme="light" data-anim="subtle">
+
+<main>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <!-- A : full bleed -->
+    <div class="hero-A">
+      <div class="hero-A__bg"><img src="assets/thai-parc.png" alt="Séance de massage en extérieur sous les palmiers"></div>
+      <div class="scrim"></div>
+      <div class="wrap">
+        <div class="hero-A__content">
+          <span class="eyebrow" data-i18n="home.hero.eyebrow">Massage & Yoga · France & Allemagne</span>
+          <h1 data-i18n="home.hero.title">Offrez-vous un moment de paix profonde.</h1>
+          <p data-i18n="home.hero.text">Massages thérapeutiques et yoga personnalisé pour relâcher les tensions, faire circuler l’énergie et réharmoniser le corps et l’esprit.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+            <a class="btn btn-light" href="services.html" data-i18n="cta.discover">Découvrir les soins</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B : editorial split -->
+    <div class="hero-B"><div class="wrap"><div class="hero-B__grid">
+      <div class="hero-B__text">
+        <span class="eyebrow" data-i18n="home.hero.eyebrow">Massage & Yoga · France & Allemagne</span>
+        <h1 data-i18n="home.hero.title">Offrez-vous un moment de paix profonde.</h1>
+        <p data-i18n="home.hero.text">Massages thérapeutiques et yoga personnalisé pour relâcher les tensions, faire circuler l’énergie et réharmoniser le corps et l’esprit.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+          <a class="btn btn-ghost" href="services.html" data-i18n="cta.discover">Découvrir les soins</a>
+        </div>
+      </div>
+      <div class="hero-B__media">
+        <img src="assets/eloise-meditation.png" alt="Eloïse Werle en méditation">
+        <span class="badge" data-i18n="brand.sub">Massage & Yoga</span>
+      </div>
+    </div></div></div>
+
+    <!-- C : centered minimal -->
+    <div class="hero-C"><div class="wrap"><div class="hero-C__inner">
+      <span class="eyebrow" data-i18n="home.hero.eyebrow">Massage & Yoga · France & Allemagne</span>
+      <h1 data-i18n="home.hero.title">Offrez-vous un moment de paix profonde.</h1>
+      <p data-i18n="home.hero.text">Massages thérapeutiques et yoga personnalisé pour relâcher les tensions, faire circuler l’énergie et réharmoniser le corps et l’esprit.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+        <a class="btn btn-ghost" href="services.html" data-i18n="cta.discover">Découvrir les soins</a>
+      </div>
+      <div class="hero-C__strip">
+        <div class="media"><img src="assets/soin-mains.png" alt=""></div>
+        <div class="media"><img src="assets/eloise-meditation.png" alt=""></div>
+        <div class="media"><img src="assets/thai-etirement.png" alt=""></div>
+      </div>
+    </div></div></div>
+  </section>
+
+  <!-- ================= CREDO ================= -->
+  <section class="section--tight bg-cream2">
+    <div class="wrap">
+      <div class="credo reveal">
+        <span class="kicker" data-i18n="home.credo.kicker">Mon credo</span>
+        <blockquote data-i18n="home.credo.quote">« Une personne heureuse et en paix fait le bien autour d’elle. »</blockquote>
+        <span class="sign" data-i18n="home.credo.sign">Eloïse Werle</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INTRO split ================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="split">
+        <div class="media media--arch ratio-portrait reveal">
+          <img src="assets/relaxation.png" alt="Moment de relaxation profonde">
+        </div>
+        <div class="split__text reveal" data-d="1">
+          <div class="head">
+            <span class="eyebrow" data-i18n="home.intro.eyebrow">L’intention</span>
+            <h2 data-i18n="home.intro.title">Prendre soin de soi, c’est promouvoir sa santé.</h2>
+          </div>
+          <p data-i18n="home.intro.text">Comprendre ses besoins, son corps et son esprit est essentiel pour développer de nouvelles habitudes qui viennent positivement impacter votre réalité. S’autoriser un massage, c’est s’offrir beaucoup d’amour et un système nerveux apaisé.</p>
+          <div class="cta-row">
+            <a class="link-underline" href="a-propos.html" data-i18n="home.intro.link">Mon parcours & mon approche</a>
+            <span class="arrow">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SIGNATURE SERVICES ================= -->
+  <section class="section bg-cream2">
+    <div class="wrap">
+      <div class="head head--center reveal" style="margin-bottom:clamp(36px,5vw,56px)">
+        <span class="eyebrow" data-i18n="home.serv.eyebrow">Les soins signature</span>
+        <h2 data-i18n="home.serv.title">Des massages choisis pour votre équilibre.</h2>
+        <p class="lead" data-i18n="home.serv.text">Chaque séance se construit autour de vos besoins du moment — détente profonde, circulation, mobilité.</p>
+      </div>
+      <div class="svc-grid" data-soins></div>
+      <div class="center" style="margin-top:clamp(34px,4vw,48px)">
+        <a class="btn btn-ghost reveal" href="services.html" data-i18n="cta.services">Voir tous les soins</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= APPROACH band ================= -->
+  <section class="section bg-sage">
+    <div class="wrap">
+      <div class="split" style="align-items:center">
+        <div class="split__text reveal">
+          <div class="head">
+            <span class="eyebrow" data-i18n="home.approach.eyebrow">L’approche</span>
+            <h2 data-i18n="home.approach.title">Réharmoniser tous les corps qui nous composent.</h2>
+          </div>
+          <p style="color:rgba(244,242,230,.86)" data-i18n="home.approach.text">Corps, esprit, émotions, énergie, subtil : retrouver l’équilibre entre eux, c’est vivre en parfaite symbiose et goûter à plus de sérénité.</p>
+        </div>
+        <div class="media media--arch-soft ratio-square reveal" data-d="1">
+          <img src="assets/eloise-meditation.png" alt="Eloïse en méditation" style="object-position:50% 22%">
+        </div>
+      </div>
+      <div class="approach-grid">
+        <div class="approach-item reveal"><span class="n">01</span><h3 data-i18n="home.approach.b1.t">Le corps</h3><p data-i18n="home.approach.b1.d">Relâcher les tensions physiques et redonner de la mobilité.</p></div>
+        <div class="approach-item reveal" data-d="1"><span class="n">02</span><h3 data-i18n="home.approach.b2.t">Le système nerveux</h3><p data-i18n="home.approach.b2.d">Apaiser le mode « combat-fuite » et réguler le cortisol.</p></div>
+        <div class="approach-item reveal" data-d="2"><span class="n">03</span><h3 data-i18n="home.approach.b3.t">L’énergie</h3><p data-i18n="home.approach.b3.d">Faire circuler les fluides et dissiper les blocages.</p></div>
+        <div class="approach-item reveal" data-d="3"><span class="n">04</span><h3 data-i18n="home.approach.b4.t">L’esprit</h3><p data-i18n="home.approach.b4.d">Un mental plus calme, des émotions apaisées.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= YOGA ================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="split split--media-left">
+        <div class="media media--arch yoga-media reveal">
+          <img src="assets/yoga-equilibre.png" alt="Pratique de yoga au coucher du soleil" style="object-position:50% 40%">
+        </div>
+        <div class="split__text reveal" data-d="1">
+          <div class="head">
+            <span class="eyebrow" data-i18n="home.yoga.eyebrow">Yoga</span>
+            <h2 data-i18n="home.yoga.title">Une pratique sur mesure, dynamique ou plus douce.</h2>
+          </div>
+          <p data-i18n="home.yoga.text">En privé ou en petit groupe, autour de la flexibilité, de la mobilité, du renforcement, de l’endurance et de la conscience corporelle — adaptée à vos capacités et à vos besoins.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+            <a class="link-underline" href="services.html#yoga" data-i18n="home.yoga.link">Découvrir le yoga</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PLACES ================= -->
+  <section class="section bg-cream2">
+    <div class="wrap">
+      <div class="head head--center reveal" style="margin-bottom:clamp(36px,5vw,52px)">
+        <span class="eyebrow" data-i18n="home.places.eyebrow">Où me trouver</span>
+        <h2 data-i18n="home.places.title">Là où je vous accueille.</h2>
+        <p class="lead" data-i18n="home.places.text">Je reçois et me déplace selon les saisons. Choisissez votre lieu au moment de la réservation.</p>
+      </div>
+      <div class="places" data-places></div>
+    </div>
+  </section>
+
+  <!-- ================= UPCOMING DATES ================= -->
+  <section class="section bg-paper">
+    <div class="wrap">
+      <div class="head head--center reveal">
+        <span class="eyebrow" data-i18n="dates.eyebrow">Agenda</span>
+        <h2 data-i18n="dates.title">Mes prochaines dates</h2>
+        <p class="lead" data-i18n="dates.text">Je me déplace selon les saisons. Voici mes prochaines disponibilités par ville.</p>
+      </div>
+      <div data-dates></div>
+      <div class="dates-cta reveal">
+        <button type="button" class="btn btn-primary" data-subscribe data-i18n="news.cta.title">Vous souhaitez recevoir les prochaines dates dès leur parution ? Inscrivez-vous ici</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= TESTIMONIALS ================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="head head--center reveal" style="margin-bottom:clamp(36px,5vw,52px)">
+        <span class="eyebrow" data-i18n="home.testi.eyebrow">Elles témoignent</span>
+        <h2 data-i18n="home.testi.title">Des moments qui font du bien.</h2>
+      </div>
+      <div class="testi" data-testi>
+        <figure class="quote reveal">
+          <div class="mk">“</div>
+          <p data-i18n="testi.1.q">Une parenthèse hors du temps. Je suis repartie légère, le corps détendu et l’esprit clair.</p>
+          <figcaption class="who"><b data-i18n="testi.1.n">Camille R.</b><small data-i18n="testi.1.r">Thaï Yoga Massage</small></figcaption>
+        </figure>
+        <figure class="quote reveal" data-d="1">
+          <div class="mk">“</div>
+          <p data-i18n="testi.2.q">Le drainage lymphatique a vraiment changé mon quotidien.</p>
+          <figcaption class="who"><b data-i18n="testi.2.n">Sarah M.</b><small data-i18n="testi.2.r">Drainage lymphatique</small></figcaption>
+        </figure>
+        <figure class="quote reveal" data-d="2">
+          <div class="mk">“</div>
+          <p data-i18n="testi.3.q">Beaucoup de présence et de bienveillance. Mes cours de yoga sont devenus un vrai rituel.</p>
+          <figcaption class="who"><b data-i18n="testi.3.n">Léa B.</b><small data-i18n="testi.3.r">Yoga personnalisé</small></figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= LEAVE A REVIEW ================= -->
+  <section class="section--tight">
+    <div class="wrap">
+      <div class="head head--center reveal">
+        <span class="eyebrow" data-i18n="rev.eyebrow">Votre avis</span>
+        <h2 data-i18n="rev.title">Partagez votre expérience</h2>
+        <p class="lead" data-i18n="rev.text">Votre témoignage compte. Il sera publié après lecture par Eloïse.</p>
+      </div>
+      <div class="review-card reveal" data-review></div>
+    </div>
+  </section>
+
+  <!-- ================= INSTAGRAM ================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="insta-head reveal">
+        <div class="head">
+          <span class="eyebrow" data-i18n="insta.eyebrow">Sur Instagram</span>
+          <h2 data-i18n="insta.title">Suivez le quotidien du studio</h2>
+        </div>
+        <a class="btn btn-ghost" href="https://instagram.com/elo_aum" target="_blank" rel="noopener" data-i18n="insta.follow">Suivre @elo_aum</a>
+      </div>
+      <div class="insta-grid reveal" data-insta></div>
+    </div>
+  </section>
+
+  <!-- ================= GIFT ================= -->
+  <section class="section--tight">
+    <div class="wrap">
+      <div class="gift reveal">
+        <div class="gift__media"><img src="assets/soin-mains.png" alt="Soin bien-être"></div>
+        <div class="gift__body">
+          <span class="eyebrow" data-i18n="home.gift.eyebrow">Carte-cadeau</span>
+          <h2 data-i18n="home.gift.title">Offrez un moment de bien-être.</h2>
+          <p data-i18n="home.gift.text">Une carte-cadeau pour un massage ou une séance de yoga, valable un an dans tous mes lieux de pratique.</p>
+          <div class="cta-row" style="margin-top:8px">
+            <a class="btn btn-light" href="reservation.html?gift=1" data-i18n="home.gift.cta">Offrir une carte-cadeau</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="section">
+    <div class="wrap">
+      <div class="cta-band reveal">
+        <span class="eyebrow" data-i18n="home.hero.eyebrow">Massage & Yoga · France & Allemagne</span>
+        <h2 data-i18n="home.cta.title">Prête à relâcher les tensions ?</h2>
+        <p class="lead" data-i18n="home.cta.text">Réservez votre séance en quelques instants — choisissez le soin, le lieu et le créneau qui vous conviennent.</p>
+        <div class="cta-row" style="justify-content:center">
+          <a class="btn btn-primary" href="reservation.html" data-i18n="cta.book">Prendre rendez-vous</a>
+          <a class="btn btn-ghost" href="contact.html" data-i18n="cta.contact">Me contacter</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script src="js/store.js"></script>
+<script src="js/strings-common.js"></script>
+<script src="js/strings-admin.js"></script>
+<script src="js/strings-home.js"></script>
+<script src="js/strings-services.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script src="js/modules.js"></script>
+<script src="js/tweaks.js"></script>
+</body>
+</html>
