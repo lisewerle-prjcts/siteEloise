@@ -748,21 +748,37 @@
       if(a.duration) bits.push('<span>'+a.duration+' min</span>');
       if(a.time) bits.push('<span>'+esc(a.time)+'</span>');
       if(a.price) bits.push('<span style="font-weight:700;color:var(--accent)">'+a.price+' €</span>');
-      return '<div class="adm-item"><div class="adm-item__main">'+
-        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(a.name||'—')+
-          ' <span style="color:var(--ink-2);font-family:var(--body);font-weight:400;font-size:.88rem">'+esc(a.email||'')+'</span></div>'+
-        '<div class="adm-item__meta">'+
-          '<span>'+esc(cityName(a.city))+'</span>'+
-          '<span>'+esc(fmtDate(a.dateISO))+'</span>'+
-          bits.join('')+
-        '</div></div>'+
-        '<div class="adm-item__actions">'+
-          (a.email?'<a class="btn-mini" href="mailto:'+esc(a.email)+'">'+esc(t('adm.rdv.reply'))+'</a>':'')+
-          (a.confirmed
-            ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.confirmed'))+'</span>'
-            : '<button class="btn-mini solid" data-confirmrdv="'+a.id+'" data-email="'+esc(a.email||'')+'" data-name="'+esc(a.name||'')+'" data-service="'+esc(svcName(a.service)||'')+'" data-location="'+esc(cityName(a.city)||'')+'" data-date="'+esc(a.dateISO||'')+'" data-time="'+esc(a.time||'')+'" data-duration="'+esc(a.duration||'')+'" data-price="'+esc(a.price||'')+'">'+esc(t('adm.rdv.confirm'))+'</button>')+
-          '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
-        '</div></div>';
+      return '<div class="adm-item" style="flex-direction:column;align-items:stretch;gap:8px">'+
+        '<div style="display:flex;align-items:flex-start;gap:12px">'+
+          '<div class="adm-item__main" style="flex:1">'+
+            '<div class="adm-item__title" style="font-size:1.05rem">'+esc(a.name||'—')+
+              ' <span style="color:var(--ink-2);font-family:var(--body);font-weight:400;font-size:.88rem">'+esc(a.email||'')+'</span></div>'+
+            '<div class="adm-item__meta">'+
+              '<span>'+esc(cityName(a.city))+'</span>'+
+              '<span>'+esc(fmtDate(a.dateISO))+'</span>'+
+              bits.join('')+
+            '</div>'+
+          '</div>'+
+          '<div class="adm-item__actions" style="flex-shrink:0">'+
+            (a.email?'<a class="btn-mini" href="mailto:'+esc(a.email)+'">'+esc(t('adm.rdv.reply'))+'</a>':'')+
+            '<button class="btn-mini" data-editrdv="'+a.id+'">✏ Modifier</button>'+
+            (a.confirmed
+              ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.confirmed'))+'</span>'
+              : '<button class="btn-mini solid" data-confirmrdv="'+a.id+'" data-email="'+esc(a.email||'')+'" data-name="'+esc(a.name||'')+'" data-service="'+esc(svcName(a.service)||'')+'" data-location="'+esc(cityName(a.city)||'')+'" data-date="'+esc(a.dateISO||'')+'" data-time="'+esc(a.time||'')+'" data-duration="'+esc(a.duration||'')+'" data-price="'+esc(a.price||'')+'">'+esc(t('adm.rdv.confirm'))+'</button>')+
+            '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
+          '</div>'+
+        '</div>'+
+        '<div class="adm-rdv-edit" data-editform="'+a.id+'" style="display:none;background:var(--cream-2);border-radius:10px;padding:12px 16px;display:none">'+
+          '<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">'+
+            '<div><label style="font-size:.76rem;font-weight:600;display:block;margin-bottom:4px">Date</label>'+
+              '<input type="date" value="'+esc(a.dateISO||'')+'" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem" data-rdv-date></div>'+
+            '<div><label style="font-size:.76rem;font-weight:600;display:block;margin-bottom:4px">Heure</label>'+
+              '<input type="time" value="'+esc(a.time||'')+'" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem" data-rdv-time></div>'+
+            '<button class="btn btn-primary btn-sm" data-saverdv="'+a.id+'">Sauvegarder</button>'+
+            '<button class="btn-mini" data-closeedit="'+a.id+'">Annuler</button>'+
+          '</div>'+
+        '</div>'+
+      '</div>';
     }
 
     var stats = '<div class="adm-stats">'+
@@ -817,6 +833,28 @@
       addForm.reset();
     });
 
+    [].slice.call(panel.querySelectorAll('[data-editrdv]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var form = panel.querySelector('[data-editform="'+b.dataset.editrdv+'"]');
+        if(form) form.style.display = form.style.display === 'none' ? 'block' : 'none';
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-closeedit]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var form = panel.querySelector('[data-editform="'+b.dataset.closeedit+'"]');
+        if(form) form.style.display = 'none';
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-saverdv]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var form = panel.querySelector('[data-editform="'+b.dataset.saverdv+'"]');
+        if(!form) return;
+        var dateVal = form.querySelector('[data-rdv-date]').value;
+        var timeVal = form.querySelector('[data-rdv-time]').value;
+        S.updateAppointment(b.dataset.saverdv, { dateISO: dateVal, time: timeVal });
+        toast('Rendez-vous mis à jour');
+      });
+    });
     [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
         if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);

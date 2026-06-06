@@ -300,6 +300,11 @@
       list.forEach(function(a) { if (a.id === id) a.confirmed = true; });
       write(KEYS.appts, list);
     },
+    updateAppointment: function(id, patch) {
+      var list = read(KEYS.appts, []);
+      list.forEach(function(a) { if (a.id === id) Object.assign(a, patch); });
+      write(KEYS.appts, list);
+    },
 
     /* services */
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
@@ -502,6 +507,12 @@
     var _confAppt = API.confirmAppointment;
     API.confirmAppointment = function (id) {
       _confAppt.call(API, id);
+      var a = read(KEYS.appts, []).filter(function (x) { return x.id === id; })[0];
+      if (a) DB.save('appointments', a);
+    };
+    var _updAppt = API.updateAppointment;
+    API.updateAppointment = function (id, patch) {
+      _updAppt.call(API, id, patch);
       var a = read(KEYS.appts, []).filter(function (x) { return x.id === id; })[0];
       if (a) DB.save('appointments', a);
     };
