@@ -153,7 +153,6 @@
         <aside class="summary">${summary()}</aside>
       </div>`;
     bind();
-    if (window.ewApplyI18n) window.ewApplyI18n();
     renderAlerts();
   }
 
@@ -333,7 +332,6 @@
         <a class="btn btn-ghost" href="contact.html">${t('cta.contact')}</a></div>
       <p class="note">${t('rv.done.note')}</p>
     </div>`;
-    if (window.ewApplyI18n) window.ewApplyI18n();
   }
 
   function renderInvalid(emailOk) {
@@ -494,7 +492,6 @@
       alertRoot.querySelector('[data-alocs]').textContent = A.locs.map(locName).join(' · ');
     };
     const edit = alertRoot.querySelector('[data-aedit]'); if (edit) edit.onclick = () => { A.done = false; renderAlerts(); };
-    if (window.ewApplyI18n) window.ewApplyI18n();
   }
 
   /* ---------- re-render on language change ---------- */
