@@ -43,6 +43,9 @@
 .ben-list li{ position:relative; padding-left:26px; color:var(--ink); font-size:1rem; }
 .ben-list li::before{ content:''; position:absolute; left:0; top:8px; width:8px; height:8px; border-radius:50%;
   background:var(--accent); box-shadow:0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent); }
+.ben-list--check li::before{ display:none; }
+.ben-list--check li{ padding-left:22px; }
+.ben-list--check li::after{ content:'✔'; position:absolute; left:0; top:0; color:var(--accent); font-size:.88rem; }
 .note{ margin-top:16px; font-size:.9rem; color:var(--ink-2); font-style:italic; }
 .price-row{ margin-top:28px; display:flex; align-items:center; gap:20px; flex-wrap:wrap; }
 .price-row .p{ font-family:var(--display); font-size:1.55rem; }
@@ -143,42 +146,35 @@
     var T = window.t;
     var services = EWS.publishedServices();
 
+    function benSection(label, items) {
+      if (!items || !items.length) return '';
+      return '<div class="ben-label">' + esc(label) + '</div>' +
+        '<ul class="ben-list">' + items.map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>';
+    }
+
     var html = services.map(function (s, i) {
       var id = s.id;
       var num = i < 9 ? '0' + (i + 1) : String(i + 1);
       var rev = i % 2 === 1 ? ' svc-detail--rev' : '';
-      var pfx = PREFIX[id] || id;
 
       var img = EWS.serviceImg(id);
       var tag = EWS.serviceTag(id);
       var name = EWS.serviceName(id);
-
-      var storedDesc = EWS.serviceDescription(id);
-      var desc = storedDesc || T('sv.' + pfx + '.long') || '';
-
-      var storedBen = EWS.serviceBenefits(id);
-      var benefits = storedBen.length
-        ? storedBen
-        : ['b1','b2','b3','b4'].map(function (k) {
-            var v = T('sv.' + pfx + '.' + k);
-            return (v && v.indexOf('sv.') !== 0) ? v : null;
-          }).filter(Boolean);
-
+      var desc = EWS.serviceDescription(id);
+      var note = EWS.serviceNote ? EWS.serviceNote(id) : '';
+      var benPhys = EWS.serviceBenefitsPhysical ? EWS.serviceBenefitsPhysical(id) : [];
+      var benEmot = EWS.serviceBenefitsEmotional ? EWS.serviceBenefitsEmotional(id) : [];
+      var idealFor = EWS.serviceIdealFor ? EWS.serviceIdealFor(id) : [];
       var durations = EWS.serviceDurations(id);
-      var storedOptions = EWS.serviceOptions ? EWS.serviceOptions(id) : [];
-
-      var extra = '';
-      if (storedOptions.length) {
-        extra += '<div class="variants">' + storedOptions.map(function(o){ return '<span>' + esc(o) + '</span>'; }).join('') + '</div>';
-      } else if (id === 'drainage' && !storedDesc) {
-        var v1 = T('sv.drain.variant1'), v2 = T('sv.drain.variant2'), note = T('sv.drain.note');
-        extra += '<div class="variants"><span>' + esc(v1) + '</span><span>' + esc(v2) + '</span></div>';
-        if (note && note.indexOf('sv.') !== 0) extra += '<p class="note">' + esc(note) + '</p>';
-      }
+      var options = EWS.serviceOptions ? EWS.serviceOptions(id) : [];
 
       var durHtml = durations.length
         ? '<div class="variants">' + durations.map(function(d){ return '<span>' + d.min + ' min — ' + d.price + ' €</span>'; }).join('') + '</div>'
         : '';
+      var optsHtml = options.length
+        ? '<div class="variants">' + options.map(function(o){ return '<span>' + esc(o) + '</span>'; }).join('') + '</div>'
+        : '';
+      var noteHtml = note ? '<p class="note">' + esc(note) + '</p>' : '';
 
       return '<article class="svc-detail' + rev + '" id="' + id + '">' +
         '<div class="svc-detail__media reveal"><span class="num">' + num + '</span>' +
@@ -186,13 +182,16 @@
         '<div class="reveal" data-d="1">' +
           '<span class="tag">' + esc(tag) + '</span>' +
           '<h2>' + esc(name) + '</h2>' +
-          '<p class="long">' + esc(desc) + '</p>' +
-          extra +
-          (benefits.length
-            ? '<div class="ben-label">' + esc(T('sv.bienfaits.label')) + '</div>' +
-              '<ul class="ben-list">' + benefits.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>'
+          (desc ? '<p class="long">' + esc(desc) + '</p>' : '') +
+          noteHtml +
+          benSection(T('sv.ben.physical') || 'Bienfaits physiques', benPhys) +
+          benSection(T('sv.ben.emotional') || 'Bienfaits émotionnels & énergétiques', benEmot) +
+          (idealFor.length
+            ? '<div class="ben-label">' + esc(T('sv.ben.idealfor') || 'Idéal pour') + '</div>' +
+              '<ul class="ben-list ben-list--check">' + idealFor.map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>'
             : '') +
           durHtml +
+          optsHtml +
           '<div class="price-row">' +
             '<a class="btn btn-primary" href="reservation.html?service=' + id + '">' + esc(T('cta.book.this')) + '</a>' +
           '</div>' +
