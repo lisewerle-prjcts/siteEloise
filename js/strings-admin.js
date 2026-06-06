@@ -166,6 +166,15 @@ Object.assign(window.I18N.fr, {
   'adm.sv.addBenefit': 'Ajouter un bienfait',
   'adm.sv.options': 'Variantes / options',
   'adm.sv.addOption': 'Ajouter une option',
+  'adm.sv.benefitsPhysical': 'Bienfaits physiques',
+  'adm.sv.benefitsEmotional': 'Bienfaits émotionnels & énergétiques',
+  'adm.sv.idealFor': 'Idéal pour',
+  'adm.sv.note': 'Note / À savoir',
+  'adm.rdv.confirm': 'Confirmer',
+  'adm.rdv.confirmed': 'Confirmé',
+  'adm.rdv.confirmconfirm': 'Confirmer ce rendez-vous et envoyer l\'email de confirmation au client ?',
+  'adm.rdv.confirmok': 'Rendez-vous confirmé !',
+  'dates.filter.all': 'Toutes les villes',
   'adm.tab.securite': 'Sécurité',
   'adm.sec.pw.title': 'Modifier le mot de passe',
   'adm.sec.pw.current': 'Code actuel',
@@ -209,7 +218,16 @@ Object.assign(window.I18N.fr, {
   'adm.sv.nameReq': 'Le nom du soin est requis.',
   'adm.sv.none': 'Aucun soin.',
   'adm.sv.builtin': 'Par défaut',
-  'adm.sv.custom': 'Ajouté'
+  'adm.sv.custom': 'Ajouté',
+
+  'adm.sv.benefitsPhysical': 'Bienfaits physiques',
+  'adm.sv.benefitsEmotional': 'Bienfaits émotionnels & énergétiques',
+  'adm.sv.idealFor': 'Idéal pour',
+  'adm.sv.note': 'Note / À savoir',
+  'adm.rdv.confirm': 'Confirmer',
+  'adm.rdv.confirmed': 'Confirmé',
+  'adm.rdv.confirmconfirm': 'Confirmer ce rendez-vous et envoyer l\'email au client ?',
+  'adm.rdv.confirmok': 'Rendez-vous confirmé !'
 });
 
 /* ----------------------------- DEUTSCH ----------------------------- */
@@ -365,6 +383,15 @@ Object.assign(window.I18N.de, {
   'adm.sv.addBenefit': 'Wirkung hinzufügen',
   'adm.sv.options': 'Varianten / Optionen',
   'adm.sv.addOption': 'Option hinzufügen',
+  'adm.sv.benefitsPhysical': 'Körperliche Vorteile',
+  'adm.sv.benefitsEmotional': 'Emotionale & energetische Vorteile',
+  'adm.sv.idealFor': 'Ideal für',
+  'adm.sv.note': 'Hinweis',
+  'adm.rdv.confirm': 'Bestätigen',
+  'adm.rdv.confirmed': 'Bestätigt',
+  'adm.rdv.confirmconfirm': 'Diesen Termin bestätigen und Bestätigungs-E-Mail senden?',
+  'adm.rdv.confirmok': 'Termin bestätigt!',
+  'dates.filter.all': 'Alle Städte',
   'adm.tab.securite': 'Sicherheit',
   'adm.sec.pw.title': 'Passwort ändern',
   'adm.sec.pw.current': 'Aktueller Code',
@@ -408,7 +435,16 @@ Object.assign(window.I18N.de, {
   'adm.sv.nameReq': 'Der Name der Behandlung ist erforderlich.',
   'adm.sv.none': 'Keine Behandlungen.',
   'adm.sv.builtin': 'Standard',
-  'adm.sv.custom': 'Hinzugefügt'
+  'adm.sv.custom': 'Hinzugefügt',
+
+  'adm.sv.benefitsPhysical': 'Körperliche Vorteile',
+  'adm.sv.benefitsEmotional': 'Emotionale Vorteile',
+  'adm.sv.idealFor': 'Ideal für',
+  'adm.sv.note': 'Hinweis',
+  'adm.rdv.confirm': 'Bestätigen',
+  'adm.rdv.confirmed': 'Bestätigt',
+  'adm.rdv.confirmconfirm': 'Diesen Termin bestätigen?',
+  'adm.rdv.confirmok': 'Termin bestätigt!'
 });
 
 /* ----------------------------- ENGLISH ----------------------------- */
@@ -564,6 +600,15 @@ Object.assign(window.I18N.en, {
   'adm.sv.addBenefit': 'Add benefit',
   'adm.sv.options': 'Variants / options',
   'adm.sv.addOption': 'Add option',
+  'adm.sv.benefitsPhysical': 'Physical benefits',
+  'adm.sv.benefitsEmotional': 'Emotional & energetic benefits',
+  'adm.sv.idealFor': 'Ideal for',
+  'adm.sv.note': 'Note',
+  'adm.rdv.confirm': 'Confirm',
+  'adm.rdv.confirmed': 'Confirmed',
+  'adm.rdv.confirmconfirm': 'Confirm this appointment and send confirmation email to client?',
+  'adm.rdv.confirmok': 'Appointment confirmed!',
+  'dates.filter.all': 'All cities',
   'adm.tab.securite': 'Security',
   'adm.sec.pw.title': 'Change password',
   'adm.sec.pw.current': 'Current code',

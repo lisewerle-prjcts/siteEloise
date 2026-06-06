@@ -600,6 +600,38 @@
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addben style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
         '</div>'+
+        '<div><label>'+esc(t('adm.sv.benefitsPhysical'))+'</label>'+
+          '<div data-e-ben-phys style="display:grid;gap:6px;margin-top:6px">'+
+            S.serviceBenefitsPhysical(id).map(function(b){
+              return '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input class="e-ben-phys-txt" value="'+esc(b)+'" style="flex:1">'+
+                '<button type="button" class="btn-mini danger e-ben-phys-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addbenphys style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
+        '</div>'+
+        '<div><label>'+esc(t('adm.sv.benefitsEmotional'))+'</label>'+
+          '<div data-e-ben-emot style="display:grid;gap:6px;margin-top:6px">'+
+            S.serviceBenefitsEmotional(id).map(function(b){
+              return '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input class="e-ben-emot-txt" value="'+esc(b)+'" style="flex:1">'+
+                '<button type="button" class="btn-mini danger e-ben-emot-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addbenemot style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
+        '</div>'+
+        '<div><label>'+esc(t('adm.sv.idealFor'))+'</label>'+
+          '<div data-e-idealfor style="display:grid;gap:6px;margin-top:6px">'+
+            S.serviceIdealFor(id).map(function(b){
+              return '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input class="e-idealfor-txt" value="'+esc(b)+'" style="flex:1">'+
+                '<button type="button" class="btn-mini danger e-idealfor-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addidealfor style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
+        '</div>'+
+        '<div><label>'+esc(t('adm.sv.note'))+'</label>'+
+          '<textarea data-e-note style="min-height:80px">'+esc(S.serviceNote(id))+'</textarea></div>'+
         '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
           ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
         '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
@@ -639,6 +671,36 @@
     [].slice.call(box.querySelectorAll('.e-ben-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+    $('[data-e-addbenphys]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input class="e-ben-phys-txt" style="flex:1">'+
+        '<button type="button" class="btn-mini danger e-ben-phys-del">×</button>';
+      row.querySelector('.e-ben-phys-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-ben-phys]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-ben-phys-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
+    $('[data-e-addbenemot]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input class="e-ben-emot-txt" style="flex:1">'+
+        '<button type="button" class="btn-mini danger e-ben-emot-del">×</button>';
+      row.querySelector('.e-ben-emot-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-ben-emot]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-ben-emot-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
+    $('[data-e-addidealfor]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input class="e-idealfor-txt" style="flex:1">'+
+        '<button type="button" class="btn-mini danger e-idealfor-del">×</button>';
+      row.querySelector('.e-idealfor-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-idealfor]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-idealfor-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
     $('[data-e-save]',box).addEventListener('click', function(){
       var img = ($('[data-e-url]',box).value||'').trim() || $('[data-e-asset]',box).value;
       var rows = [].slice.call($('[data-e-durations]',box).querySelectorAll('div'));
@@ -649,10 +711,18 @@
       var benefits = benInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var optInputs = [].slice.call($('[data-e-options]',box).querySelectorAll('.e-opt-txt'));
       var options = optInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var benPhysInputs = [].slice.call($('[data-e-ben-phys]',box).querySelectorAll('.e-ben-phys-txt'));
+      var benefitsPhysical = benPhysInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var benEmotInputs = [].slice.call($('[data-e-ben-emot]',box).querySelectorAll('.e-ben-emot-txt'));
+      var benefitsEmotional = benEmotInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var idealForInputs = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt'));
+      var idealFor = idealForInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var note = ($('[data-e-note]',box).value||'').trim();
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value,
         durations: durations.length ? durations : S.serviceDurations(id),
         description: ($('[data-e-desc]',box).value||'').trim(),
-        benefits: benefits, options: options, img:img });
+        benefits: benefits, options: options, img:img,
+        benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note });
       close();
     });
   }
@@ -683,6 +753,9 @@
         '</div></div>'+
         '<div class="adm-item__actions">'+
           (a.email?'<a class="btn-mini" href="mailto:'+esc(a.email)+'">'+esc(t('adm.rdv.reply'))+'</a>':'')+
+          (a.confirmed
+            ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.confirmed'))+'</span>'
+            : '<button class="btn-mini solid" data-confirmrdv="'+a.id+'" data-email="'+esc(a.email||'')+'" data-name="'+esc(a.name||'')+'" data-service="'+esc(svcName(a.service)||'')+'" data-location="'+esc(cityName(a.city)||'')+'" data-date="'+esc(a.dateISO||'')+'" data-time="'+esc(a.time||'')+'" data-duration="'+esc(a.duration||'')+'" data-price="'+esc(a.price||'')+'">'+esc(t('adm.rdv.confirm'))+'</button>')+
           '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
         '</div></div>';
     }
@@ -742,6 +815,32 @@
     [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
         if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-confirmrdv]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        if(!confirm(t('adm.rdv.confirmconfirm'))) return;
+        if(S.confirmAppointment) S.confirmAppointment(b.dataset.confirmrdv);
+        if(b.dataset.email) {
+          fetch('/api/contact', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              type: 'confirm',
+              name: b.dataset.name,
+              email: b.dataset.email,
+              clientEmail: b.dataset.email,
+              service: b.dataset.service,
+              location: b.dataset.location,
+              date: b.dataset.date,
+              time: b.dataset.time,
+              duration: b.dataset.duration,
+              price: b.dataset.price,
+              message: 'Confirmation'
+            })
+          }).catch(function(){});
+        }
+        toast(t('adm.rdv.confirmok'));
       });
     });
   }

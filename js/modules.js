@@ -25,32 +25,56 @@
   function stars(n) { n = Math.max(0, Math.min(5, n || 5)); var s = ''; for (var i = 0; i < 5; i++) s += i < n ? '★' : '☆'; return s; }
 
   /* -------------------- upcoming dates -------------------- */
+  var datesFilter = null;
   function renderDates() {
     var host = document.querySelector('[data-dates]');
     if (!host) return;
-    var list = S.upcomingDates().slice(0, 6);
+    var all = S.upcomingDates();
+    // cities present in upcoming dates
+    var cityIds = [];
+    all.forEach(function(d) { if (d.city && cityIds.indexOf(d.city) < 0) cityIds.push(d.city); });
+    // filter chips
+    var chipsHtml = '';
+    if (cityIds.length > 1) {
+      chipsHtml = '<div class="dates-filter" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">' +
+        '<button type="button" style="padding:8px 16px;border:1px solid '+(datesFilter===null?'var(--accent)':'var(--line)')+';border-radius:999px;font-size:.83rem;font-weight:600;color:'+(datesFilter===null?'var(--accent)':'var(--ink-2)')+';background:transparent;cursor:pointer;transition:.3s" data-dcity="">' + esc(t('dates.filter.all') || 'Toutes les villes') + '</button>' +
+        cityIds.map(function(id) {
+          return '<button type="button" style="padding:8px 16px;border:1px solid '+(datesFilter===id?'var(--accent)':'var(--line)')+';border-radius:999px;font-size:.83rem;font-weight:600;color:'+(datesFilter===id?'var(--accent)':'var(--ink-2)')+';background:transparent;cursor:pointer;transition:.3s" data-dcity="'+id+'">' + esc(cityName(id)) + '</button>';
+        }).join('') +
+      '</div>';
+    }
+    var list = (datesFilter ? all.filter(function(d) { return d.city === datesFilter; }) : all).slice(0, 6);
+    var rowsHtml;
     if (!list.length) {
-      host.innerHTML = '<p class="dates-empty">' + esc(t('dates.none')) + '</p>';
-      return;
+      rowsHtml = '<p class="dates-empty">' + esc(t('dates.none')) + '</p>';
+    } else {
+      rowsHtml = list.map(function (d) {
+        var dt = new Date(d.date + 'T00:00:00');
+        var day = dt.toLocaleDateString(locale(), { day: '2-digit' });
+        var mon = dt.toLocaleDateString(locale(), { month: 'short' }).replace('.', '');
+        var meta = [];
+        var time = '';
+        if (d.start && d.end) time = d.start + ' – ' + d.end;
+        else if (d.start) time = t('dates.from') + ' ' + d.start;
+        if (time) meta.push('<span>' + esc(time) + '</span>');
+        if (d.service) meta.push('<span class="svc">' + esc(svcName(d.service)) + '</span>');
+        return '<div class="date-row reveal">' +
+          '<div class="date-row__day"><div class="d">' + esc(day) + '</div><div class="m">' + esc(mon) + '</div></div>' +
+          '<div class="date-row__body"><div class="date-row__city">' + esc(cityName(d.city)) + '</div>' +
+          '<div class="date-row__meta">' + meta.join('') + '</div></div>' +
+          '<a class="btn btn-ghost btn-sm" href="reservation.html">' + esc(t('dates.book')) + '</a>' +
+          '</div>';
+      }).join('');
     }
     host.className = 'dates-list';
-    host.innerHTML = list.map(function (d) {
-      var dt = new Date(d.date + 'T00:00:00');
-      var day = dt.toLocaleDateString(locale(), { day: '2-digit' });
-      var mon = dt.toLocaleDateString(locale(), { month: 'short' }).replace('.', '');
-      var meta = [];
-      var time = '';
-      if (d.start && d.end) time = d.start + ' – ' + d.end;
-      else if (d.start) time = t('dates.from') + ' ' + d.start;
-      if (time) meta.push('<span>' + esc(time) + '</span>');
-      if (d.service) meta.push('<span class="svc">' + esc(svcName(d.service)) + '</span>');
-      return '<div class="date-row reveal">' +
-        '<div class="date-row__day"><div class="d">' + esc(day) + '</div><div class="m">' + esc(mon) + '</div></div>' +
-        '<div class="date-row__body"><div class="date-row__city">' + esc(cityName(d.city)) + '</div>' +
-        '<div class="date-row__meta">' + meta.join('') + '</div></div>' +
-        '<a class="btn btn-ghost btn-sm" href="reservation.html">' + esc(t('dates.book')) + '</a>' +
-        '</div>';
-    }).join('');
+    host.innerHTML = chipsHtml + rowsHtml;
+    // bind filter chips
+    [].slice.call(host.querySelectorAll('[data-dcity]')).forEach(function(b) {
+      b.addEventListener('click', function() {
+        datesFilter = b.getAttribute('data-dcity') || null;
+        renderDates();
+      });
+    });
     if (window.ewObserveReveals) window.ewObserveReveals();
   }
 
