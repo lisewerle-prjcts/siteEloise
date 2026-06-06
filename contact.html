@@ -191,9 +191,11 @@
     }).then(function(r){ return r.json(); }).then(function(){
       form.style.display = 'none';
       document.getElementById('cdone').classList.add('show');
-    }).catch(function(){
-      form.style.display = 'none';
-      document.getElementById('cdone').classList.add('show');
+    }).catch(function(err){
+      btn.disabled = false;
+      btn.textContent = window.t ? window.t('ct.f.send') : 'Envoyer le message';
+      alert('Erreur réseau — veuillez réessayer.');
+      console.error('contact fetch error:', err);
     });
   });
   form.querySelectorAll('input,textarea').forEach(function(el){
