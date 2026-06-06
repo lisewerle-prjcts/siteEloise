@@ -158,6 +158,9 @@ Object.assign(window.I18N.fr, {
   'adm.rdv.cancelconfirm': 'Annuler ce rendez-vous ?',
   'adm.sv.durations': 'Durées & tarifs',
   'adm.sv.addDur': 'Ajouter une durée',
+  'adm.sv.description': 'Description',
+  'adm.sv.benefits': 'Bienfaits',
+  'adm.sv.addBenefit': 'Ajouter un bienfait',
 
   'news.cta.title': 'Vous souhaitez recevoir les prochaines dates dès leur parution ? Inscrivez-vous',
   'news.modal.title': 'Recevoir mes prochaines dates',
@@ -336,6 +339,9 @@ Object.assign(window.I18N.de, {
   'adm.rdv.cancelconfirm': 'Diesen Termin stornieren?',
   'adm.sv.durations': 'Dauer & Preise',
   'adm.sv.addDur': 'Dauer hinzufügen',
+  'adm.sv.description': 'Beschreibung',
+  'adm.sv.benefits': 'Wirkung',
+  'adm.sv.addBenefit': 'Wirkung hinzufügen',
 
   'news.cta.title': 'Möchten Sie die nächsten Termine bei Veröffentlichung erhalten? Hier eintragen',
   'news.modal.title': 'Meine nächsten Termine erhalten',
@@ -514,6 +520,9 @@ Object.assign(window.I18N.en, {
   'adm.rdv.cancelconfirm': 'Cancel this appointment?',
   'adm.sv.durations': 'Durations & prices',
   'adm.sv.addDur': 'Add duration',
+  'adm.sv.description': 'Description',
+  'adm.sv.benefits': 'Benefits',
+  'adm.sv.addBenefit': 'Add benefit',
 
   'news.cta.title': 'Want to hear about new dates the moment they’re published? Sign up',
   'news.modal.title': 'Get my upcoming dates',

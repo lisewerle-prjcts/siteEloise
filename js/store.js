@@ -35,12 +35,12 @@
   };
 
   var BUILTIN_SERVICES = [
-    { id: 'thai',        builtin: true, published: true, durations: DEFAULT_DURATIONS['thai'],        img: 'assets/thai-etirement.png',  name: 'Thaï Yoga Massage',    tag: 'Étirements & énergie' },
-    { id: 'balinais',    builtin: true, published: true, durations: DEFAULT_DURATIONS['balinais'],    img: 'assets/soin-mains.png',       name: 'Massage Balinais',       tag: 'Enveloppant & circulatoire' },
-    { id: 'deep',        builtin: true, published: true, durations: DEFAULT_DURATIONS['deep'],        img: 'assets/relaxation.png',       name: 'Deep Tissue',            tag: 'Tensions profondes' },
-    { id: 'drainage',    builtin: true, published: true, durations: DEFAULT_DURATIONS['drainage'],    img: 'assets/drainage-visage.png',  name: 'Drainage lymphatique',   tag: 'Détox & légèreté' },
-    { id: 'ayurvedique', builtin: true, published: true, durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',         name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant' },
-    { id: 'yoga',        builtin: true, published: true, durations: DEFAULT_DURATIONS['yoga'],        img: 'assets/yoga-equilibre.png',   name: 'Yoga personnalisé',      tag: 'Mobilité & souffle' }
+    { id: 'thai',        builtin: true, published: true, durations: DEFAULT_DURATIONS['thai'],        img: 'assets/thai-etirement.png',  name: 'Thaï Yoga Massage',    tag: 'Étirements & énergie',      description: '', benefits: [] },
+    { id: 'balinais',    builtin: true, published: true, durations: DEFAULT_DURATIONS['balinais'],    img: 'assets/soin-mains.png',       name: 'Massage Balinais',       tag: 'Enveloppant & circulatoire', description: '', benefits: [] },
+    { id: 'deep',        builtin: true, published: true, durations: DEFAULT_DURATIONS['deep'],        img: 'assets/relaxation.png',       name: 'Deep Tissue',            tag: 'Tensions profondes',         description: '', benefits: [] },
+    { id: 'drainage',    builtin: true, published: true, durations: DEFAULT_DURATIONS['drainage'],    img: 'assets/drainage-visage.png',  name: 'Drainage lymphatique',   tag: 'Détox & légèreté',           description: '', benefits: [] },
+    { id: 'ayurvedique', builtin: true, published: true, durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',         name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',   description: '', benefits: [] },
+    { id: 'yoga',        builtin: true, published: true, durations: DEFAULT_DURATIONS['yoga'],        img: 'assets/yoga-equilibre.png',   name: 'Yoga personnalisé',      tag: 'Mobilité & souffle',         description: '', benefits: [] }
   ];
 
   /* ---------- low-level ---------- */
@@ -241,6 +241,8 @@
     serviceTag: function (id) { var s = API.service(id);
       if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
       return (s && s.tag) || ''; },
+    serviceDescription: function (id) { var s = API.service(id); return (s && s.description) || ''; },
+    serviceBenefits: function (id) { var s = API.service(id); return (s && s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
     serviceDurations: function (id) {
       var s = API.service(id);
       if (s && s.durations && s.durations.length) return s.durations;
@@ -259,6 +261,7 @@
       var rec = { id: n, builtin: false, published: s.published !== false,
         name: (s.name || '').trim(), tag: (s.tag || '').trim(),
         durations: s.durations || [{min:60, price:70}],
+        description: (s.description || '').trim(), benefits: s.benefits || [],
         img: s.img || 'assets/relaxation.png', createdAt: Date.now() };
       list.push(rec); write(KEYS.services, list); return rec;
     },

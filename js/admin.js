@@ -459,7 +459,6 @@
 
     function item(s){
       var pub = s.published !== false;
-      var unit = S.serviceUnit(s.id);
       return '<div class="adm-item'+(pub?'':' is-off')+'">'+
         '<div class="adm-thumb"><img src="'+esc(S.serviceImg(s.id))+'" alt=""></div>'+
         '<div class="adm-item__main">'+
@@ -529,6 +528,18 @@
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addur style="margin-top:8px">+ '+esc(t('adm.sv.addDur'))+'</button>'+
         '</div>'+
+        '<div><label>'+esc(t('adm.sv.description'))+'</label>'+
+          '<textarea data-e-desc style="min-height:100px">'+esc(S.serviceDescription(id))+'</textarea></div>'+
+        '<div><label>'+esc(t('adm.sv.benefits'))+'</label>'+
+          '<div data-e-benefits style="display:grid;gap:6px;margin-top:6px">'+
+            S.serviceBenefits(id).map(function(b){
+              return '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input class="e-ben-txt" value="'+esc(b)+'" style="flex:1">'+
+                '<button type="button" class="btn-mini danger e-ben-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addben style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
+        '</div>'+
         '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
           ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
         '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
@@ -548,14 +559,28 @@
     [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+    $('[data-e-addben]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input class="e-ben-txt" style="flex:1">'+
+        '<button type="button" class="btn-mini danger e-ben-del">×</button>';
+      row.querySelector('.e-ben-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-benefits]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-ben-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
     $('[data-e-save]',box).addEventListener('click', function(){
       var img = ($('[data-e-url]',box).value||'').trim() || $('[data-e-asset]',box).value;
       var rows = [].slice.call($('[data-e-durations]',box).querySelectorAll('div'));
       var durations = rows.map(function(row){
         return { min:+(row.querySelector('.e-dur-min').value)||60, price:+(row.querySelector('.e-dur-price').value)||0 };
       }).filter(function(o){ return o.min > 0; });
+      var benInputs = [].slice.call($('[data-e-benefits]',box).querySelectorAll('.e-ben-txt'));
+      var benefits = benInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value,
-        durations: durations.length ? durations : S.serviceDurations(id), img:img });
+        durations: durations.length ? durations : S.serviceDurations(id),
+        description: ($('[data-e-desc]',box).value||'').trim(),
+        benefits: benefits, img:img });
       close();
     });
   }
