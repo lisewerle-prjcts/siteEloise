@@ -106,7 +106,10 @@
           <h4 data-i18n="footer.news">Lettre du bien-être</h4>
           <p style="color:#C2B49E;margin-bottom:14px" data-i18n="footer.news.text">Rituels, créneaux et inspirations douces, une fois par saison.</p>
           <form class="news-form" data-newsletter>
-            <input type="text" name="name" data-i18n-ph="news.name.ph" placeholder="Votre prénom (facultatif)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+              <input type="text" name="firstName" data-i18n-ph="news.firstname.ph" placeholder="Prénom">
+              <input type="text" name="lastName" data-i18n-ph="news.lastname.ph" placeholder="Nom">
+            </div>
             <input type="email" name="email" required data-i18n-ph="news.placeholder" placeholder="Votre adresse e-mail">
             <div class="news-cities">
               <span class="news-cities__lbl" data-i18n="news.cities">Recevoir les dates à :</span>
@@ -131,13 +134,13 @@
   nf.addEventListener('submit', (e) => {
     e.preventDefault();
     const cities = [].slice.call(nf.querySelectorAll('input[name="city"]:checked')).map(i => i.value);
-    const nameEl = nf.querySelector('input[name="name"]');
+    const firstName = (nf.querySelector('input[name="firstName"]') || {}).value || '';
+    const lastName  = (nf.querySelector('input[name="lastName"]')  || {}).value || '';
     if (window.EWStore) {
       window.EWStore.addSubscriber({
-        name: nameEl ? nameEl.value : '',
-        email: nf.email.value,
-        cities: cities,
-        lang: window.ewLang ? window.ewLang() : 'fr'
+        firstName, lastName,
+        name: [firstName, lastName].filter(Boolean).join(' '),
+        email: nf.email.value, cities, lang: window.ewLang ? window.ewLang() : 'fr'
       });
     }
     nf.style.display = 'none';
@@ -198,7 +201,10 @@
       <h3>${esc(t('news.modal.title'))}</h3>
       <p class="ew-modal__lead">${esc(t('news.modal.text'))}</p>
       <form class="news-form news-form--modal" data-submodal>
-        <input type="text" name="name" placeholder="${esc(t('news.name.ph'))}">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input type="text" name="firstName" placeholder="${esc(t('news.firstname.ph'))}">
+          <input type="text" name="lastName" placeholder="${esc(t('news.lastname.ph'))}">
+        </div>
         <input type="email" name="email" required placeholder="${esc(t('news.placeholder'))}">
         <div class="news-cities">
           <span class="news-cities__lbl">${esc(t('news.cities'))}</span>
@@ -211,8 +217,11 @@
     f.addEventListener('submit', e => {
       e.preventDefault();
       const cities = [].slice.call(f.querySelectorAll('input[name="city"]:checked')).map(i => i.value);
-      const nameEl = f.querySelector('input[name="name"]');
-      S.addSubscriber({ name: nameEl ? nameEl.value : '', email: f.email.value, cities: cities, lang: window.ewLang ? window.ewLang() : 'fr' });
+      const firstNameEl = f.querySelector('input[name="firstName"]');
+      const lastNameEl  = f.querySelector('input[name="lastName"]');
+      const firstName = firstNameEl ? firstNameEl.value : '';
+      const lastName  = lastNameEl  ? lastNameEl.value  : '';
+      S.addSubscriber({ firstName, lastName, name: [firstName, lastName].filter(Boolean).join(' '), email: f.email.value, cities: cities, lang: window.ewLang ? window.ewLang() : 'fr' });
       box.innerHTML = `<button class="ew-modal__x" data-close aria-label="Fermer">×</button>
         <div class="ew-modal__ok"><div class="mk">♥</div><p class="lead">${esc(t('news.done2'))}</p></div>`;
     });

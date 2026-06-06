@@ -26,6 +26,11 @@
 
   /* -------------------- upcoming dates -------------------- */
   var datesFilter = null;
+  var datesExpanded = false;
+  var DATES_INITIAL = 3;
+  function chipBtn(label, active, attr) {
+    return '<button type="button" style="padding:8px 16px;border:1px solid '+(active?'var(--accent)':'var(--line)')+';border-radius:999px;font-size:.83rem;font-weight:600;color:'+(active?'var(--accent)':'var(--ink-2)')+';background:transparent;cursor:pointer;transition:.3s" '+attr+'>'+label+'</button>';
+  }
   function renderDates() {
     var host = document.querySelector('[data-dates]');
     if (!host) return;
@@ -36,19 +41,20 @@
     // filter chips
     var chipsHtml = '';
     if (cityIds.length > 1) {
-      chipsHtml = '<div class="dates-filter" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">' +
-        '<button type="button" style="padding:8px 16px;border:1px solid '+(datesFilter===null?'var(--accent)':'var(--line)')+';border-radius:999px;font-size:.83rem;font-weight:600;color:'+(datesFilter===null?'var(--accent)':'var(--ink-2)')+';background:transparent;cursor:pointer;transition:.3s" data-dcity="">' + esc(t('dates.filter.all') || 'Toutes les villes') + '</button>' +
+      chipsHtml = '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">' +
+        chipBtn(esc(t('dates.filter.all') || 'Toutes les villes'), datesFilter===null, 'data-dcity=""') +
         cityIds.map(function(id) {
-          return '<button type="button" style="padding:8px 16px;border:1px solid '+(datesFilter===id?'var(--accent)':'var(--line)')+';border-radius:999px;font-size:.83rem;font-weight:600;color:'+(datesFilter===id?'var(--accent)':'var(--ink-2)')+';background:transparent;cursor:pointer;transition:.3s" data-dcity="'+id+'">' + esc(cityName(id)) + '</button>';
+          return chipBtn(esc(cityName(id)), datesFilter===id, 'data-dcity="'+id+'"');
         }).join('') +
       '</div>';
     }
-    var list = (datesFilter ? all.filter(function(d) { return d.city === datesFilter; }) : all).slice(0, 6);
+    var filtered = datesFilter ? all.filter(function(d) { return d.city === datesFilter; }) : all;
+    var visible = datesExpanded ? filtered : filtered.slice(0, DATES_INITIAL);
     var rowsHtml;
-    if (!list.length) {
+    if (!filtered.length) {
       rowsHtml = '<p class="dates-empty">' + esc(t('dates.none')) + '</p>';
     } else {
-      rowsHtml = list.map(function (d) {
+      rowsHtml = visible.map(function (d) {
         var dt = new Date(d.date + 'T00:00:00');
         var day = dt.toLocaleDateString(locale(), { day: '2-digit' });
         var mon = dt.toLocaleDateString(locale(), { month: 'short' }).replace('.', '');
@@ -66,15 +72,24 @@
           '</div>';
       }).join('');
     }
+    var moreHtml = '';
+    if (!datesExpanded && filtered.length > DATES_INITIAL) {
+      moreHtml = '<div style="text-align:center;margin-top:20px">' +
+        '<button type="button" class="btn btn-ghost" data-dates-more>' +
+          esc(t('dates.more') || 'Voir plus') + ' (' + (filtered.length - DATES_INITIAL) + ')' +
+        '</button></div>';
+    }
     host.className = 'dates-list';
-    host.innerHTML = chipsHtml + rowsHtml;
-    // bind filter chips
+    host.innerHTML = chipsHtml + rowsHtml + moreHtml;
     [].slice.call(host.querySelectorAll('[data-dcity]')).forEach(function(b) {
       b.addEventListener('click', function() {
         datesFilter = b.getAttribute('data-dcity') || null;
+        datesExpanded = false;
         renderDates();
       });
     });
+    var moreBtn = host.querySelector('[data-dates-more]');
+    if (moreBtn) moreBtn.addEventListener('click', function() { datesExpanded = true; renderDates(); });
     if (window.ewObserveReveals) window.ewObserveReveals();
   }
 
@@ -175,14 +190,12 @@
     var list = S.publishedServices();
     host.innerHTML = list.map(function (s, i) {
       var href = 'services.html' + (SVC_ANCHOR[s.id] || '');
-      var unit = S.serviceUnit(s.id);
       return '<a class="svc reveal"' + (i % 3 ? ' data-d="' + (i % 3) + '"' : '') + ' href="' + href + '">' +
         '<div class="svc__media"><img src="' + esc(S.serviceImg(s.id)) + '" alt="' + esc(S.serviceName(s.id)) + '"></div>' +
         '<div class="svc__body">' +
           '<span class="svc__tag">' + esc(S.serviceTag(s.id)) + '</span>' +
           '<span class="svc__name">' + esc(S.serviceName(s.id)) + '</span>' +
-          '<div class="svc__foot"><span class="svc__price">' + esc(S.servicePrice(s.id)) + '\u00a0\u20ac' +
-            (unit ? ' <small>' + esc(unit) + '</small>' : '') + '</span><span class="svc__go">\u2192</span></div>' +
+          '<div class="svc__foot"><span class="svc__price">' + esc(S.servicePrice(s.id)) + '\u00a0\u20ac</span><span class="svc__go">\u2192</span></div>' +
         '</div></a>';
     }).join('');
     if (window.ewObserveReveals) window.ewObserveReveals();

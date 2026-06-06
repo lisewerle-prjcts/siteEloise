@@ -21,6 +21,10 @@ Object.assign(window.I18N.fr, {
   'dates.none': 'De nouvelles dates arrivent très bientôt. Inscrivez-vous pour être prévenu·e.',
   'dates.from': 'de',
   'dates.to': 'à',
+  'dates.more': 'Voir plus',
+  'news.firstname.ph': 'Prénom',
+  'news.lastname.ph': 'Nom',
+  'adm.s.delcity': 'Retirer de cette ville',
 
   /* instagram (public) */
   'insta.eyebrow': 'Sur Instagram',
@@ -319,6 +323,7 @@ Object.assign(window.I18N.de, {
   'adm.s.copyCity': 'E-Mails kopieren',
   'adm.s.none': 'Noch keine Abonnenten.',
   'adm.s.del': 'Entfernen',
+  'adm.s.delcity': 'Von dieser Stadt entfernen',
 
   'adm.r.pending': 'Ausstehend',
   'adm.r.published': 'Veröffentlicht',
@@ -537,6 +542,7 @@ Object.assign(window.I18N.en, {
   'adm.s.none': 'No subscribers yet.',
   'adm.s.del': 'Remove',
 
+  'adm.s.delcity': 'Remove from this city',
   'adm.r.pending': 'Pending',
   'adm.r.published': 'Published',
   'adm.r.none': 'Nothing here yet.',

@@ -260,6 +260,17 @@
     removeSubscriber: function (id) {
       write(KEYS.subs, read(KEYS.subs, []).filter(function (s) { return s.id !== id; }));
     },
+    removeSubscriberCity: function (id, city) {
+      var list = read(KEYS.subs, []);
+      var sub = list.find(function (s) { return s.id === id; });
+      if (!sub) return;
+      sub.cities = (sub.cities || []).filter(function (c) { return c !== city; });
+      if (sub.cities.length === 0) {
+        write(KEYS.subs, list.filter(function (s) { return s.id !== id; }));
+      } else {
+        write(KEYS.subs, list);
+      }
+    },
     subscribersForCity: function (city) {
       return read(KEYS.subs, []).filter(function (s) { return s.cities.indexOf(city) !== -1; });
     },

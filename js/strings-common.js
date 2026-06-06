@@ -51,7 +51,10 @@ Object.assign(window.I18N.fr, {
 
   'news.placeholder': 'Votre adresse e-mail',
   'news.submit': 'S\u2019inscrire',
+  'news.firstname.ph': 'Prénom',
+  'news.lastname.ph': 'Nom',
   'news.done': 'Merci ! À très bientôt.',
+  'dates.more': 'Voir plus',
 });
 
 Object.assign(window.I18N.de, {
@@ -105,6 +108,9 @@ Object.assign(window.I18N.de, {
   'news.placeholder': 'Ihre E-Mail-Adresse',
   'news.submit': 'Abonnieren',
   'news.done': 'Danke! Bis bald.',
+  'news.firstname.ph': 'Vorname',
+  'news.lastname.ph': 'Nachname',
+  'dates.more': 'Mehr anzeigen',
 });
 
 Object.assign(window.I18N.en, {
@@ -158,4 +164,7 @@ Object.assign(window.I18N.en, {
   'news.placeholder': 'Your email address',
   'news.submit': 'Subscribe',
   'news.done': 'Thank you! See you soon.',
+  'news.firstname.ph': 'First name',
+  'news.lastname.ph': 'Last name',
+  'dates.more': 'See more',
 });

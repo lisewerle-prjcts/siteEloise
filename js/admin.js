@@ -234,7 +234,9 @@
               (nb?' <span class="pill-tag">'+nb+' '+esc(t('adm.s.appts'))+'</span>':'')+'</div>'+
             '<div class="adm-item__meta"><span>'+esc(s.email)+'</span><span>'+esc(t('adm.s.since'))+' '+esc(fmtShort(s.date))+'</span>'+
               '<span>'+s.cities.map(cityName).map(esc).join(', ')+'</span></div></div>'+
-            '<div class="adm-item__actions"><button class="btn-mini" data-history="'+s.id+'">'+esc(t('adm.s.history'))+'</button>'+
+            '<div class="adm-item__actions">'+
+              s.cities.map(function(city){ return '<button class="btn-mini" data-delcity="'+s.id+'" data-city="'+esc(city)+'">✕ '+esc(cityName(city))+'</button>'; }).join('')+
+              '<button class="btn-mini" data-history="'+s.id+'">'+esc(t('adm.s.history'))+'</button>'+
               '<button class="btn-mini danger" data-delsub="'+s.id+'">'+esc(t('adm.s.del'))+'</button></div>'+
           '</div>'; }).join('')+'</div>';
     }).join('');
@@ -247,8 +249,11 @@
         copyText(em.join(', ')); toast(t('adm.n.copied'));
       });
     });
+    [].slice.call(panel.querySelectorAll('[data-delcity]')).forEach(function(b){
+      b.addEventListener('click', function(e){ e.stopPropagation(); S.removeSubscriberCity(b.dataset.delcity, b.dataset.city); render(); });
+    });
     [].slice.call(panel.querySelectorAll('[data-delsub]')).forEach(function(b){
-      b.addEventListener('click', function(e){ e.stopPropagation(); S.removeSubscriber(b.dataset.delsub); });
+      b.addEventListener('click', function(e){ e.stopPropagation(); S.removeSubscriber(b.dataset.delsub); render(); });
     });
     [].slice.call(panel.querySelectorAll('[data-history]')).forEach(function(b){
       b.addEventListener('click', function(e){ e.stopPropagation(); openSubscriber(b.dataset.history); });
