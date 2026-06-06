@@ -2,7 +2,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { name, email, subject, message, type, service, location, date, time, duration, price, phone, notes } = req.body || {};
+  const { name, email, clientEmail, subject, message, type, service, location, date, time, duration, price, phone, notes } = req.body || {};
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Champs requis manquants' });
@@ -77,6 +77,40 @@ module.exports = async function handler(req, res) {
       console.error('Resend error:', err);
       return res.status(500).json({ error: 'Email service error' });
     }
+
+    // Confirmation email to the client for bookings
+    if (isBooking && clientEmail && clientEmail !== email) {
+      const clientHtml = `
+        <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#2C2C2A">
+          <div style="background:#C8B89A;padding:32px 40px;border-radius:12px 12px 0 0">
+            <h1 style="color:#FBF5ED;font-size:24px;margin:0;font-weight:400">Votre réservation est confirmée ✓</h1>
+            <p style="color:#F0DECF;margin:6px 0 0;font-size:14px">Eloïse Werle — eloisewerle.com</p>
+          </div>
+          <div style="background:#FDFAF5;padding:32px 40px;border:1px solid #E8E0D5;border-top:none;border-radius:0 0 12px 12px">
+            <p style="font-size:1.05rem;margin:0 0 24px">Bonjour ${name},<br><br>Votre séance a bien été enregistrée. Eloïse vous contactera sous peu pour confirmer le rendez-vous.</p>
+            <table style="width:100%;border-collapse:collapse">
+              <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em;width:40%">Soin</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;font-weight:600">${service || '—'}</td></tr>
+              <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Lieu</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5">${location || '—'}</td></tr>
+              <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Date</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5">${date || '—'}${time ? ' à ' + time : ''}</td></tr>
+              <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Durée</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5">${duration ? duration + ' min' : '—'}</td></tr>
+              <tr><td style="padding:10px 0;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Total</td><td style="padding:10px 0;font-weight:700;font-size:18px;color:#C8B89A">${price ? price + ' €' : '—'}</td></tr>
+            </table>
+            <p style="margin-top:28px;color:#7C6E5F;font-size:13px">Questions ? Répondez à cet e-mail ou écrivez à <a href="mailto:eloiserose.werle@gmail.com" style="color:#C8B89A">eloiserose.werle@gmail.com</a></p>
+          </div>
+        </div>`;
+      await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: 'Eloïse Werle <hello@eloisewerle.com>',
+          to: [clientEmail],
+          reply_to: 'eloiserose.werle@gmail.com',
+          subject: `Confirmation de réservation — ${service || 'séance'}`,
+          html: clientHtml,
+        }),
+      }).catch(e => console.error('Client email error:', e));
+    }
+
     return res.status(200).json({ ok: true });
   } catch (e) {
     console.error('Fetch error:', e);

@@ -465,7 +465,8 @@
         '<div class="adm-item__main">'+
           '<div class="adm-item__title" style="font-size:1.1rem">'+esc(S.serviceName(s.id))+
             ' <span class="pill-tag '+(s.builtin?'':'ok')+'">'+esc(t(s.builtin?'adm.sv.builtin':'adm.sv.custom'))+'</span></div>'+
-          '<div class="adm-item__meta"><span class="svc">'+esc(S.serviceTag(s.id))+'</span><span>'+esc(S.servicePrice(s.id))+' €'+(unit?' '+esc(unit):'')+'</span></div>'+
+          '<div class="adm-item__meta"><span class="svc">'+esc(S.serviceTag(s.id))+'</span>'+
+            S.serviceDurations(s.id).map(function(o){ return '<span>'+o.min+' min — '+o.price+' €</span>'; }).join('')+'</div>'+
         '</div>'+
         '<div class="adm-item__actions">'+
           '<label class="sw" title="'+esc(t('adm.sv.published'))+'"><input type="checkbox" data-togglesvc="'+s.id+'"'+(pub?' checked':'')+'><span></span></label>'+
@@ -517,8 +518,17 @@
       '<div class="adm-form" style="margin-top:10px">'+
         '<div><label>'+esc(t('adm.sv.name'))+'</label><input data-e-name value="'+esc(S.serviceName(id))+'"></div>'+
         '<div><label>'+esc(t('adm.sv.tag'))+'</label><input data-e-tag value="'+esc(S.serviceTag(id))+'"></div>'+
-        '<div class="row2"><div><label>'+esc(t('adm.sv.price'))+'</label><input type="number" data-e-price value="'+esc(S.servicePrice(id))+'"></div>'+
-          '<div><label>'+esc(t('adm.sv.unit'))+'</label><input data-e-unit value="'+esc(S.serviceUnit(id))+'"></div></div>'+
+        '<div><label>'+esc(t('adm.sv.durations'))+'</label>'+
+          '<div data-e-durations style="display:grid;gap:8px;margin-top:6px">'+
+            S.serviceDurations(id).map(function(o){
+              return '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input type="number" class="e-dur-min" placeholder="min" value="'+o.min+'" style="width:72px"> min'+
+                '<input type="number" class="e-dur-price" placeholder="€" value="'+o.price+'" style="width:72px"> €'+
+                '<button type="button" class="btn-mini danger e-dur-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addur style="margin-top:8px">+ '+esc(t('adm.sv.addDur'))+'</button>'+
+        '</div>'+
         '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
           ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
         '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
@@ -527,10 +537,25 @@
       '<div class="adm-modal__actions"><button class="btn btn-primary btn-sm" data-e-save>'+esc(t('adm.sv.saveEdit'))+'</button>'+
         '<button class="btn-mini" data-close>'+esc(t('adm.h.close'))+'</button></div>';
     modal.classList.add('on');
+    $('[data-e-addur]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input type="number" class="e-dur-min" placeholder="min" style="width:72px"> min'+
+        '<input type="number" class="e-dur-price" placeholder="€" style="width:72px"> €'+
+        '<button type="button" class="btn-mini danger e-dur-del">×</button>';
+      row.querySelector('.e-dur-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-durations]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
     $('[data-e-save]',box).addEventListener('click', function(){
       var img = ($('[data-e-url]',box).value||'').trim() || $('[data-e-asset]',box).value;
+      var rows = [].slice.call($('[data-e-durations]',box).querySelectorAll('div'));
+      var durations = rows.map(function(row){
+        return { min:+(row.querySelector('.e-dur-min').value)||60, price:+(row.querySelector('.e-dur-price').value)||0 };
+      }).filter(function(o){ return o.min > 0; });
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value,
-        price:+$('[data-e-price]',box).value, unit:$('[data-e-unit]',box).value, img:img });
+        durations: durations.length ? durations : S.serviceDurations(id), img:img });
       close();
     });
   }
@@ -561,6 +586,7 @@
         '</div></div>'+
         '<div class="adm-item__actions">'+
           (a.email?'<a class="btn-mini" href="mailto:'+esc(a.email)+'">'+esc(t('adm.rdv.reply'))+'</a>':'')+
+          '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
         '</div></div>';
     }
 
@@ -575,6 +601,12 @@
       '<div class="adm-list">'+(upcoming.length ? upcoming.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>'+
       '<div class="adm-sub" style="margin-top:24px">'+esc(t('adm.rdv.past'))+' · '+past.length+'</div>'+
       '<div class="adm-list">'+(past.length ? past.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>';
+
+    [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);
+      });
+    });
   }
 
   /* ====================== RENDER + BADGES ====================== */

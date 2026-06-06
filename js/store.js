@@ -14,27 +14,33 @@
     campaigns: 'ew_campaigns_v1',
     cities:    'ew_cities_v1',
     appts:     'ew_appointments_v1',
-    services:  'ew_services_v1',
+    services:  'ew_services_v2',   // v2: durations array replaces price+unit
     seeded:    'ew_seeded_v1'
   };
 
-  /* Built-in cities — names/regions resolved via i18n (loc.<id>.*) so they
-     stay trilingual. Custom cities added later carry their own plain strings. */
   var BUILTIN_CITIES = [
     { id: 'sucy',     builtin: true, active: true, days: [1, 2, 3], mapLabel: 'Sucy-en-Brie · 94', name: 'Sucy-en-Brie', region: 'Val-de-Marne, France' },
     { id: 'chesnay',  builtin: true, active: true, days: [3, 4, 5], mapLabel: 'Le Chesnay · 78',   name: 'Le Chesnay',   region: 'Yvelines, France' },
     { id: 'wehingen', builtin: true, active: true, days: [5, 6, 0], mapLabel: 'Wehingen · DE',     name: 'Wehingen',     region: 'Bade-Wurtemberg, Allemagne' }
   ];
 
-  /* Built-in soins — name/tag resolved via i18n (svc.<id>.*) until edited.
-     Drive the home “soins signature” grid; publish/unpublish like Instagram. */
+  /* Duration+price combos per service (Eloïse can override from admin) */
+  var DEFAULT_DURATIONS = {
+    'thai':        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
+    'balinais':    [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
+    'deep':        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
+    'drainage':    [{min:60,price:80},{min:120,price:150}],
+    'ayurvedique': [{min:60,price:70},{min:90,price:100}],
+    'yoga':        [{min:60,price:65},{min:90,price:90}]
+  };
+
   var BUILTIN_SERVICES = [
-    { id: 'thai',  builtin: true, published: true, price: 60, img: 'assets/thai-etirement.png',  name: 'Thaï Yoga Massage',     tag: 'Étirements & énergie' },
-    { id: 'bali',  builtin: true, published: true, price: 60, img: 'assets/soin-mains.png',       name: 'Massage Balinais',        tag: 'Enveloppant & circulatoire' },
-    { id: 'deep',  builtin: true, published: true, price: 60, img: 'assets/relaxation.png',       name: 'Deep Tissue',             tag: 'Tensions profondes' },
-    { id: 'lymph', builtin: true, published: true, price: 70, img: 'assets/drainage-visage.png',  name: 'Drainage lymphatique',    tag: 'Détox & légèreté' },
-    { id: 'ayur',  builtin: true, published: true, price: 60, img: 'assets/thai-dos.png',          name: 'Ayurvédique & Abhyanga',  tag: 'Chaleureux & nourrissant' },
-    { id: 'yoga',  builtin: true, published: true, price: 60, img: 'assets/yoga-equilibre.png',    name: 'Yoga personnalisé',       tag: 'Mobilité & souffle' }
+    { id: 'thai',        builtin: true, published: true, durations: DEFAULT_DURATIONS['thai'],        img: 'assets/thai-etirement.png',  name: 'Thaï Yoga Massage',    tag: 'Étirements & énergie' },
+    { id: 'balinais',    builtin: true, published: true, durations: DEFAULT_DURATIONS['balinais'],    img: 'assets/soin-mains.png',       name: 'Massage Balinais',       tag: 'Enveloppant & circulatoire' },
+    { id: 'deep',        builtin: true, published: true, durations: DEFAULT_DURATIONS['deep'],        img: 'assets/relaxation.png',       name: 'Deep Tissue',            tag: 'Tensions profondes' },
+    { id: 'drainage',    builtin: true, published: true, durations: DEFAULT_DURATIONS['drainage'],    img: 'assets/drainage-visage.png',  name: 'Drainage lymphatique',   tag: 'Détox & légèreté' },
+    { id: 'ayurvedique', builtin: true, published: true, durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',         name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant' },
+    { id: 'yoga',        builtin: true, published: true, durations: DEFAULT_DURATIONS['yoga'],        img: 'assets/yoga-equilibre.png',   name: 'Yoga personnalisé',      tag: 'Mobilité & souffle' }
   ];
 
   /* ---------- low-level ---------- */
@@ -47,7 +53,7 @@
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
   function slug(s) {
     return (s || '').toString().toLowerCase().trim()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 28) || ('v' + uid());
   }
   var listeners = [];
@@ -62,7 +68,7 @@
     return d.toISOString().slice(0, 10);
   }
 
-  /* ---------- migrations / seeds ---------- */
+  /* ---------- migrations ---------- */
   function ensureCities() {
     if (!localStorage.getItem(KEYS.cities)) writeRaw(KEYS.cities, BUILTIN_CITIES.slice());
   }
@@ -72,16 +78,17 @@
   function ensureAppointments() {
     if (localStorage.getItem(KEYS.appts)) return;
     writeRaw(KEYS.appts, [
-      { id: uid(), email: 'camille.r@example.com', name: 'Camille Roux', city: 'sucy',     service: 'thai',     duration: 75, price: 75, dateISO: daysFromNow(-58), time: '10:30' },
-      { id: uid(), email: 'camille.r@example.com', name: 'Camille Roux', city: 'sucy',     service: 'thai',     duration: 90, price: 90, dateISO: daysFromNow(-21), time: '14:00' },
-      { id: uid(), email: 'camille.r@example.com', name: 'Camille Roux', city: 'sucy',     service: 'deep',     duration: 60, price: 60, dateISO: daysFromNow(6),   time: '09:00' },
-      { id: uid(), email: 'sarah.m@example.com',   name: 'Sarah Meyer',  city: 'chesnay',  service: 'drainage', duration: 60, price: 70, dateISO: daysFromNow(-40), time: '12:00' },
-      { id: uid(), email: 'sarah.m@example.com',   name: 'Sarah Meyer',  city: 'chesnay',  service: 'drainage', duration: 60, price: 70, dateISO: daysFromNow(-12), time: '15:30' },
-      { id: uid(), email: 'lea.b@example.com',     name: 'Léa Bonnet',   city: 'chesnay',  service: 'yoga',     duration: 60, price: 60, dateISO: daysFromNow(-30), time: '17:00' },
-      { id: uid(), email: 'anna.s@example.de',     name: 'Anna Schmidt', city: 'wehingen', service: 'balinais', duration: 90, price: 90, dateISO: daysFromNow(-18), time: '10:30' },
-      { id: uid(), email: 'emma.l@example.com',    name: 'Emma Laurent', city: 'sucy',     service: 'ayurvedique', duration: 90, price: 90, dateISO: daysFromNow(9), time: '11:00' }
+      { id: uid(), email: 'camille.r@example.com', name: 'Camille Roux',  city: 'sucy',     service: 'thai',        duration: 75,  price: 85,  dateISO: daysFromNow(-58), time: '10:30' },
+      { id: uid(), email: 'camille.r@example.com', name: 'Camille Roux',  city: 'sucy',     service: 'thai',        duration: 90,  price: 100, dateISO: daysFromNow(-21), time: '14:00' },
+      { id: uid(), email: 'camille.r@example.com', name: 'Camille Roux',  city: 'sucy',     service: 'deep',        duration: 60,  price: 70,  dateISO: daysFromNow(6),   time: '09:00' },
+      { id: uid(), email: 'sarah.m@example.com',   name: 'Sarah Meyer',   city: 'chesnay',  service: 'drainage',    duration: 60,  price: 80,  dateISO: daysFromNow(-40), time: '12:00' },
+      { id: uid(), email: 'sarah.m@example.com',   name: 'Sarah Meyer',   city: 'chesnay',  service: 'drainage',    duration: 60,  price: 80,  dateISO: daysFromNow(-12), time: '15:30' },
+      { id: uid(), email: 'lea.b@example.com',     name: 'Léa Bonnet',    city: 'chesnay',  service: 'yoga',        duration: 60,  price: 65,  dateISO: daysFromNow(-30), time: '17:00' },
+      { id: uid(), email: 'anna.s@example.de',     name: 'Anna Schmidt',  city: 'wehingen', service: 'balinais',    duration: 90,  price: 100, dateISO: daysFromNow(-18), time: '10:30' },
+      { id: uid(), email: 'emma.l@example.com',    name: 'Emma Laurent',  city: 'sucy',     service: 'ayurvedique', duration: 90,  price: 100, dateISO: daysFromNow(9),   time: '11:00' }
     ]);
   }
+
   function seed() {
     ensureCities();
     ensureServices();
@@ -89,13 +96,13 @@
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
     writeRaw(KEYS.subs, [
-      { id: uid(), name: 'Camille Roux',   email: 'camille.r@example.com', cities: ['sucy'],            lang: 'fr', date: daysFromNow(-40) },
-      { id: uid(), name: 'Sarah Meyer',    email: 'sarah.m@example.com',   cities: ['sucy', 'chesnay'], lang: 'fr', date: daysFromNow(-32) },
-      { id: uid(), name: 'Léa Bonnet',     email: 'lea.b@example.com',     cities: ['chesnay'],         lang: 'fr', date: daysFromNow(-25) },
-      { id: uid(), name: 'Anna Schmidt',   email: 'anna.s@example.de',     cities: ['wehingen'],        lang: 'de', date: daysFromNow(-20) },
-      { id: uid(), name: 'Julia Wagner',   email: 'julia.w@example.de',    cities: ['wehingen'],        lang: 'de', date: daysFromNow(-15) },
-      { id: uid(), name: 'Emma Laurent',   email: 'emma.l@example.com',    cities: ['sucy', 'wehingen'],lang: 'fr', date: daysFromNow(-9) },
-      { id: uid(), name: 'Sophie Klein',   email: 'sophie.k@example.de',   cities: ['chesnay', 'wehingen'], lang: 'de', date: daysFromNow(-4) }
+      { id: uid(), name: 'Camille Roux',  email: 'camille.r@example.com', cities: ['sucy'],             lang: 'fr', date: daysFromNow(-40) },
+      { id: uid(), name: 'Sarah Meyer',   email: 'sarah.m@example.com',   cities: ['sucy', 'chesnay'],  lang: 'fr', date: daysFromNow(-32) },
+      { id: uid(), name: 'Léa Bonnet',    email: 'lea.b@example.com',     cities: ['chesnay'],          lang: 'fr', date: daysFromNow(-25) },
+      { id: uid(), name: 'Anna Schmidt',  email: 'anna.s@example.de',     cities: ['wehingen'],         lang: 'de', date: daysFromNow(-20) },
+      { id: uid(), name: 'Julia Wagner',  email: 'julia.w@example.de',    cities: ['wehingen'],         lang: 'de', date: daysFromNow(-15) },
+      { id: uid(), name: 'Emma Laurent',  email: 'emma.l@example.com',    cities: ['sucy', 'wehingen'], lang: 'fr', date: daysFromNow(-9)  },
+      { id: uid(), name: 'Sophie Klein',  email: 'sophie.k@example.de',   cities: ['chesnay', 'wehingen'], lang: 'de', date: daysFromNow(-4) }
     ]);
     writeRaw(KEYS.dates, [
       { id: uid(), city: 'sucy',     date: daysFromNow(6),  start: '09:00', end: '18:00', service: 'thai',     note: '', createdAt: Date.now(), notified: true },
@@ -203,12 +210,15 @@
       return read(KEYS.subs, []).filter(function (s) { return s.cities.indexOf(city) !== -1; });
     },
 
-    /* appointments (booking history) */
+    /* appointments */
     appointments: function () { return read(KEYS.appts, []); },
     appointmentsForEmail: function (email) {
       email = (email || '').toLowerCase();
       return read(KEYS.appts, []).filter(function (a) { return (a.email || '').toLowerCase() === email; })
         .sort(function (a, b) { return a.dateISO < b.dateISO ? 1 : a.dateISO > b.dateISO ? -1 : 0; });
+    },
+    appointmentsForDate: function (city, dateISO) {
+      return read(KEYS.appts, []).filter(function (a) { return a.city === city && a.dateISO === dateISO; });
     },
     addAppointment: function (a) {
       var list = read(KEYS.appts, []);
@@ -217,8 +227,11 @@
         dateISO: a.dateISO || '', time: a.time || '', createdAt: Date.now() };
       list.push(rec); write(KEYS.appts, list); return rec;
     },
+    removeAppointment: function (id) {
+      write(KEYS.appts, read(KEYS.appts, []).filter(function (a) { return a.id !== id; }));
+    },
 
-    /* services (soins) — drive the home grid; publish like Instagram */
+    /* services */
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
     publishedServices: function () { return API.services().filter(function (s) { return s.published !== false; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
@@ -228,11 +241,14 @@
     serviceTag: function (id) { var s = API.service(id);
       if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
       return (s && s.tag) || ''; },
-    servicePrice: function (id) { var s = API.service(id); return s ? (s.price || 0) : 0; },
-    serviceUnit: function (id) { var s = API.service(id);
-      if (s && s.unit) return s.unit;
-      if (s && s.builtin && !s.edited && window.t) { var v = window.t('common.perHour'); if (v && v !== 'common.perHour') return v; }
-      return s && s.unit != null ? s.unit : (window.t ? window.t('common.perHour') : '');
+    serviceDurations: function (id) {
+      var s = API.service(id);
+      if (s && s.durations && s.durations.length) return s.durations;
+      return DEFAULT_DURATIONS[id] || [{min:60, price:70}];
+    },
+    servicePrice: function (id) {
+      var opts = API.serviceDurations(id);
+      return opts.length ? opts[0].price : 0;
     },
     serviceImg: function (id) { var s = API.service(id); return s ? s.img : ''; },
     addService: function (s) {
@@ -241,8 +257,9 @@
       var n = id, i = 2;
       while (list.some(function (x) { return x.id === n; })) { n = id + '-' + (i++); }
       var rec = { id: n, builtin: false, published: s.published !== false,
-        name: (s.name || '').trim(), tag: (s.tag || '').trim(), price: +s.price || 0,
-        unit: (s.unit != null ? s.unit : ''), img: s.img || 'assets/relaxation.png', createdAt: Date.now() };
+        name: (s.name || '').trim(), tag: (s.tag || '').trim(),
+        durations: s.durations || [{min:60, price:70}],
+        img: s.img || 'assets/relaxation.png', createdAt: Date.now() };
       list.push(rec); write(KEYS.services, list); return rec;
     },
     updateService: function (id, patch) {
@@ -335,7 +352,6 @@
     }
   };
 
-  // back-compat alias used by older callers
   Object.defineProperty(API, 'CITIES', { get: function () { return API.cityIds(); } });
 
   seed();

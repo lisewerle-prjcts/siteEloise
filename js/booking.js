@@ -12,53 +12,78 @@
 
   /* ---------- data ---------- */
   const SERVICES = [
-    { id: 'thai',        cat: 'massage',  rate: 60, durations: [60, 75, 90] },
-    { id: 'balinais',    cat: 'massage',  rate: 60, durations: [60, 75, 90] },
-    { id: 'deep',        cat: 'massage',  rate: 60, durations: [60, 75, 90] },
-    { id: 'ayurvedique', cat: 'massage',  rate: 60, durations: [60, 90] },
-    { id: 'drainage',    cat: 'drainage', rate: 70, durations: [60, 120] },
-    { id: 'yoga',        cat: 'yoga',     rate: 60, durations: [60, 90] },
+    { id: 'thai',        cat: 'massage'  },
+    { id: 'balinais',    cat: 'massage'  },
+    { id: 'deep',        cat: 'massage'  },
+    { id: 'ayurvedique', cat: 'massage'  },
+    { id: 'drainage',    cat: 'drainage' },
+    { id: 'yoga',        cat: 'yoga'     },
   ];
   const IMG = { thai: 'thai-etirement', balinais: 'soin-mains', deep: 'relaxation',
                 drainage: 'drainage-visage', ayurvedique: 'thai-dos', yoga: 'yoga-equilibre' };
+
+  /* Fallback prices if store not loaded */
+  const FALLBACK_OPTIONS = {
+    thai:        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
+    balinais:    [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
+    deep:        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
+    drainage:    [{min:60,price:80},{min:120,price:150}],
+    ayurvedique: [{min:60,price:70},{min:90,price:100}],
+    yoga:        [{min:60,price:65},{min:90,price:90}],
+  };
+
   var EWS = window.EWStore;
+  function serviceOptions(id) {
+    if (EWS) { const s = EWS.service(id); if (s && s.durations && s.durations.length) return s.durations; }
+    return FALLBACK_OPTIONS[id] || [{min:60,price:70}];
+  }
+  function serviceDurations(id) { return serviceOptions(id).map(o => o.min); }
+
   function locations() {
     return (EWS ? EWS.activeCityIds() : ['sucy', 'chesnay', 'wehingen']).map(function (id) {
       return { id: id, days: EWS ? EWS.cityDays(id) : [2, 3, 4] };
     });
   }
   const SLOT_TIMES = ['09:00', '10:30', '12:00', '14:00', '15:30', '17:00', '18:30'];
+  const BUFFER_MIN = 15;
 
   function svc(id) { return SERVICES.find(s => s.id === id); }
   function locName(id) { return EWS ? EWS.cityName(id) : id; }
   function locRegion(id) { return EWS ? EWS.cityRegion(id) : ''; }
-  function price(serviceId, min) { const s = svc(serviceId); return s ? Math.round(s.rate * min / 60) : 0; }
-
-  /* ---------- deterministic pseudo-random ---------- */
-  function seed(str) {
-    let h = 2166136261;
-    for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); }
-    return ((h >>> 0) % 100000) / 100000;
+  function price(serviceId, min) {
+    const opts = serviceOptions(serviceId);
+    const opt = opts.find(o => o.min === min);
+    return opt ? opt.price : (opts.length ? opts[0].price : 0);
   }
+
   function iso(d) { return d.toISOString().slice(0, 10); }
+  function timeToMin(t) { if (!t) return 0; const p = t.split(':'); return +p[0]*60 + (+p[1]||0); }
 
-  function freeSlots(locId, d) {
-    const key = locId + iso(d);
-    return SLOT_TIMES.filter(tm => seed(key + tm) > 0.42);
+  /* Real slot availability — checks against stored appointments with buffer */
+  function bookedRanges(locId, dateISO) {
+    if (!EWS) return [];
+    return EWS.appointmentsForDate(locId, dateISO).map(a => ({
+      start: timeToMin(a.time) - BUFFER_MIN,
+      end:   timeToMin(a.time) + (a.duration || 60) + BUFFER_MIN
+    }));
   }
-  function dayAvailable(locId, d) {
+  function isSlotFree(locId, dateISO, slotTime, duration) {
+    const start = timeToMin(slotTime), end = start + duration;
+    return !bookedRanges(locId, dateISO).some(r => start < r.end && end > r.start);
+  }
+  function freeSlots(locId, dateISO, duration) {
+    return SLOT_TIMES.filter(tm => isSlotFree(locId, dateISO, tm, duration || S.duration || 60));
+  }
+  function dayAvailable(locId, d, duration) {
     const loc = locations().find(l => l.id === locId);
-    if (!loc) return false;
-    if (!loc.days.includes(d.getDay())) return false;
-    if (seed('open' + locId + iso(d)) < 0.22) return false;     // occasional closed day
-    return freeSlots(locId, d).length > 0;
+    if (!loc || !loc.days.includes(d.getDay())) return false;
+    return freeSlots(locId, iso(d), duration || S.duration || 60).length > 0;
   }
-
-  function upcomingDays(locId, n) {
+  function upcomingDays(locId, n, duration) {
     const out = []; const today = new Date(); today.setHours(0, 0, 0, 0);
-    for (let i = 1; i <= 80 && out.length < n; i++) {
+    for (let i = 1; i <= 90 && out.length < n; i++) {
       const d = new Date(today); d.setDate(today.getDate() + i);
-      out.push({ date: d, avail: dayAvailable(locId, d) });
+      out.push({ date: d, avail: dayAvailable(locId, d, duration || S.duration || 60) });
     }
     return out;
   }
@@ -151,11 +176,13 @@
 
   function optCard(s) {
     const on = S.service === s.id ? 'on' : '';
+    const opts = serviceOptions(s.id);
+    const minPrice = opts.reduce((m, o) => Math.min(m, o.price), opts[0].price);
     return `<button type="button" class="opt ${on}" data-svc="${s.id}">
       <img class="opt__img" src="assets/${IMG[s.id]}.png" alt="">
       <span class="opt__tx"><b>${t('svc.' + s.id + '.name')}</b>
         <small>${t('svc.' + s.id + '.tag')}</small>
-        <span class="pr">${t('common.from')} ${price(s.id, s.durations[0])}&nbsp;€</span></span>
+        <span class="pr">${t('common.from')} ${minPrice}&nbsp;€</span></span>
     </button>`;
   }
   function step1() {
@@ -174,10 +201,9 @@
         <span class="loc__tx"><b>${locName(l.id)}</b><small>${locRegion(l.id)}</small></span>
         <span class="loc__days">${daysHint(l)}</span></button>`;
     }).join('');
-    const s = svc(S.service);
-    const durs = (s ? s.durations : [60]).map(m => {
-      const on = S.duration === m ? 'on' : '';
-      return `<button type="button" class="dur ${on}" data-dur="${m}">${durLabel(m)}<small>${price(S.service, m)}&nbsp;€</small></button>`;
+    const durs = serviceOptions(S.service).map(o => {
+      const on = S.duration === o.min ? 'on' : '';
+      return `<button type="button" class="dur ${on}" data-dur="${o.min}">${durLabel(o.min)}<small>${o.price}&nbsp;€</small></button>`;
     }).join('');
     return `<div class="step__h"><h2>${t('rv.s2.title')}</h2></div>
       <div class="step__cat">${t('rv.s2.loc')}</div><div class="loc-list">${locs}</div>
@@ -186,7 +212,7 @@
 
   function step3() {
     if (!S.location) { S.step = 2; return step2(); }
-    const days = upcomingDays(S.location, 14);
+    const days = upcomingDays(S.location, 14, S.duration);
     const strip = days.map(o => {
       const d = o.date, isoStr = iso(d);
       const on = S.dateISO === isoStr ? 'on' : '';
@@ -200,7 +226,7 @@
     let slotsHtml = `<p class="empty-note">${t('rv.pickday')}</p>`;
     if (S.dateISO) {
       const d = new Date(S.dateISO + 'T00:00:00');
-      const free = dayAvailable(S.location, d) ? freeSlots(S.location, d) : [];
+      const free = freeSlots(S.location, S.dateISO, S.duration);
       const all = SLOT_TIMES;
       if (free.length === 0) {
         slotsHtml = `<p class="empty-note">${t('rv.noslots')}</p>`;
@@ -323,8 +349,8 @@
   function bind() {
     root.querySelectorAll('[data-svc]').forEach(b => b.onclick = () => {
       S.service = b.getAttribute('data-svc');
-      const s = svc(S.service);
-      if (!s.durations.includes(S.duration)) S.duration = s.durations[0];
+      const opts = serviceOptions(S.service);
+      if (!opts.find(o => o.min === S.duration)) S.duration = opts[0].min;
       save(); render();
     });
     root.querySelectorAll('[data-loc]').forEach(b => b.onclick = () => {
@@ -370,6 +396,7 @@
           type: 'booking',
           name: fullName,
           email: S.form.email,
+          clientEmail: S.form.email,
           phone: S.form.phone || '',
           notes: S.form.notes || '',
           service: S.service ? t('svc.' + S.service + '.name') : '',
