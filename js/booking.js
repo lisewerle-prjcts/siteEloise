@@ -354,14 +354,33 @@
       root.scrollIntoView ? null : null; window.scrollTo({ top: root.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
     };
     const conf = root.querySelector('[data-confirm]'); if (conf) conf.onclick = () => {
+      const fullName = [S.form.first, S.form.last].filter(Boolean).join(' ');
       if (EWS && S.form.email && S.service && S.dateISO) {
         EWS.addAppointment({
           email: S.form.email,
-          name: [S.form.first, S.form.last].filter(Boolean).join(' '),
+          name: fullName,
           city: S.location, service: S.service, duration: S.duration,
           price: price(S.service, S.duration), dateISO: S.dateISO, time: S.time
         });
       }
+      fetch('/api/contact', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          type: 'booking',
+          name: fullName,
+          email: S.form.email,
+          phone: S.form.phone || '',
+          notes: S.form.notes || '',
+          service: S.service ? t('svc.' + S.service + '.name') : '',
+          location: S.location ? locName(S.location) : '',
+          date: S.dateISO || '',
+          time: S.time || '',
+          duration: S.duration || '',
+          price: (S.service && S.duration) ? price(S.service, S.duration) : '',
+          message: S.form.notes || '(pas de notes)'
+        })
+      }).catch(() => {});
       S.done = true; render(); save();
       window.scrollTo({ top: root.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
     };

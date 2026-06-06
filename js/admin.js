@@ -45,7 +45,7 @@
   function authed(){ return localStorage.getItem(AUTH_KEY)==='1'; }
   function showApp(){
     gate.style.display='none'; app.hidden=false;
-    render(); if(window.ewApplyI18n) window.ewApplyI18n();
+    render(); setTab('rdv'); if(window.ewApplyI18n) window.ewApplyI18n();
   }
   function initGate(){
     gate.querySelector('.hint').textContent = t('adm.login.hint') + ' ' + CODE;
@@ -535,6 +535,48 @@
     });
   }
 
+  /* ====================== RENDEZ-VOUS TAB ====================== */
+  function renderAppointments(){
+    var panel = $('[data-panel="rdv"]'); if(!panel) return;
+    var all = S.appointments ? S.appointments() : [];
+    var todayStr = today();
+    var upcoming = all.filter(function(a){ return a.dateISO >= todayStr; })
+      .sort(function(a,b){ return a.dateISO < b.dateISO ? -1 : 1; });
+    var past = all.filter(function(a){ return a.dateISO < todayStr; })
+      .sort(function(a,b){ return a.dateISO < b.dateISO ? 1 : -1; });
+
+    function apptRow(a){
+      var bits = [];
+      if(a.service) bits.push('<span class="svc">'+esc(svcName(a.service))+'</span>');
+      if(a.duration) bits.push('<span>'+a.duration+' min</span>');
+      if(a.time) bits.push('<span>'+esc(a.time)+'</span>');
+      if(a.price) bits.push('<span style="font-weight:700;color:var(--accent)">'+a.price+' €</span>');
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(a.name||'—')+
+          ' <span style="color:var(--ink-2);font-family:var(--body);font-weight:400;font-size:.88rem">'+esc(a.email||'')+'</span></div>'+
+        '<div class="adm-item__meta">'+
+          '<span>'+esc(cityName(a.city))+'</span>'+
+          '<span>'+esc(fmtDate(a.dateISO))+'</span>'+
+          bits.join('')+
+        '</div></div>'+
+        '<div class="adm-item__actions">'+
+          (a.email?'<a class="btn-mini" href="mailto:'+esc(a.email)+'">'+esc(t('adm.rdv.reply'))+'</a>':'')+
+        '</div></div>';
+    }
+
+    var stats = '<div class="adm-stats">'+
+      '<div class="adm-stat"><div class="n">'+all.length+'</div><div class="l">'+esc(t('adm.rdv.total'))+'</div></div>'+
+      '<div class="adm-stat"><div class="n">'+upcoming.length+'</div><div class="l">'+esc(t('adm.rdv.upcoming'))+'</div></div>'+
+      '<div class="adm-stat"><div class="n">'+past.length+'</div><div class="l">'+esc(t('adm.rdv.past'))+'</div></div>'+
+      '</div>';
+
+    panel.innerHTML = stats +
+      '<div class="adm-sub">'+esc(t('adm.rdv.upcoming'))+' · '+upcoming.length+'</div>'+
+      '<div class="adm-list">'+(upcoming.length ? upcoming.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>'+
+      '<div class="adm-sub" style="margin-top:24px">'+esc(t('adm.rdv.past'))+' · '+past.length+'</div>'+
+      '<div class="adm-list">'+(past.length ? past.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>';
+  }
+
   /* ====================== RENDER + BADGES ====================== */
   function updateBadges(){
     var pend = S.testimonials().filter(function(r){return r.status==='pending';}).length;
@@ -542,7 +584,7 @@
     if(b){ b.textContent = pend; b.style.display = pend?'inline-flex':'none'; }
   }
   function render(){
-    renderDates(); renderSubs(); renderReviews(); renderInsta(); renderPlaces(); renderServices();
+    renderAppointments(); renderDates(); renderSubs(); renderReviews(); renderInsta(); renderPlaces(); renderServices();
     updateBadges();
     // NOTE: do not call ewApplyI18n() here — dynamic panels already use t().
     // Calling it would dispatch ew:langchange and recurse via the listener below.
@@ -558,7 +600,7 @@
     [].slice.call(document.querySelectorAll('.adm-tab')).forEach(function(b){
       b.addEventListener('click', function(){ setTab(b.dataset.tab); });
     });
-    setTab('dates');
+    setTab('rdv');
     if(authed()) showApp();
     window.addEventListener('ew:datachange', function(){ if(authed()) render(); });
     window.addEventListener('ew:langchange', function(){ if(authed()) render(); });

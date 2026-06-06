@@ -52,6 +52,7 @@ Object.assign(window.I18N.fr, {
   'adm.logout': 'Quitter',
   'adm.proto': 'Prototype — les données sont enregistrées dans ce navigateur uniquement. L’envoi des e-mails s’ouvre dans votre messagerie.',
 
+  'adm.tab.rdv': 'Rendez-vous',
   'adm.tab.dates': 'Mes dates',
   'adm.tab.subs': 'Abonnés',
   'adm.tab.reviews': 'Avis',
@@ -147,6 +148,13 @@ Object.assign(window.I18N.fr, {
   'adm.h.none': 'Aucun rendez-vous enregistré pour ce contact.',
   'adm.h.close': 'Fermer',
 
+  /* rendez-vous tab */
+  'adm.rdv.total': 'Réservations',
+  'adm.rdv.upcoming': 'À venir',
+  'adm.rdv.past': 'Passés',
+  'adm.rdv.none': 'Aucun rendez-vous pour le moment.',
+  'adm.rdv.reply': 'Répondre',
+
   'news.cta.title': 'Vous souhaitez recevoir les prochaines dates dès leur parution ? Inscrivez-vous',
   'news.modal.title': 'Recevoir mes prochaines dates',
   'news.modal.text': 'Choisissez vos lieux : je vous écris dès qu’une nouvelle date est publiée.',
@@ -223,6 +231,7 @@ Object.assign(window.I18N.de, {
   'adm.logout': 'Verlassen',
   'adm.proto': 'Prototyp — Daten werden nur in diesem Browser gespeichert. Der E-Mail-Versand öffnet Ihr Mailprogramm.',
 
+  'adm.tab.rdv': 'Termine',
   'adm.tab.dates': 'Termine',
   'adm.tab.subs': 'Abonnenten',
   'adm.tab.reviews': 'Bewertungen',
@@ -313,6 +322,13 @@ Object.assign(window.I18N.de, {
   'adm.h.none': 'Keine Termine für diesen Kontakt gespeichert.',
   'adm.h.close': 'Schließen',
 
+  /* rendez-vous tab */
+  'adm.rdv.total': 'Buchungen',
+  'adm.rdv.upcoming': 'Bevorstehend',
+  'adm.rdv.past': 'Vergangen',
+  'adm.rdv.none': 'Noch keine Termine.',
+  'adm.rdv.reply': 'Antworten',
+
   'news.cta.title': 'Möchten Sie die nächsten Termine bei Veröffentlichung erhalten? Hier eintragen',
   'news.modal.title': 'Meine nächsten Termine erhalten',
   'news.modal.text': 'Wählen Sie Ihre Orte: Ich schreibe Ihnen, sobald ein neuer Termin veröffentlicht wird.',
@@ -389,6 +405,7 @@ Object.assign(window.I18N.en, {
   'adm.logout': 'Leave',
   'adm.proto': 'Prototype — data is stored in this browser only. Sending emails opens your mail app.',
 
+  'adm.tab.rdv': 'Appointments',
   'adm.tab.dates': 'Dates',
   'adm.tab.subs': 'Subscribers',
   'adm.tab.reviews': 'Reviews',
@@ -478,6 +495,13 @@ Object.assign(window.I18N.en, {
   'adm.h.past': 'Past',
   'adm.h.none': 'No appointments on record for this contact.',
   'adm.h.close': 'Close',
+
+  /* rendez-vous tab */
+  'adm.rdv.total': 'Bookings',
+  'adm.rdv.upcoming': 'Upcoming',
+  'adm.rdv.past': 'Past',
+  'adm.rdv.none': 'No appointments yet.',
+  'adm.rdv.reply': 'Reply',
 
   'news.cta.title': 'Want to hear about new dates the moment they’re published? Sign up',
   'news.modal.title': 'Get my upcoming dates',

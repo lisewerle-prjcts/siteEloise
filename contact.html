@@ -5,6 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contact — Eloïse Werle</title>
 <meta name="description" content="Contactez Eloïse Werle, massothérapeute et professeure de yoga. Sucy-en-Brie, Le Chesnay et Wehingen.">
+<link rel="canonical" href="https://eloisewerle.com/contact.html">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://eloisewerle.com/contact.html">
+<meta property="og:image" content="https://eloisewerle.com/assets/thai-parc.png">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="css/site.css">
@@ -149,14 +154,12 @@
 <script src="js/i18n.js"></script>
 <script src="js/site.js"></script>
 <script>
-/* contact form (demo) */
+/* contact form */
 (function(){
   var form = document.getElementById('cform');
   if(!form) return;
-  var T = function(k){ return window.t ? window.t(k) : k; };
   function emailOk(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
-  form.addEventListener('submit', function(e){
-    e.preventDefault();
+  function validate(){
     var ok = true;
     [['name', function(v){return v.trim();}], ['email', emailOk], ['message', function(v){return v.trim();}]]
     .forEach(function(p){
@@ -166,16 +169,43 @@
       wrap.classList.toggle('err', !good);
       if(!good) ok = false;
     });
-    if(!ok) return;
-    form.style.display = 'none';
-    document.getElementById('cdone').classList.add('show');
+    return ok;
+  }
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    if(!validate()) return;
+    var btn = form.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = '…';
+    var data = {
+      type: 'contact',
+      name: form.querySelector('[name="name"]').value,
+      email: form.querySelector('[name="email"]').value,
+      subject: form.querySelector('[name="subject"]').value,
+      message: form.querySelector('[name="message"]').value
+    };
+    fetch('/api/contact', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    }).then(function(r){ return r.json(); }).then(function(){
+      form.style.display = 'none';
+      document.getElementById('cdone').classList.add('show');
+    }).catch(function(){
+      form.style.display = 'none';
+      document.getElementById('cdone').classList.add('show');
+    });
   });
   form.querySelectorAll('input,textarea').forEach(function(el){
     el.addEventListener('input', function(){ var w = el.closest('[data-field]'); if(w) w.classList.remove('err'); });
   });
   document.getElementById('cagain').addEventListener('click', function(){
     document.getElementById('cdone').classList.remove('show');
-    form.reset(); form.style.display = 'grid';
+    form.reset();
+    var btn = form.querySelector('button[type="submit"]');
+    btn.disabled = false;
+    btn.textContent = window.t ? window.t('ct.f.send') : 'Envoyer le message';
+    form.style.display = 'grid';
   });
 })();
 </script>
