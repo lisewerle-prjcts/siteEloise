@@ -90,17 +90,27 @@
 
   /* ---------- state ---------- */
   const SKEY = 'ew_booking';
-  let S = { step: 1, service: null, duration: null, location: null, dateISO: null, time: null,
+  let S = { step: 1, service: null, option: null, duration: null, location: null, dateISO: null, time: null,
             form: { first: '', last: '', email: '', phone: '', notes: '', consent: false },
             gift: false, done: false };
-  try { const sv = JSON.parse(localStorage.getItem(SKEY) || 'null'); if (sv) S = Object.assign(S, sv); } catch (e) {}
+  try {
+    const sv = JSON.parse(localStorage.getItem(SKEY) || 'null');
+    if (sv) {
+      if (sv.done) {
+        // Previous session was completed — start fresh
+        S.gift = sv.gift || false;
+      } else {
+        S = Object.assign(S, sv);
+      }
+    }
+  } catch (e) {}
   S.done = false;
 
   // URL params
   const params = new URLSearchParams(location.search);
   if (params.get('gift') === '1') { S.gift = true; document.body.classList.add('is-gift'); }
   const ps = params.get('service');
-  if (ps && svc(ps) && S.service !== ps) { S.service = ps; S.duration = svc(ps).durations[0]; if (S.step < 2) S.step = 2; }
+  if (ps && svc(ps) && S.service !== ps) { S.service = ps; S.duration = serviceOptions(ps)[0].min; if (S.step < 2) S.step = 2; }
   if (S.gift) document.body.classList.add('is-gift');
 
   function save() { try { localStorage.setItem(SKEY, JSON.stringify(S)); } catch (e) {} }
@@ -173,15 +183,20 @@
     return step5();
   }
 
+  function svcName(id) { return EWS ? EWS.serviceName(id) : t('svc.' + id + '.name'); }
+  function svcTag(id)  { return EWS ? EWS.serviceTag(id)  : t('svc.' + id + '.tag');  }
+
   function optCard(s) {
     const on = S.service === s.id ? 'on' : '';
     const opts = serviceOptions(s.id);
     const minPrice = opts.reduce((m, o) => Math.min(m, o.price), opts[0].price);
+    const maxPrice = opts.reduce((m, o) => Math.max(m, o.price), opts[0].price);
+    const priceStr = minPrice === maxPrice ? `${minPrice} €` : `${minPrice}–${maxPrice} €`;
     return `<button type="button" class="opt ${on}" data-svc="${s.id}">
       <img class="opt__img" src="assets/${IMG[s.id]}.png" alt="">
-      <span class="opt__tx"><b>${t('svc.' + s.id + '.name')}</b>
-        <small>${t('svc.' + s.id + '.tag')}</small>
-        <span class="pr">${t('common.from')} ${minPrice}&nbsp;€</span></span>
+      <span class="opt__tx"><b>${svcName(s.id)}</b>
+        <small>${svcTag(s.id)}</small>
+        <span class="pr">${priceStr}</span></span>
     </button>`;
   }
   function step1() {
@@ -204,9 +219,18 @@
       const on = S.duration === o.min ? 'on' : '';
       return `<button type="button" class="dur ${on}" data-dur="${o.min}">${durLabel(o.min)}<small>${o.price}&nbsp;€</small></button>`;
     }).join('');
+    const svcOpts = EWS ? EWS.serviceOptions(S.service) : [];
+    const optsHtml = svcOpts.length
+      ? `<div class="step__cat">${t('rv.s2.option') || 'Option'}</div>
+         <div class="dur-row">${svcOpts.map(o => {
+           const on = S.option === o ? 'on' : '';
+           return `<button type="button" class="dur ${on}" data-opt="${o}">${o}</button>`;
+         }).join('')}</div>`
+      : '';
     return `<div class="step__h"><h2>${t('rv.s2.title')}</h2></div>
       <div class="step__cat">${t('rv.s2.loc')}</div><div class="loc-list">${locs}</div>
-      <div class="step__cat">${t('rv.s2.dur')}</div><div class="dur-row">${durs}</div>`;
+      <div class="step__cat">${t('rv.s2.dur')}</div><div class="dur-row">${durs}</div>
+      ${optsHtml}`;
   }
 
   function step3() {
@@ -284,7 +308,7 @@
   function reviewBlock() {
     const f = S.form;
     const rows = [
-      [t('rv.sum.service'), S.service ? t('svc.' + S.service + '.name') : '—'],
+      [t('rv.sum.service'), S.service ? (svcName(S.service) + (S.option ? ' — ' + S.option : '')) : '—'],
       [t('rv.sum.loc'), S.location ? locName(S.location) : '—'],
       [t('rv.sum.when'), S.dateISO ? (fmtFull(S.dateISO) + (S.time ? ' · ' + S.time : '')) : '—'],
       [t('rv.sum.duration'), S.duration ? durLabel(S.duration) : '—'],
@@ -314,7 +338,7 @@
     return `<div class="summary__img">${img}</div>
       <div class="summary__body">
         <h3>${t('rv.summary')}</h3>
-        ${line(t('rv.sum.service'), S.service ? t('svc.' + S.service + '.name') : '')}
+        ${line(t('rv.sum.service'), S.service ? (svcName(S.service) + (S.option ? ' — ' + S.option : '')) : '')}
         ${line(t('rv.sum.loc'), S.location ? locName(S.location) : '')}
         ${line(t('rv.sum.when'), S.dateISO ? (fmtFull(S.dateISO) + (S.time ? ' · ' + S.time : '')) : '')}
         ${line(t('rv.sum.duration'), S.duration ? durLabel(S.duration) : '')}
@@ -356,6 +380,7 @@
       S.location = b.getAttribute('data-loc'); save(); render();
     });
     root.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { S.duration = +b.getAttribute('data-dur'); save(); render(); });
+    root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { S.option = b.getAttribute('data-opt'); save(); render(); });
     root.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { S.dateISO = b.getAttribute('data-day'); S.time = null; save(); render(); });
     root.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { S.time = b.getAttribute('data-slot'); save(); render(); });
 
@@ -397,7 +422,7 @@
           clientEmail: S.form.email,
           phone: S.form.phone || '',
           notes: S.form.notes || '',
-          service: S.service ? t('svc.' + S.service + '.name') : '',
+          service: S.service ? (svcName(S.service) + (S.option ? ' — ' + S.option : '')) : '',
           location: S.location ? locName(S.location) : '',
           date: S.dateISO || '',
           time: S.time || '',
@@ -410,7 +435,7 @@
       window.scrollTo({ top: root.getBoundingClientRect().top + window.scrollY - 90, behavior: 'smooth' });
     };
     const again = root.querySelector('[data-again]'); if (again) again.onclick = () => {
-      S = { step: 1, service: null, duration: null, location: null, dateISO: null, time: null,
+      S = { step: 1, service: null, option: null, duration: null, location: null, dateISO: null, time: null,
             form: { first: '', last: '', email: '', phone: '', notes: '', consent: false }, gift: S.gift, done: false };
       save(); render();
     };

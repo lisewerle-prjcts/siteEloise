@@ -21,6 +21,7 @@ Object.assign(window.I18N.fr, {
   'rv.s2.title': 'Où et combien de temps ?',
   'rv.s2.loc': 'Lieu de la séance',
   'rv.s2.dur': 'Durée',
+  'rv.s2.option': 'Option',
   'rv.min': 'min',
   'rv.h': 'h',
 
@@ -103,6 +104,7 @@ Object.assign(window.I18N.de, {
   'rv.s2.title': 'Wo und wie lange?',
   'rv.s2.loc': 'Ort der Sitzung',
   'rv.s2.dur': 'Dauer',
+  'rv.s2.option': 'Option',
   'rv.min': 'Min',
   'rv.h': 'Std',
 
@@ -184,6 +186,7 @@ Object.assign(window.I18N.en, {
   'rv.s2.title': 'Where and how long?',
   'rv.s2.loc': 'Session location',
   'rv.s2.dur': 'Duration',
+  'rv.s2.option': 'Option',
   'rv.min': 'min',
   'rv.h': 'h',
 

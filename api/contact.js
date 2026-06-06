@@ -95,7 +95,7 @@ module.exports = async function handler(req, res) {
               <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Durée</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5">${duration ? duration + ' min' : '—'}</td></tr>
               <tr><td style="padding:10px 0;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Total</td><td style="padding:10px 0;font-weight:700;font-size:18px;color:#C8B89A">${price ? price + ' €' : '—'}</td></tr>
             </table>
-            <p style="margin-top:28px;color:#7C6E5F;font-size:13px">Questions ? Répondez à cet e-mail ou écrivez à <a href="mailto:eloiserose.werle@gmail.com" style="color:#C8B89A">eloiserose.werle@gmail.com</a></p>
+            <p style="margin-top:28px;color:#7C6E5F;font-size:13px">Pour toute modification, contactez-moi en direct. Le règlement se fait sur place. Prévoyez une tenue décontractée et qui ne craint pas l'huile.</p>
           </div>
         </div>`;
       await fetch('https://api.resend.com/emails', {

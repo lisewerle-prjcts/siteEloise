@@ -810,8 +810,10 @@
     var b = document.querySelector('.adm-tab[data-tab="reviews"] .badge');
     if(b){ b.textContent = pend; b.style.display = pend?'inline-flex':'none'; }
   }
+  function safeRun(fn) { try { fn(); } catch(e) { console.error(fn.name, e); } }
   function render(){
-    renderAppointments(); renderDates(); renderSubs(); renderReviews(); renderInsta(); renderPlaces(); renderServices(); renderSecurity();
+    safeRun(renderAppointments); safeRun(renderDates); safeRun(renderSubs); safeRun(renderReviews);
+    safeRun(renderInsta); safeRun(renderPlaces); safeRun(renderServices); safeRun(renderSecurity);
     updateBadges();
     // NOTE: do not call ewApplyI18n() here — dynamic panels already use t().
     // Calling it would dispatch ew:langchange and recurse via the listener below.
