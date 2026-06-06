@@ -11,6 +11,23 @@
   function locale() { return LOC[lang()] || 'fr-FR'; }
   var CODE = 'aum';
   var AUTH_KEY = 'ew_admin_ok';
+  function getCode() { return S && S.getAdminCode ? S.getAdminCode() : CODE; }
+
+  function parseUA(ua) {
+    if (!ua) return 'Navigateur inconnu';
+    var br = 'Navigateur';
+    if (/Chrome\//.test(ua) && !/Chromium|Edg|OPR/.test(ua)) br = 'Chrome';
+    else if (/Firefox\//.test(ua)) br = 'Firefox';
+    else if (/Edg\//.test(ua)) br = 'Edge';
+    else if (/Safari\//.test(ua) && !/Chrome/.test(ua)) br = 'Safari';
+    var os = '';
+    if (/iPhone|iPad/.test(ua)) os = 'iOS';
+    else if (/Android/.test(ua)) os = 'Android';
+    else if (/Windows/.test(ua)) os = 'Windows';
+    else if (/Mac OS X/.test(ua)) os = 'macOS';
+    else if (/Linux/.test(ua)) os = 'Linux';
+    return br + (os ? ' · ' + os : '');
+  }
 
   var ASSETS = ['assets/thai-parc.png','assets/eloise-meditation.png','assets/drainage-visage.png',
     'assets/yoga-equilibre.png','assets/relaxation.png','assets/thai-backbend.png',
@@ -52,9 +69,12 @@
     var f = gate.querySelector('form'), err = gate.querySelector('.err');
     f.addEventListener('submit', function(e){
       e.preventDefault();
-      var v = (f.code.value||'').trim().toLowerCase();
-      if(v===CODE){ localStorage.setItem(AUTH_KEY,'1'); showApp(); }
-      else { err.textContent = t('adm.login.err'); f.code.value=''; }
+      var v = (f.code.value||'').trim();
+      if(v===getCode()){
+        localStorage.setItem(AUTH_KEY,'1');
+        if(S.logAdminSession) S.logAdminSession();
+        showApp();
+      } else { err.textContent = t('adm.login.err'); f.code.value=''; }
     });
   }
 
@@ -457,7 +477,7 @@
     var panel = $('[data-panel="soins"]'); if(!panel) return;
     var list = S.services();
 
-    function item(s){
+    function item(s, idx, total){
       var pub = s.published !== false;
       return '<div class="adm-item'+(pub?'':' is-off')+'">'+
         '<div class="adm-thumb"><img src="'+esc(S.serviceImg(s.id))+'" alt=""></div>'+
@@ -470,6 +490,8 @@
         '<div class="adm-item__actions">'+
           '<label class="sw" title="'+esc(t('adm.sv.published'))+'"><input type="checkbox" data-togglesvc="'+s.id+'"'+(pub?' checked':'')+'><span></span></label>'+
           '<div class="adm-row-actions">'+
+            (idx>0?'<button class="btn-mini" data-upsvc="'+s.id+'" title="Monter">↑</button>':'')+
+            (idx<total-1?'<button class="btn-mini" data-downsvc="'+s.id+'" title="Descendre">↓</button>':'')+
             '<button class="btn-mini" data-editsvc="'+s.id+'">'+esc(t('adm.sv.edit'))+'</button>'+
             (s.builtin?'':'<button class="btn-mini danger" data-delsvc="'+s.id+'">'+esc(t('adm.sv.del'))+'</button>')+
           '</div>'+
@@ -482,8 +504,16 @@
         '<form class="adm-form" data-addsvc>'+
           '<div><label>'+esc(t('adm.sv.name'))+'</label><input name="name" required></div>'+
           '<div><label>'+esc(t('adm.sv.tag'))+'</label><input name="tag"></div>'+
-          '<div class="row2"><div><label>'+esc(t('adm.sv.price'))+'</label><input type="number" name="price" min="0" value="60"></div>'+
-            '<div><label>'+esc(t('adm.sv.unit'))+'</label><input name="unit" value="'+esc(t('common.perHour'))+'"></div></div>'+
+          '<div><label>'+esc(t('adm.sv.durations'))+'</label>'+
+            '<div data-new-durations style="display:grid;gap:8px;margin-top:6px">'+
+              '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input type="number" class="nd-min" placeholder="min" value="60" style="width:72px"> min '+
+                '<input type="number" class="nd-price" placeholder="€" value="70" style="width:72px"> €'+
+                '<button type="button" class="btn-mini danger nd-del">×</button>'+
+              '</div>'+
+            '</div>'+
+            '<button type="button" class="btn-mini" data-new-addur style="margin-top:6px">+ '+esc(t('adm.sv.addDur'))+'</button>'+
+          '</div>'+
           '<div><label>'+esc(t('adm.sv.img'))+'</label><select name="asset">'+
             ASSETS.map(function(a){ return '<option value="'+a+'">'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
           '<div><label>'+esc(t('adm.sv.url'))+'</label><input name="url" placeholder="https://…"></div>'+
@@ -491,8 +521,21 @@
           '<p style="color:var(--ink-3);font-size:.82rem;line-height:1.4">'+esc(t('adm.sv.hint'))+'</p>'+
         '</form></div>'+
         '<div><div class="adm-sub">'+esc(t('adm.sv.list'))+'</div>'+
-          '<div class="adm-list">'+(list.length?list.map(item).join(''):'<div class="adm-empty">'+esc(t('adm.sv.none'))+'</div>')+'</div>'+
+          '<div class="adm-list">'+(list.length?list.map(function(s,i){ return item(s,i,list.length); }).join(''):'<div class="adm-empty">'+esc(t('adm.sv.none'))+'</div>')+'</div>'+
         '</div></div>';
+
+    // add-service durations editor
+    $('[data-new-addur]', panel).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input type="number" class="nd-min" placeholder="min" style="width:72px"> min '+
+        '<input type="number" class="nd-price" placeholder="€" style="width:72px"> €'+
+        '<button type="button" class="btn-mini danger nd-del">×</button>';
+      row.querySelector('.nd-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-new-durations]', panel).appendChild(row);
+    });
+    [].slice.call(panel.querySelectorAll('.nd-del')).forEach(function(b){
+      b.addEventListener('click', function(){ b.closest('div').remove(); });
+    });
 
     var f = $('[data-addsvc]', panel);
     f.addEventListener('submit', function(e){
@@ -500,11 +543,18 @@
       var fd = new FormData(f);
       if(!(fd.get('name')||'').trim()) return;
       var img = (fd.get('url')||'').trim() || fd.get('asset');
-      S.addService({ name:fd.get('name'), tag:fd.get('tag'), price:fd.get('price'), unit:fd.get('unit'), img:img, published:true });
+      var durRows = [].slice.call($('[data-new-durations]', f).querySelectorAll('div'));
+      var durations = durRows.map(function(row){
+        return { min:+(row.querySelector('.nd-min').value)||60, price:+(row.querySelector('.nd-price').value)||0 };
+      }).filter(function(o){ return o.min>0; });
+      S.addService({ name:fd.get('name'), tag:fd.get('tag'), durations:durations.length?durations:[{min:60,price:70}], img:img, published:true });
+      f.reset();
     });
     [].slice.call(panel.querySelectorAll('[data-togglesvc]')).forEach(function(b){ b.addEventListener('change', function(){ S.setServicePublished(b.dataset.togglesvc, b.checked); }); });
     [].slice.call(panel.querySelectorAll('[data-editsvc]')).forEach(function(b){ b.addEventListener('click', function(){ openServiceEdit(b.dataset.editsvc); }); });
     [].slice.call(panel.querySelectorAll('[data-delsvc]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.sv.delconfirm'))) S.removeService(b.dataset.delsvc); }); });
+    [].slice.call(panel.querySelectorAll('[data-upsvc]')).forEach(function(b){ b.addEventListener('click', function(){ if(S.reorderService) S.reorderService(b.dataset.upsvc, -1); }); });
+    [].slice.call(panel.querySelectorAll('[data-downsvc]')).forEach(function(b){ b.addEventListener('click', function(){ if(S.reorderService) S.reorderService(b.dataset.downsvc, 1); }); });
   }
 
   function openServiceEdit(id){
@@ -527,6 +577,16 @@
             }).join('')+
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addur style="margin-top:8px">+ '+esc(t('adm.sv.addDur'))+'</button>'+
+        '</div>'+
+        '<div><label>'+esc(t('adm.sv.options'))+'</label>'+
+          '<div data-e-options style="display:grid;gap:6px;margin-top:6px">'+
+            S.serviceOptions(id).map(function(o){
+              return '<div style="display:flex;gap:8px;align-items:center">'+
+                '<input class="e-opt-txt" value="'+esc(o)+'" style="flex:1">'+
+                '<button type="button" class="btn-mini danger e-opt-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addopt style="margin-top:6px">+ '+esc(t('adm.sv.addOption'))+'</button>'+
         '</div>'+
         '<div><label>'+esc(t('adm.sv.description'))+'</label>'+
           '<textarea data-e-desc style="min-height:100px">'+esc(S.serviceDescription(id))+'</textarea></div>'+
@@ -559,6 +619,16 @@
     [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+    $('[data-e-addopt]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+      row.innerHTML='<input class="e-opt-txt" style="flex:1">'+
+        '<button type="button" class="btn-mini danger e-opt-del">×</button>';
+      row.querySelector('.e-opt-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-options]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-opt-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
     $('[data-e-addben]',box).addEventListener('click', function(){
       var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
       row.innerHTML='<input class="e-ben-txt" style="flex:1">'+
@@ -577,10 +647,12 @@
       }).filter(function(o){ return o.min > 0; });
       var benInputs = [].slice.call($('[data-e-benefits]',box).querySelectorAll('.e-ben-txt'));
       var benefits = benInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var optInputs = [].slice.call($('[data-e-options]',box).querySelectorAll('.e-opt-txt'));
+      var options = optInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value,
         durations: durations.length ? durations : S.serviceDurations(id),
         description: ($('[data-e-desc]',box).value||'').trim(),
-        benefits: benefits, img:img });
+        benefits: benefits, options: options, img:img });
       close();
     });
   }
@@ -622,15 +694,113 @@
       '</div>';
 
     panel.innerHTML = stats +
-      '<div class="adm-sub">'+esc(t('adm.rdv.upcoming'))+' · '+upcoming.length+'</div>'+
-      '<div class="adm-list">'+(upcoming.length ? upcoming.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>'+
-      '<div class="adm-sub" style="margin-top:24px">'+esc(t('adm.rdv.past'))+' · '+past.length+'</div>'+
-      '<div class="adm-list">'+(past.length ? past.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>';
+      '<div class="adm-cols"><div class="adm-card">'+
+        '<h3>'+esc(t('adm.rdv.add'))+'</h3>'+
+        '<form class="adm-form" data-addrdv>'+
+          '<div><label>'+esc(t('adm.rdv.client'))+'</label><input name="rname" required></div>'+
+          '<div><label>E-mail</label><input name="remail" type="email"></div>'+
+          '<div class="row2">'+
+            '<div><label>'+esc(t('adm.d.city'))+'</label>'+citySelect('rcity','')+'</div>'+
+            '<div><label>'+esc(t('adm.d.service'))+'</label>'+svcSelect('rservice','')+'</div>'+
+          '</div>'+
+          '<div class="row2">'+
+            '<div><label>'+esc(t('adm.d.date'))+'</label><input type="date" name="rdate" required></div>'+
+            '<div><label>'+esc(t('adm.d.start'))+'</label><input type="time" name="rtime" value="10:00"></div>'+
+          '</div>'+
+          '<div class="row2">'+
+            '<div><label>Durée (min)</label><input type="number" name="rduration" value="60" min="15"></div>'+
+            '<div><label>Prix (€)</label><input type="number" name="rprice" value="0" min="0"></div>'+
+          '</div>'+
+          '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.rdv.save'))+'</button>'+
+        '</form>'+
+      '</div>'+
+      '<div>'+
+        '<div class="adm-sub">'+esc(t('adm.rdv.upcoming'))+' · '+upcoming.length+'</div>'+
+        '<div class="adm-list">'+(upcoming.length ? upcoming.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>'+
+        '<div class="adm-sub" style="margin-top:24px">'+esc(t('adm.rdv.past'))+' · '+past.length+'</div>'+
+        '<div class="adm-list">'+(past.length ? past.map(apptRow).join('') : '<div class="adm-empty">'+esc(t('adm.rdv.none'))+'</div>')+'</div>'+
+      '</div></div>';
+
+    var addForm = $('[data-addrdv]', panel);
+    addForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var fd = new FormData(addForm);
+      if(!(fd.get('rname')||'').trim()) return;
+      S.addAppointment({
+        name: (fd.get('rname')||'').trim(),
+        email: (fd.get('remail')||'').trim(),
+        city: fd.get('rcity')||'',
+        service: fd.get('rservice')||'',
+        dateISO: fd.get('rdate')||'',
+        time: fd.get('rtime')||'',
+        duration: +(fd.get('rduration')||60),
+        price: +(fd.get('rprice')||0)
+      });
+      addForm.reset();
+    });
 
     [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
         if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);
       });
+    });
+  }
+
+  /* ====================== SÉCURITÉ TAB ====================== */
+  function renderSecurity(){
+    var panel = $('[data-panel="securite"]'); if(!panel) return;
+    var sessions = S.getAdminSessions ? S.getAdminSessions() : [];
+
+    panel.innerHTML =
+      '<div class="adm-cols"><div class="adm-card">'+
+        '<h3>'+esc(t('adm.sec.pw.title'))+'</h3>'+
+        '<form class="adm-form" data-chpw autocomplete="off">'+
+          '<div><label>'+esc(t('adm.sec.pw.current'))+'</label><input type="password" name="cur" autocomplete="off"></div>'+
+          '<div><label>'+esc(t('adm.sec.pw.new'))+'</label><input type="password" name="nw" autocomplete="new-password"></div>'+
+          '<div><label>'+esc(t('adm.sec.pw.confirm'))+'</label><input type="password" name="conf" autocomplete="new-password"></div>'+
+          '<div class="err" data-pw-err></div>'+
+          '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.sec.pw.save'))+'</button>'+
+        '</form>'+
+      '</div>'+
+      '<div>'+
+        '<div class="adm-sub">'+esc(t('adm.sec.sessions.title'))+'</div>'+
+        (sessions.length
+          ? '<div class="adm-list">'+sessions.map(function(s){
+              var d = new Date(s.at);
+              var dt = d.toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})+' '+
+                       d.toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'});
+              return '<div class="adm-item"><div class="adm-item__main">'+
+                '<div class="adm-item__title" style="font-size:.95rem">'+esc(parseUA(s.ua))+'</div>'+
+                '<div class="adm-item__meta"><span>'+esc(dt)+'</span></div>'+
+              '</div></div>';
+            }).join('')+'</div>'
+          : '<div class="adm-empty">'+esc(t('adm.sec.sessions.none'))+'</div>')+
+        '<div style="margin-top:16px">'+
+          '<button class="btn-mini danger" data-disconnectall>'+esc(t('adm.sec.disconnect'))+'</button>'+
+        '</div>'+
+      '</div></div>';
+
+    $('[data-chpw]', panel).addEventListener('submit', function(e){
+      e.preventDefault();
+      var f = e.target;
+      var errEl = $('[data-pw-err]', f);
+      var cur = f.cur.value, nw = f.nw.value, conf = f.conf.value;
+      errEl.textContent = '';
+      if(cur !== getCode()){ errEl.textContent = t('adm.sec.pw.err.wrong'); return; }
+      if(nw !== conf){ errEl.textContent = t('adm.sec.pw.err.match'); return; }
+      if(!nw.trim()) return;
+      if(S.setAdminCode) S.setAdminCode(nw.trim());
+      toast(t('adm.sec.pw.ok'));
+      f.reset();
+    });
+
+    var disc = $('[data-disconnectall]', panel);
+    if(disc) disc.addEventListener('click', function(){
+      if(confirm(t('adm.sec.disconnectconfirm'))){
+        if(S.clearAdminSessions) S.clearAdminSessions();
+        localStorage.removeItem(AUTH_KEY);
+        location.reload();
+      }
     });
   }
 
@@ -641,7 +811,7 @@
     if(b){ b.textContent = pend; b.style.display = pend?'inline-flex':'none'; }
   }
   function render(){
-    renderAppointments(); renderDates(); renderSubs(); renderReviews(); renderInsta(); renderPlaces(); renderServices();
+    renderAppointments(); renderDates(); renderSubs(); renderReviews(); renderInsta(); renderPlaces(); renderServices(); renderSecurity();
     updateBadges();
     // NOTE: do not call ewApplyI18n() here — dynamic panels already use t().
     // Calling it would dispatch ew:langchange and recurse via the listener below.

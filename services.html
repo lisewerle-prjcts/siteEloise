@@ -165,14 +165,20 @@
           }).filter(Boolean);
 
       var durations = EWS.serviceDurations(id);
-      var firstPrice = durations.length ? durations[0].price : '';
+      var storedOptions = EWS.serviceOptions ? EWS.serviceOptions(id) : [];
 
       var extra = '';
-      if (id === 'drainage' && !storedDesc) {
+      if (storedOptions.length) {
+        extra += '<div class="variants">' + storedOptions.map(function(o){ return '<span>' + esc(o) + '</span>'; }).join('') + '</div>';
+      } else if (id === 'drainage' && !storedDesc) {
         var v1 = T('sv.drain.variant1'), v2 = T('sv.drain.variant2'), note = T('sv.drain.note');
         extra += '<div class="variants"><span>' + esc(v1) + '</span><span>' + esc(v2) + '</span></div>';
         if (note && note.indexOf('sv.') !== 0) extra += '<p class="note">' + esc(note) + '</p>';
       }
+
+      var durHtml = durations.length
+        ? '<div class="variants">' + durations.map(function(d){ return '<span>' + d.min + ' min — ' + d.price + ' €</span>'; }).join('') + '</div>'
+        : '';
 
       return '<article class="svc-detail' + rev + '" id="' + id + '">' +
         '<div class="svc-detail__media reveal"><span class="num">' + num + '</span>' +
@@ -186,8 +192,8 @@
             ? '<div class="ben-label">' + esc(T('sv.bienfaits.label')) + '</div>' +
               '<ul class="ben-list">' + benefits.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>'
             : '') +
+          durHtml +
           '<div class="price-row">' +
-            (firstPrice ? '<span class="p">' + firstPrice + '&nbsp;€ <small>' + esc(T('common.perHour')) + '</small></span>' : '') +
             '<a class="btn btn-primary" href="reservation.html?service=' + id + '">' + esc(T('cta.book.this')) + '</a>' +
           '</div>' +
         '</div></article>';
