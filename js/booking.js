@@ -56,7 +56,10 @@
     return opt ? opt.price : (opts.length ? opts[0].price : 0);
   }
 
-  function iso(d) { return d.toISOString().slice(0, 10); }
+  function iso(d) {
+    const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
+    return y + '-' + (m < 10 ? '0' + m : m) + '-' + (day < 10 ? '0' + day : day);
+  }
   function timeToMin(t) { if (!t) return 0; const p = t.split(':'); return +p[0]*60 + (+p[1]||0); }
 
   /* Real slot availability — checks against stored appointments with buffer */
