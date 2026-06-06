@@ -455,5 +455,115 @@
   Object.defineProperty(API, 'CITIES', { get: function () { return API.cityIds(); } });
 
   seed();
+
+  /* =========================================================
+     Supabase sync — requires db.js loaded before store.js
+     Strategy: localStorage = cache (sync, instant UI)
+               Supabase     = source of truth (async, persists across devices)
+     On init  : fetch DB → overwrite localStorage → fire ew:datachange
+     On write : update localStorage immediately, then push to DB async
+     ========================================================= */
+  (function () {
+    var DB = window.EWDB;
+    if (!DB) return;
+
+    var SYNC = [
+      { key: KEYS.subs,   table: 'subscribers'  },
+      { key: KEYS.appts,  table: 'appointments' },
+      { key: KEYS.dates,  table: 'dates'        },
+      { key: KEYS.testi,  table: 'testimonials' }
+    ];
+
+    /* ---- wrap write methods ---- */
+
+    var _addSub = API.addSubscriber;
+    API.addSubscriber = function (sub) {
+      var r = _addSub.call(API, sub); if (r) DB.save('subscribers', r); return r;
+    };
+    var _remSub = API.removeSubscriber;
+    API.removeSubscriber = function (id) {
+      _remSub.call(API, id); DB.del('subscribers', id);
+    };
+    var _remSubCity = API.removeSubscriberCity;
+    API.removeSubscriberCity = function (id, city) {
+      _remSubCity.call(API, id, city);
+      var s = API.subscriber(id);
+      if (s) DB.save('subscribers', s); else DB.del('subscribers', id);
+    };
+
+    var _addAppt = API.addAppointment;
+    API.addAppointment = function (a) {
+      var r = _addAppt.call(API, a); if (r) DB.save('appointments', r); return r;
+    };
+    var _remAppt = API.removeAppointment;
+    API.removeAppointment = function (id) {
+      _remAppt.call(API, id); DB.del('appointments', id);
+    };
+    var _confAppt = API.confirmAppointment;
+    API.confirmAppointment = function (id) {
+      _confAppt.call(API, id);
+      var a = read(KEYS.appts, []).filter(function (x) { return x.id === id; })[0];
+      if (a) DB.save('appointments', a);
+    };
+
+    var _addDate = API.addDate;
+    API.addDate = function (d) {
+      var r = _addDate.call(API, d); if (r) DB.save('dates', r); return r;
+    };
+    var _updDate = API.updateDate;
+    API.updateDate = function (id, patch) {
+      _updDate.call(API, id, patch);
+      var d = read(KEYS.dates, []).filter(function (x) { return x.id === id; })[0];
+      if (d) DB.save('dates', d);
+    };
+    var _remDate = API.removeDate;
+    API.removeDate = function (id) {
+      _remDate.call(API, id); DB.del('dates', id);
+    };
+
+    var _addTesti = API.addTestimonial;
+    API.addTestimonial = function (t) {
+      var r = _addTesti.call(API, t); if (r) DB.save('testimonials', r); return r;
+    };
+    var _setTesti = API.setTestimonialStatus;
+    API.setTestimonialStatus = function (id, status) {
+      _setTesti.call(API, id, status);
+      var t = read(KEYS.testi, []).filter(function (x) { return x.id === id; })[0];
+      if (t) DB.save('testimonials', t);
+    };
+    var _remTesti = API.removeTestimonial;
+    API.removeTestimonial = function (id) {
+      _remTesti.call(API, id); DB.del('testimonials', id);
+    };
+
+    var _addSvc = API.addService;
+    API.addService = function (s) {
+      var r = _addSvc.call(API, s); if (r) DB.save('services', r); return r;
+    };
+    var _updSvc = API.updateService;
+    API.updateService = function (id, patch) {
+      _updSvc.call(API, id, patch);
+      var s = API.service(id); if (s) DB.save('services', s);
+    };
+    var _setPub = API.setServicePublished;
+    API.setServicePublished = function (id, on) {
+      _setPub.call(API, id, on);
+      var s = API.service(id); if (s) DB.save('services', s);
+    };
+    var _remSvc = API.removeService;
+    API.removeService = function (id) {
+      var ok = _remSvc.call(API, id); if (ok) DB.del('services', id); return ok;
+    };
+
+    /* ---- initial load from DB ---- */
+    Promise.all(SYNC.map(function (t) {
+      return DB.load(t.table).then(function (rows) {
+        if (rows && rows.length) write(t.key, rows);
+      }).catch(function () {});
+    })).then(function () {
+      window.dispatchEvent(new Event('ew:datachange'));
+    });
+  })();
+
   window.EWStore = API;
 })();
