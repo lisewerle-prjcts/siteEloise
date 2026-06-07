@@ -11,16 +11,17 @@
   const t = (k) => (window.t ? window.t(k) : k);
 
   /* ---------- data ---------- */
-  const SERVICES = [
-    { id: 'thai',        cat: 'massage'  },
-    { id: 'balinais',    cat: 'massage'  },
-    { id: 'deep',        cat: 'massage'  },
-    { id: 'ayurvedique', cat: 'massage'  },
-    { id: 'drainage',    cat: 'drainage' },
-    { id: 'yoga',        cat: 'yoga'     },
-  ];
   const IMG = { thai: 'thai-etirement', balinais: 'soin-mains', deep: 'relaxation',
                 drainage: 'drainage-visage', ayurvedique: 'thai-dos', yoga: 'yoga-equilibre' };
+
+  function publishedServices() {
+    if (EWS && EWS.publishedServices) return EWS.publishedServices();
+    return [
+      { id: 'thai', category: 'massage' }, { id: 'balinais', category: 'massage' },
+      { id: 'deep', category: 'massage' }, { id: 'ayurvedique', category: 'massage' },
+      { id: 'drainage', category: 'drainage' }, { id: 'yoga', category: 'yoga' }
+    ];
+  }
 
   /* Fallback prices if store not loaded */
   const FALLBACK_OPTIONS = {
@@ -47,7 +48,7 @@
   const SLOT_TIMES = ['09:00', '10:30', '12:00', '14:00', '15:30', '17:00', '18:30'];
   const BUFFER_MIN = 15;
 
-  function svc(id) { return SERVICES.find(s => s.id === id); }
+  function svc(id) { return publishedServices().find(s => s.id === id); }
   function locName(id) { return EWS ? EWS.cityName(id) : id; }
   function locRegion(id) { return EWS ? EWS.cityRegion(id) : ''; }
   function price(serviceId, min) {
@@ -194,6 +195,11 @@
   function svcName(id) { return EWS ? EWS.serviceName(id) : t('svc.' + id + '.name'); }
   function svcTag(id)  { return EWS ? EWS.serviceTag(id)  : t('svc.' + id + '.tag');  }
 
+  function svcImg(id) {
+    if (EWS && EWS.serviceImg) { const u = EWS.serviceImg(id); if (u) return u; }
+    return IMG[id] ? 'assets/' + IMG[id] + '.png' : 'assets/relaxation.png';
+  }
+
   function optCard(s) {
     const on = S.service === s.id ? 'on' : '';
     const opts = serviceOptions(s.id);
@@ -201,18 +207,30 @@
     const maxPrice = opts.reduce((m, o) => Math.max(m, o.price), opts[0].price);
     const priceStr = minPrice === maxPrice ? `${minPrice} €` : `${minPrice}–${maxPrice} €`;
     return `<button type="button" class="opt ${on}" data-svc="${s.id}">
-      <img class="opt__img" src="assets/${IMG[s.id]}.png" alt="">
+      <img class="opt__img" src="${svcImg(s.id)}" alt="">
       <span class="opt__tx"><b>${svcName(s.id)}</b>
         <small>${svcTag(s.id)}</small>
         <span class="pr">${priceStr}</span></span>
     </button>`;
   }
+
+  const CAT_LABEL = { massage: 'rv.cat.massage', drainage: 'rv.cat.drainage', yoga: 'rv.cat.yoga' };
+  const CAT_ORDER = ['massage', 'drainage', 'yoga'];
+
   function step1() {
-    const cat = (c) => SERVICES.filter(s => s.cat === c).map(optCard).join('');
-    return `<div class="step__h"><h2>${t('rv.s1.title')}</h2><p>${t('rv.s1.sub')}</p></div>
-      <div class="step__cat">${t('rv.cat.massage')}</div><div class="opt-grid">${cat('massage')}</div>
-      <div class="step__cat">${t('rv.cat.drainage')}</div><div class="opt-grid">${cat('drainage')}</div>
-      <div class="step__cat">${t('rv.cat.yoga')}</div><div class="opt-grid">${cat('yoga')}</div>`;
+    const svcs = publishedServices();
+    const seen = new Set();
+    const cats = [];
+    CAT_ORDER.forEach(c => { if (svcs.some(s => (s.category||'massage') === c)) { cats.push(c); seen.add(c); } });
+    svcs.forEach(s => { const c = s.category || 'massage'; if (!seen.has(c)) { cats.push(c); seen.add(c); } });
+
+    const body = cats.map(c => {
+      const cards = svcs.filter(s => (s.category || 'massage') === c).map(optCard).join('');
+      const label = CAT_LABEL[c] ? t(CAT_LABEL[c]) : c;
+      return `<div class="step__cat">${label}</div><div class="opt-grid">${cards}</div>`;
+    }).join('');
+
+    return `<div class="step__h"><h2>${t('rv.s1.title')}</h2><p>${t('rv.s1.sub')}</p></div>${body}`;
   }
 
   function step2() {

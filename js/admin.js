@@ -527,6 +527,11 @@
         '<form class="adm-form" data-addsvc>'+
           '<div><label>'+esc(t('adm.sv.name'))+'</label><input name="name" required></div>'+
           '<div><label>'+esc(t('adm.sv.tag'))+'</label><input name="tag"></div>'+
+          '<div><label>'+esc(t('adm.sv.category'))+'</label><select name="category">'+
+            '<option value="massage">'+esc(t('rv.cat.massage'))+'</option>'+
+            '<option value="drainage">'+esc(t('rv.cat.drainage'))+'</option>'+
+            '<option value="yoga">'+esc(t('rv.cat.yoga'))+'</option>'+
+          '</select></div>'+
           '<div><label>'+esc(t('adm.sv.durations'))+'</label>'+
             '<div data-new-durations style="display:grid;gap:8px;margin-top:6px">'+
               '<div style="display:flex;gap:8px;align-items:center">'+
@@ -570,7 +575,7 @@
       var durations = durRows.map(function(row){
         return { min:+(row.querySelector('.nd-min').value)||60, price:+(row.querySelector('.nd-price').value)||0 };
       }).filter(function(o){ return o.min>0; });
-      S.addService({ name:fd.get('name'), tag:fd.get('tag'), durations:durations.length?durations:[{min:60,price:70}], img:img, published:true });
+      S.addService({ name:fd.get('name'), tag:fd.get('tag'), category:fd.get('category')||'massage', durations:durations.length?durations:[{min:60,price:70}], img:img, published:true });
       f.reset();
     });
     [].slice.call(panel.querySelectorAll('[data-togglesvc]')).forEach(function(b){ b.addEventListener('change', function(){ S.setServicePublished(b.dataset.togglesvc, b.checked); }); });
@@ -590,6 +595,12 @@
       '<div class="adm-form" style="margin-top:10px">'+
         '<div><label>'+esc(t('adm.sv.name'))+'</label><input data-e-name value="'+esc(S.serviceName(id))+'"></div>'+
         '<div><label>'+esc(t('adm.sv.tag'))+'</label><input data-e-tag value="'+esc(S.serviceTag(id))+'"></div>'+
+        '<div><label>'+esc(t('adm.sv.category'))+'</label><select data-e-category>'+
+          ['massage','drainage','yoga'].map(function(c){
+            var sel = (s.category||'massage')===c?' selected':'';
+            return '<option value="'+c+'"'+sel+'>'+esc(t('rv.cat.'+c))+'</option>';
+          }).join('')+
+        '</select></div>'+
         '<div><label>'+esc(t('adm.sv.durations'))+'</label>'+
           '<div data-e-durations style="display:grid;gap:8px;margin-top:6px">'+
             S.serviceDurations(id).map(function(o){
@@ -741,7 +752,8 @@
       var idealForInputs = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt'));
       var idealFor = idealForInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var note = ($('[data-e-note]',box).value||'').trim();
-      S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value,
+      var catEl = box.querySelector('[data-e-category]');
+      S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value, category:catEl?catEl.value:'massage',
         durations: durations.length ? durations : S.serviceDurations(id),
         description: ($('[data-e-desc]',box).value||'').trim(),
         benefits: benefits, options: options, img:img,

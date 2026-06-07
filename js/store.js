@@ -35,42 +35,42 @@
   };
 
   var BUILTIN_SERVICES = [
-    { id: 'thai', builtin: true, published: true, durations: DEFAULT_DURATIONS['thai'], img: 'assets/thai-etirement.png',
+    { id: 'thai', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['thai'], img: 'assets/thai-etirement.png',
       name: 'Thaï Yoga Massage', tag: 'Étirements & énergie',
       description: 'Aussi appelé massage thaï traditionnel. Il se pratique habillé, dans des vêtements amples et confortables, sur futon au sol, avec de nombreux étirements passifs pour le receveur.',
       benefitsPhysical: ['Augmente la souplesse.', 'Améliore la mobilité articulaire.', 'Débloque certaines tensions musculaires.', 'Stimule la circulation sanguine et énergétique.'],
       benefitsEmotional: ['Travaille sur les lignes énergétiques (Sen).', 'Donne souvent une sensation de vitalité et d\'ouverture du corps.', 'Peut améliorer la respiration.', 'Favorise l\'alignement corporel.', 'Libère les tensions liées aux mauvaises postures.'],
       idealFor: ['Personnes qui aiment le mouvement.', 'Pratiquants de yoga ou d\'activités corporelles.', 'Ceux qui ressentent un manque de mobilité ou de fluidité dans le corps.'],
       note: '', benefits: [], options: [] },
-    { id: 'balinais', builtin: true, published: true, durations: DEFAULT_DURATIONS['balinais'], img: 'assets/soin-mains.png',
+    { id: 'balinais', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['balinais'], img: 'assets/soin-mains.png',
       name: 'Massage Balinais', tag: 'Enveloppant & circulatoire',
       description: 'Le massage balinais est un merveilleux mélange d\'influences indonésiennes, indiennes et chinoises. (Mélange d\'huile d\'amande douce et de coco fractionné)',
       benefitsPhysical: ['Détend les muscles tout en stimulant la circulation.', 'Améliore la souplesse.', 'Réduit les tensions corporelles.', 'Apporte une sensation de légèreté.'],
       benefitsEmotional: ['Favorise la détente mentale.', 'Procure une sensation de détente et d\'évasion.', 'Aide au relâchement émotionnel.'],
       idealFor: ['Personnes recherchant un équilibre entre détente et tonicité.', 'Ceux qui trouvent l\'Abhyanga trop doux et le Deep Tissue trop intense.'],
       note: 'Il alterne mouvements enveloppants, pétrissages, étirements doux et pressions énergétiques.', benefits: [], options: [] },
-    { id: 'deep', builtin: true, published: true, durations: DEFAULT_DURATIONS['deep'], img: 'assets/relaxation.png',
+    { id: 'deep', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['deep'], img: 'assets/relaxation.png',
       name: 'Deep Tissue', tag: 'Tensions profondes',
       description: 'Le Deep Tissue est un massage occidental ciblant les couches musculaires profondes et les fascias. (Mélange d\'huile d\'amande douce et de coco fractionné)',
       benefitsPhysical: ['Relâche les tensions musculaires chroniques.', 'Améliore la mobilité.', 'Diminue les douleurs liées aux contractures.', 'Travaille les adhérences fasciales.', 'Favorise une meilleure posture.'],
       benefitsEmotional: ['Très apprécié des sportifs.', 'Aide à récupérer après des efforts importants.', 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.'],
       idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau avec douleurs du dos, nuque et épaules.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
-    { id: 'drainage', builtin: true, published: true, durations: DEFAULT_DURATIONS['drainage'], img: 'assets/drainage-visage.png',
+    { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/drainage-visage.png',
       name: 'Drainage lymphatique', tag: 'Détox & légèreté',
       description: 'Le drainage lymphatique est une technique très douce visant à stimuler la circulation de la lymphe.',
       benefitsPhysical: ['Réduit la rétention d\'eau.', 'Diminue les sensations de jambes lourdes.', 'Favorise l\'élimination des déchets métaboliques.'],
       benefitsEmotional: ['Aide à diminuer certains gonflements.', 'Peut affiner temporairement la silhouette lorsque celle-ci est liée à la rétention hydrique.', 'Améliore l\'aspect de certaines zones congestionnées.', 'Sensation de légèreté.', 'Effet relaxant sur le système nerveux.'],
       idealFor: ['Jambes lourdes.', 'Rétention d\'eau.', 'Sensation de gonflement.', 'Personnes restant longtemps debout ou assises.'],
       note: '', benefits: [], options: [] },
-    { id: 'ayurvedique', builtin: true, published: true, durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
+    { id: 'ayurvedique', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
       name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',
       description: 'L\'Abhyanga est un massage traditionnel issu de l\'Inde et de l\'Ayurvéda. Il est généralement réalisé avec une grande quantité d\'huile (de sésame chaude de préférence).',
       benefitsPhysical: ['Détend profondément les muscles et les articulations.', 'Améliore la circulation sanguine.', 'Nourrit et assouplit la peau.', 'Favorise un meilleur sommeil.', 'Soutient la récupération en cas de fatigue physique.'],
       benefitsEmotional: ['Apaise le système nerveux.', 'Réduit le stress et l\'anxiété.', 'Procure une sensation de sécurité et d\'ancrage.', 'Favorise l\'équilibre émotionnel.', 'Selon l\'Ayurvéda, aide à harmoniser les doshas (Vata, Pitta, Kapha).'],
       idealFor: ['Personnes stressées, anxieuses ou en surcharge mentale.', 'Accompagnement du burn-out ou de la fatigue chronique.', 'Recherche de détente profonde et de reconnexion à soi.'],
       note: '', benefits: [], options: [] },
-    { id: 'yoga', builtin: true, published: true, durations: DEFAULT_DURATIONS['yoga'], img: 'assets/yoga-equilibre.png',
+    { id: 'yoga', builtin: true, published: true, category: 'yoga', durations: DEFAULT_DURATIONS['yoga'], img: 'assets/yoga-equilibre.png',
       name: 'Yoga personnalisé', tag: 'Mobilité & souffle',
       description: 'Séance de yoga adaptée à vos besoins, votre niveau et vos objectifs du moment.',
       benefitsPhysical: ['Améliore la souplesse et la mobilité.', 'Renforce les muscles profonds.', 'Améliore la posture et l\'alignement corporel.', 'Favorise une meilleure respiration.'],
@@ -154,6 +154,19 @@
     try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch(e) {}
     localStorage.setItem('ew_migrated_v4', '1');
   }
+  function migrateServicesV5() {
+    if (localStorage.getItem('ew_migrated_v5')) return;
+    var catMap = { thai:'massage', balinais:'massage', deep:'massage', ayurvedique:'massage', drainage:'drainage', yoga:'yoga' };
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
+    if (stored && Array.isArray(stored)) {
+      stored.forEach(function(s) {
+        if (!s.category) s.category = catMap[s.id] || 'massage';
+      });
+      try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch(e) {}
+    }
+    localStorage.setItem('ew_migrated_v5', '1');
+  }
   function migrateServicesV2() {
     var stored = null;
     try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
@@ -191,6 +204,7 @@
     migrateServicesV2();
     migrateServicesV3();
     migrateServicesV4();
+    migrateServicesV5();
     ensureAppointments();
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
@@ -416,6 +430,7 @@
       var n = id, i = 2;
       while (list.some(function (x) { return x.id === n; })) { n = id + '-' + (i++); }
       var rec = { id: n, builtin: false, published: s.published !== false,
+        category: s.category || 'massage',
         name: (s.name || '').trim(), tag: (s.tag || '').trim(),
         durations: s.durations || [{min:60, price:70}],
         description: (s.description || '').trim(), benefits: s.benefits || [],
