@@ -7,7 +7,11 @@
    =========================================================================== */
 (function () {
   'use strict';
-  if (localStorage.getItem('ew_admin_ok') !== '1') return;
+  function isAdmin() {
+    if (localStorage.getItem('ew_admin_ok') === '1') return true;
+    var m = document.cookie.match('(?:^|; )ew_admin_ok=([^;]*)'); return m ? m[1] === '1' : false;
+  }
+  if (!isAdmin()) return;
 
   var S = window.EWStore;
   var editMode = false;

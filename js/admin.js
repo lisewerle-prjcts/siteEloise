@@ -59,7 +59,14 @@
 
   /* ============================ AUTH ============================ */
   var gate = $('#adm-gate'), app = $('#adm-app');
-  function authed(){ return localStorage.getItem(AUTH_KEY)==='1'; }
+  function setCookie(v) {
+    var d = new Date(); d.setFullYear(d.getFullYear() + 1);
+    document.cookie = AUTH_KEY+'='+v+'; expires='+d.toUTCString()+'; path=/; SameSite=Strict';
+  }
+  function getCookie() {
+    var m = document.cookie.match('(?:^|; )'+AUTH_KEY+'=([^;]*)'); return m ? m[1] : null;
+  }
+  function authed(){ return localStorage.getItem(AUTH_KEY)==='1' || getCookie()==='1'; }
   function showApp(){
     gate.style.display='none'; app.hidden=false;
     render(); setTab('rdv'); if(window.ewApplyI18n) window.ewApplyI18n();
@@ -72,6 +79,7 @@
       var v = (f.code.value||'').trim();
       if(v===getCode()){
         localStorage.setItem(AUTH_KEY,'1');
+        setCookie('1');
         if(S.logAdminSession) S.logAdminSession();
         showApp();
       } else { err.textContent = t('adm.login.err'); f.code.value=''; }
@@ -959,6 +967,7 @@
       if(confirm(t('adm.sec.disconnectconfirm'))){
         if(S.clearAdminSessions) S.clearAdminSessions();
         localStorage.removeItem(AUTH_KEY);
+        setCookie('0');
         location.reload();
       }
     });

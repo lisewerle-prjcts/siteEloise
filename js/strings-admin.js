@@ -53,8 +53,8 @@ Object.assign(window.I18N.fr, {
   'adm.login.btn': 'Entrer',
   'adm.login.err': 'Code incorrect. Réessayez.',
   'adm.login.hint': 'Démonstration — code : ',
-  'adm.logout': 'Quitter',
-  'adm.proto': 'Prototype — les données sont enregistrées dans ce navigateur uniquement. L’envoi des e-mails s’ouvre dans votre messagerie.',
+  ‘adm.logout’: ‘Quitter’,
+  ‘adm.proto’: ‘Les données sont synchronisées en temps réel sur tous vos appareils.’,
 
   'adm.tab.rdv': 'Rendez-vous',
   'adm.tab.dates': 'Mes dates',
@@ -276,7 +276,7 @@ Object.assign(window.I18N.de, {
   'adm.login.err': 'Falscher Code. Bitte erneut versuchen.',
   'adm.login.hint': 'Demo — Code: ',
   'adm.logout': 'Verlassen',
-  'adm.proto': 'Prototyp — Daten werden nur in diesem Browser gespeichert. Der E-Mail-Versand öffnet Ihr Mailprogramm.',
+  'adm.proto': 'Daten werden in Echtzeit auf allen Geräten synchronisiert.',
 
   'adm.tab.rdv': 'Termine',
   'adm.tab.dates': 'Termine',
@@ -494,7 +494,7 @@ Object.assign(window.I18N.en, {
   'adm.login.err': 'Wrong code. Try again.',
   'adm.login.hint': 'Demo — code: ',
   'adm.logout': 'Leave',
-  'adm.proto': 'Prototype — data is stored in this browser only. Sending emails opens your mail app.',
+  'adm.proto': 'Data is synchronised in real time across all your devices.',
 
   'adm.tab.rdv': 'Appointments',
   'adm.tab.dates': 'Dates',
