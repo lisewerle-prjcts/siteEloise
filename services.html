@@ -70,6 +70,14 @@
 .price-card .amt small{ font-family:var(--body); font-size:.9rem; color:var(--ink-2); letter-spacing:0; }
 .price-card .d{ color:var(--ink-2); font-size:.95rem; margin-top:4px; }
 
+/* category section */
+.svc-cat-section { padding-top: clamp(36px,5vw,64px); }
+.svc-cat-section + .svc-cat-section { border-top: 2px solid var(--line); }
+.svc-cat-header { display:flex; align-items:center; gap:16px; margin-bottom:clamp(8px,2vw,16px); }
+.svc-cat-header h2 { font-family:var(--body); font-weight:700; font-size:.74rem; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin:0; }
+.svc-cat-header hr { flex:1; border:none; border-top:1px solid var(--line); }
+.svc-cat-section .svc-detail:first-of-type { padding-top: clamp(24px,3vw,40px); }
+
 @media (max-width:860px){
   .svc-detail{ grid-template-columns:1fr; }
   .svc-detail--rev .svc-detail__media{ order:0; }
@@ -88,9 +96,9 @@
         <h1 data-i18n="sv.hero.title">Des soins pensés pour votre corps et votre esprit.</h1>
         <p data-i18n="sv.hero.text">Massages thérapeutiques et yoga personnalisé. Chaque séance s’adapte à vos besoins du moment.</p>
         <div class="jump">
-          <a href="#thai" data-i18n="sv.hero.jump.massage">Massages</a>
-          <a href="#drainage" data-i18n="sv.hero.jump.drainage">Drainage</a>
-          <a href="#yoga" data-i18n="sv.hero.jump.yoga">Yoga</a>
+          <a href="#cat-massage" data-i18n="sv.hero.jump.massage">Massages</a>
+          <a href="#cat-drainage" data-i18n="sv.hero.jump.drainage">Drainage</a>
+          <a href="#cat-yoga" data-i18n="sv.hero.jump.yoga">Yoga</a>
         </div>
       </div>
     </div>
@@ -133,7 +141,9 @@
 <script>
 (function () {
   'use strict';
-  var PREFIX = { thai:'thai', balinais:'bali', deep:'deep', drainage:'drain', ayurvedique:'ayur', yoga:'yoga' };
+
+  var CAT_ORDER = ['massage', 'drainage', 'yoga'];
+  var CAT_I18N  = { massage: 'rv.cat.massage', drainage: 'rv.cat.drainage', yoga: 'rv.cat.yoga' };
 
   function esc(s) {
     return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) {
@@ -154,11 +164,9 @@
         '<ul class="ben-list">' + items.map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>';
     }
 
-    var html = services.map(function (s, i) {
+    function svcCard(s, idxInCat) {
       var id = s.id;
-      var num = i < 9 ? '0' + (i + 1) : String(i + 1);
-      var rev = i % 2 === 1 ? ' svc-detail--rev' : '';
-
+      var rev = idxInCat % 2 === 1 ? ' svc-detail--rev' : '';
       var img = EWS.serviceImg(id);
       var tag = EWS.serviceTag(id);
       var name = EWS.serviceName(id);
@@ -169,7 +177,6 @@
       var idealFor = EWS.serviceIdealFor ? EWS.serviceIdealFor(id) : [];
       var durations = EWS.serviceDurations(id);
       var options = EWS.serviceOptions ? EWS.serviceOptions(id) : [];
-
       var durHtml = durations.length
         ? '<div class="variants">' + durations.map(function(d){ return '<span>' + d.min + ' min — ' + d.price + ' €</span>'; }).join('') + '</div>'
         : '';
@@ -177,9 +184,8 @@
         ? '<div class="variants">' + options.map(function(o){ return '<span>' + esc(o) + '</span>'; }).join('') + '</div>'
         : '';
       var noteHtml = note ? '<p class="note">' + esc(note) + '</p>' : '';
-
       return '<article class="svc-detail' + rev + '" id="' + id + '">' +
-        '<div class="svc-detail__media reveal" data-svc-img="' + id + '"><span class="num">' + num + '</span>' +
+        '<div class="svc-detail__media reveal" data-svc-img="' + id + '">' +
           '<img src="' + esc(img) + '" alt="' + esc(name) + '"></div>' +
         '<div class="reveal" data-d="1">' +
           '<span class="tag" data-svc-id="' + id + '" data-svc-field="tag">' + esc(tag) + '</span>' +
@@ -192,12 +198,28 @@
             ? '<div class="ben-label">' + esc(T('sv.ben.idealfor') || 'Idéal pour') + '</div>' +
               '<ul class="ben-list ben-list--check">' + idealFor.map(function(b){ return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>'
             : '') +
-          durHtml +
-          optsHtml +
+          durHtml + optsHtml +
           '<div class="price-row">' +
             '<a class="btn btn-primary" href="reservation.html?service=' + id + '">' + esc(T('cta.book.this')) + '</a>' +
           '</div>' +
         '</div></article>';
+    }
+
+    /* group by category in display order */
+    var grouped = {};
+    services.forEach(function(s) { var c = s.category || 'massage'; if (!grouped[c]) grouped[c] = []; grouped[c].push(s); });
+    var seen = new Set();
+    var cats = [];
+    CAT_ORDER.forEach(function(c) { if (grouped[c]) { cats.push(c); seen.add(c); } });
+    Object.keys(grouped).forEach(function(c) { if (!seen.has(c)) cats.push(c); });
+
+    var html = cats.map(function(c) {
+      var label = CAT_I18N[c] ? T(CAT_I18N[c]) : c;
+      var cards = grouped[c].map(svcCard).join('');
+      return '<section class="svc-cat-section" id="cat-' + c + '">' +
+        '<div class="svc-cat-header"><h2>' + esc(label) + '</h2><hr></div>' +
+        cards +
+        '</section>';
     }).join('');
 
     root.innerHTML = html;
