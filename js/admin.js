@@ -92,8 +92,9 @@
       return '<option value="'+c+'"'+(c===val?' selected':'')+'>'+esc(cityName(c))+'</option>'; }).join('') +'</select>';
   }
   function svcSelect(name, val){
-    return '<select name="'+name+'"><option value="">—</option>'+ SVC.map(function(s){
-      return '<option value="'+s+'"'+(s===val?' selected':'')+'>'+esc(svcName(s))+'</option>'; }).join('') +'</select>';
+    var ids = S.publishedServices ? S.publishedServices().map(function(s){ return s.id; }) : SVC;
+    return '<select name="'+name+'"><option value="">—</option>'+ ids.map(function(id){
+      return '<option value="'+id+'"'+(id===val?' selected':'')+'>'+esc(svcName(id))+'</option>'; }).join('') +'</select>';
   }
   function renderDates(){
     var panel = $('[data-panel="dates"]'); if(!panel) return;

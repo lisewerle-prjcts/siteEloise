@@ -19,9 +19,9 @@
   };
 
   var BUILTIN_CITIES = [
-    { id: 'sucy',     builtin: true, active: true, days: [1, 2, 3], mapLabel: 'Sucy-en-Brie · 94', name: 'Sucy-en-Brie', region: 'Val-de-Marne, France',       mapEmbed: 'https://www.openstreetmap.org/export/embed.html?bbox=2.49,48.76,2.54,48.79&layer=mapnik&marker=48.7726,2.5118' },
-    { id: 'chesnay',  builtin: true, active: true, days: [3, 4, 5], mapLabel: 'Le Chesnay · 78',   name: 'Le Chesnay',   region: 'Yvelines, France',           mapEmbed: 'https://www.openstreetmap.org/export/embed.html?bbox=2.10,48.80,2.15,48.83&layer=mapnik&marker=48.8153,2.1240' },
-    { id: 'wehingen', builtin: true, active: true, days: [5, 6, 0], mapLabel: 'Wehingen · DE',     name: 'Wehingen',     region: 'Bade-Wurtemberg, Allemagne', mapEmbed: 'https://www.openstreetmap.org/export/embed.html?bbox=8.81,48.13,8.85,48.16&layer=mapnik&marker=48.1453,8.8272' }
+    { id: 'sucy',     builtin: true, active: true, days: [1, 2, 3], openFrom: '09:00', openTo: '18:00', mapLabel: 'Sucy-en-Brie · 94', name: 'Sucy-en-Brie', region: 'Val-de-Marne, France' },
+    { id: 'chesnay',  builtin: true, active: true, days: [3, 4, 5], openFrom: '09:00', openTo: '18:00', mapLabel: 'Le Chesnay · 78',   name: 'Le Chesnay',   region: 'Yvelines, France' },
+    { id: 'wehingen', builtin: true, active: true, days: [5, 6, 0], openFrom: '09:00', openTo: '18:00', mapLabel: 'Wehingen · DE',     name: 'Wehingen',     region: 'Bade-Wurtemberg, Allemagne' }
   ];
 
   /* Duration+price combos per service (Eloïse can override from admin) */
@@ -133,6 +133,27 @@
     if (changed) try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch(e) {}
     localStorage.setItem('ew_migrated_v3', '1');
   }
+  function migrateServicesV4() {
+    if (localStorage.getItem('ew_migrated_v4')) return;
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
+    if (!stored || !Array.isArray(stored)) { localStorage.setItem('ew_migrated_v4', '1'); return; }
+    stored.forEach(function(s) {
+      if (!s.builtin) return;
+      var def = null;
+      for (var i = 0; i < BUILTIN_SERVICES.length; i++) { if (BUILTIN_SERVICES[i].id === s.id) { def = BUILTIN_SERVICES[i]; break; } }
+      if (!def) return;
+      // Force-reset description if it looks concatenated (contains '*' benefit markers)
+      if (!s.description || s.description.indexOf('*') !== -1 || s.description.length > 300) {
+        s.description = def.description;
+      }
+      s.benefitsPhysical = def.benefitsPhysical.slice();
+      s.benefitsEmotional = def.benefitsEmotional.slice();
+      s.idealFor = def.idealFor.slice();
+    });
+    try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch(e) {}
+    localStorage.setItem('ew_migrated_v4', '1');
+  }
   function migrateServicesV2() {
     var stored = null;
     try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
@@ -169,6 +190,7 @@
     ensureServices();
     migrateServicesV2();
     migrateServicesV3();
+    migrateServicesV4();
     ensureAppointments();
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
@@ -234,7 +256,8 @@
       if (c && c.builtin && !c.edited) return i18nRegion(id) || c.region || '';
       return (c && c.region) || i18nRegion(id) || ''; },
     cityMapLabel: function (id) { var c = cityById(id); return (c && c.mapLabel) || API.cityName(id); },
-    cityMapEmbed: function(id) { var c = cityById(id); return (c && c.mapEmbed) || ''; },
+    cityOpenFrom: function (id) { var c = cityById(id); return (c && c.openFrom) || '09:00'; },
+    cityOpenTo:   function (id) { var c = cityById(id); return (c && c.openTo)   || '18:00'; },
     cityDays: function (id) { var c = cityById(id); return (c && c.days && c.days.length) ? c.days : [2, 3, 4]; },
     activeCityIds: function () { return API.cities().filter(function (c) { return c.active !== false; }).map(function (c) { return c.id; }); },
     setCityActive: function (id, on) {

@@ -75,7 +75,12 @@
     return !bookedRanges(locId, dateISO).some(r => start < r.end && end > r.start);
   }
   function freeSlots(locId, dateISO, duration) {
-    return SLOT_TIMES.filter(tm => isSlotFree(locId, dateISO, tm, duration || S.duration || 60));
+    const dur = duration || S.duration || 60;
+    const openTo = EWS && EWS.cityOpenTo ? timeToMin(EWS.cityOpenTo(locId)) : timeToMin('18:00');
+    return SLOT_TIMES.filter(tm => {
+      const start = timeToMin(tm);
+      return start + dur <= openTo && isSlotFree(locId, dateISO, tm, dur);
+    });
   }
   function dayAvailable(locId, d, duration) {
     const loc = locations().find(l => l.id === locId);

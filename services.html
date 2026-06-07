@@ -128,6 +128,7 @@
 <script src="js/strings-services.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/site.js"></script>
+<script src="js/inline-edit.js"></script>
 <script src="js/tweaks.js"></script>
 <script>
 (function () {
@@ -178,12 +179,12 @@
       var noteHtml = note ? '<p class="note">' + esc(note) + '</p>' : '';
 
       return '<article class="svc-detail' + rev + '" id="' + id + '">' +
-        '<div class="svc-detail__media reveal"><span class="num">' + num + '</span>' +
+        '<div class="svc-detail__media reveal" data-svc-img="' + id + '"><span class="num">' + num + '</span>' +
           '<img src="' + esc(img) + '" alt="' + esc(name) + '"></div>' +
         '<div class="reveal" data-d="1">' +
-          '<span class="tag">' + esc(tag) + '</span>' +
-          '<h2>' + esc(name) + '</h2>' +
-          (desc ? '<p class="long">' + esc(desc) + '</p>' : '') +
+          '<span class="tag" data-svc-id="' + id + '" data-svc-field="tag">' + esc(tag) + '</span>' +
+          '<h2 data-svc-id="' + id + '" data-svc-field="name">' + esc(name) + '</h2>' +
+          (desc ? '<p class="long" data-svc-id="' + id + '" data-svc-field="description">' + esc(desc) + '</p>' : '') +
           noteHtml +
           benSection(T('sv.ben.physical') || 'Bienfaits physiques', benPhys) +
           benSection(T('sv.ben.emotional') || 'Bienfaits émotionnels & énergétiques', benEmot) +
