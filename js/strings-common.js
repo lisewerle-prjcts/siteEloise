@@ -58,6 +58,8 @@ Object.assign(window.I18N.fr, {
   'rv.cat.massage': 'Massages',
   'rv.cat.drainage': 'Drainage lymphatique',
   'rv.cat.yoga': 'Yoga',
+  'adm.footer.link': 'Espace Eloïse',
+  'footer.privacy': 'Politique de confidentialité',
 });
 
 Object.assign(window.I18N.de, {
@@ -117,6 +119,8 @@ Object.assign(window.I18N.de, {
   'rv.cat.massage': 'Massagen',
   'rv.cat.drainage': 'Lymphdrainage',
   'rv.cat.yoga': 'Yoga',
+  'adm.footer.link': 'Eloïse-Bereich',
+  'footer.privacy': 'Datenschutz',
 });
 
 Object.assign(window.I18N.en, {
@@ -176,4 +180,6 @@ Object.assign(window.I18N.en, {
   'rv.cat.massage': 'Massages',
   'rv.cat.drainage': 'Lymphatic drainage',
   'rv.cat.yoga': 'Yoga',
+  'adm.footer.link': 'Eloïse Space',
+  'footer.privacy': 'Privacy policy',
 });

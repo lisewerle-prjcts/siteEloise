@@ -122,7 +122,7 @@
       </div>
       <div class="footer-bottom">
         <span>© <span data-year></span> Eloïse Werle · <span data-i18n="footer.made">Massothérapeute & professeure de yoga certifiée</span></span>
-        <span><a class="link-underline" href="admin.html" data-i18n="adm.footer.link">Espace Eloïse</a> · <a class="link-underline" data-i18n="footer.legal" href="mentions-legales.html">Mentions légales</a></span>
+        <span><a class="link-underline" href="admin.html" data-i18n="adm.footer.link">Espace Eloïse</a> · <a class="link-underline" data-i18n="footer.legal" href="mentions-legales.html">Mentions légales</a> · <a class="link-underline" data-i18n="footer.privacy" href="politique-confidentialite.html">Politique de confidentialité</a></span>
       </div>
     </div>`;
   document.body.appendChild(footer);
