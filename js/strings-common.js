@@ -55,6 +55,9 @@ Object.assign(window.I18N.fr, {
   'news.lastname.ph': 'Nom',
   'news.done': 'Merci ! À très bientôt.',
   'dates.more': 'Voir plus',
+  'rv.cat.massage': 'Massages',
+  'rv.cat.drainage': 'Drainage lymphatique',
+  'rv.cat.yoga': 'Yoga',
 });
 
 Object.assign(window.I18N.de, {
@@ -111,6 +114,9 @@ Object.assign(window.I18N.de, {
   'news.firstname.ph': 'Vorname',
   'news.lastname.ph': 'Nachname',
   'dates.more': 'Mehr anzeigen',
+  'rv.cat.massage': 'Massagen',
+  'rv.cat.drainage': 'Lymphdrainage',
+  'rv.cat.yoga': 'Yoga',
 });
 
 Object.assign(window.I18N.en, {
@@ -167,4 +173,7 @@ Object.assign(window.I18N.en, {
   'news.firstname.ph': 'First name',
   'news.lastname.ph': 'Last name',
   'dates.more': 'See more',
+  'rv.cat.massage': 'Massages',
+  'rv.cat.drainage': 'Lymphatic drainage',
+  'rv.cat.yoga': 'Yoga',
 });

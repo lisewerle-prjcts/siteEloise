@@ -645,13 +645,27 @@
     };
 
     /* ---- initial load from DB ---- */
-    // Sync admin code from Supabase (so password changes propagate across devices)
+    // Sync admin code + custom/edited services from Supabase
     DB.load('services').then(function (rows) {
+      // DB.load unwraps data, so pwEntry is already the inner object {id, code}
       var pwEntry = (rows || []).filter(function (r) { return r.id === '_admin_pw'; })[0];
-      if (pwEntry && pwEntry.data && pwEntry.code) {
+      if (pwEntry && pwEntry.code) {
         localStorage.setItem('ew_admin_pw', pwEntry.code);
-      } else if (pwEntry && pwEntry.data && pwEntry.data.code) {
-        localStorage.setItem('ew_admin_pw', pwEntry.data.code);
+      }
+      // Merge non-password service rows into local store
+      // DB.load already unwraps data, so each row IS the service object
+      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw'; });
+      if (svcRows.length) {
+        var local = read(KEYS.services, BUILTIN_SERVICES).slice();
+        svcRows.forEach(function(svc) {
+          var found = false;
+          for (var i = 0; i < local.length; i++) {
+            if (local[i].id === svc.id) { Object.assign(local[i], svc); found = true; break; }
+          }
+          if (!found) local.push(svc);
+        });
+        try { localStorage.setItem(KEYS.services, JSON.stringify(local)); } catch(e) {}
+        emit();
       }
     }).catch(function () {});
 
