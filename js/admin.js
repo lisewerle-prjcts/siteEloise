@@ -59,14 +59,7 @@
 
   /* ============================ AUTH ============================ */
   var gate = $('#adm-gate'), app = $('#adm-app');
-  function setCookie(v) {
-    var d = new Date(); d.setFullYear(d.getFullYear() + 1);
-    document.cookie = AUTH_KEY+'='+v+'; expires='+d.toUTCString()+'; path=/; SameSite=Strict';
-  }
-  function getCookie() {
-    var m = document.cookie.match('(?:^|; )'+AUTH_KEY+'=([^;]*)'); return m ? m[1] : null;
-  }
-  function authed(){ return localStorage.getItem(AUTH_KEY)==='1' || getCookie()==='1'; }
+  function authed(){ return sessionStorage.getItem(AUTH_KEY)==='1'; }
   function showApp(){
     gate.style.display='none'; app.hidden=false;
     render(); setTab('rdv'); if(window.ewApplyI18n) window.ewApplyI18n();
@@ -78,8 +71,7 @@
       e.preventDefault();
       var v = (f.code.value||'').trim();
       if(v===getCode()){
-        localStorage.setItem(AUTH_KEY,'1');
-        setCookie('1');
+        sessionStorage.setItem(AUTH_KEY,"1");
         if(S.logAdminSession) S.logAdminSession();
         showApp();
       } else { err.textContent = t('adm.login.err'); f.code.value=''; }
@@ -966,8 +958,7 @@
     if(disc) disc.addEventListener('click', function(){
       if(confirm(t('adm.sec.disconnectconfirm'))){
         if(S.clearAdminSessions) S.clearAdminSessions();
-        localStorage.removeItem(AUTH_KEY);
-        setCookie('0');
+        sessionStorage.removeItem(AUTH_KEY);
         location.reload();
       }
     });
@@ -993,7 +984,7 @@
     if(!S){ return; }
     initGate();
     document.querySelector('.adm-logout').addEventListener('click', function(){
-      localStorage.removeItem(AUTH_KEY); location.reload();
+      sessionStorage.removeItem(AUTH_KEY); location.reload();
     });
     [].slice.call(document.querySelectorAll('.adm-tab')).forEach(function(b){
       b.addEventListener('click', function(){ setTab(b.dataset.tab); });

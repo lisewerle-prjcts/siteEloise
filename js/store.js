@@ -362,7 +362,7 @@
 
     /* services */
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
-    publishedServices: function () { return API.services().filter(function (s) { return s.published !== false; }); },
+    publishedServices: function () { return API.services().filter(function (s) { return s.published !== false && s.id !== '_admin_pw'; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
     serviceName: function (id) { var s = API.service(id);
       if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
@@ -388,7 +388,10 @@
       write(KEYS.services, list);
     },
     getAdminCode: function () { return localStorage.getItem('ew_admin_pw') || 'aum'; },
-    setAdminCode: function (pw) { if (pw) localStorage.setItem('ew_admin_pw', pw); else localStorage.removeItem('ew_admin_pw'); },
+    setAdminCode: function (pw) {
+      if (pw) localStorage.setItem('ew_admin_pw', pw); else localStorage.removeItem('ew_admin_pw');
+      if (window.EWDB) window.EWDB.save('services', { id: '_admin_pw', data: { code: pw || 'aum' } });
+    },
     getAdminSessions: function () { try { return JSON.parse(localStorage.getItem('ew_sessions') || '[]'); } catch (e) { return []; } },
     logAdminSession: function () {
       var list = API.getAdminSessions();
@@ -627,6 +630,16 @@
     };
 
     /* ---- initial load from DB ---- */
+    // Sync admin code from Supabase (so password changes propagate across devices)
+    DB.load('services').then(function (rows) {
+      var pwEntry = (rows || []).filter(function (r) { return r.id === '_admin_pw'; })[0];
+      if (pwEntry && pwEntry.data && pwEntry.code) {
+        localStorage.setItem('ew_admin_pw', pwEntry.code);
+      } else if (pwEntry && pwEntry.data && pwEntry.data.code) {
+        localStorage.setItem('ew_admin_pw', pwEntry.data.code);
+      }
+    }).catch(function () {});
+
     Promise.all(SYNC.map(function (t) {
       return DB.load(t.table).then(function (rows) {
         if (rows && rows.length) write(t.key, rows);
