@@ -65,7 +65,7 @@
     render(); setTab('rdv'); if(window.ewApplyI18n) window.ewApplyI18n();
   }
   function initGate(){
-    gate.querySelector('.hint').textContent = t('adm.login.hint') + ' ' + CODE;
+    gate.querySelector('.hint').textContent = '';
     var f = gate.querySelector('form'), err = gate.querySelector('.err');
     f.addEventListener('submit', function(e){
       e.preventDefault();
@@ -786,12 +786,14 @@
             '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
           '</div>'+
         '</div>'+
-        '<div class="adm-rdv-edit" data-editform="'+a.id+'" style="display:none;background:var(--cream-2);border-radius:10px;padding:12px 16px;display:none">'+
+        '<div class="adm-rdv-edit" data-editform="'+a.id+'" style="display:none;background:var(--cream-2);border-radius:10px;padding:12px 16px">'+
           '<div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">'+
             '<div><label style="font-size:.76rem;font-weight:600;display:block;margin-bottom:4px">Date</label>'+
               '<input type="date" value="'+esc(a.dateISO||'')+'" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem" data-rdv-date></div>'+
             '<div><label style="font-size:.76rem;font-weight:600;display:block;margin-bottom:4px">Heure</label>'+
               '<input type="time" value="'+esc(a.time||'')+'" style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem" data-rdv-time></div>'+
+            '<div><label style="font-size:.76rem;font-weight:600;display:block;margin-bottom:4px">Soin</label>'+
+              svcSelect('rdvsvc_'+a.id, a.service||'').replace('<select ', '<select data-rdv-svc style="padding:6px 10px;border:1px solid var(--line);border-radius:8px;font-size:.9rem" ')+'</div>'+
             '<button class="btn btn-primary btn-sm" data-saverdv="'+a.id+'">Sauvegarder</button>'+
             '<button class="btn-mini" data-closeedit="'+a.id+'">Annuler</button>'+
           '</div>'+
@@ -869,7 +871,10 @@
         if(!form) return;
         var dateVal = form.querySelector('[data-rdv-date]').value;
         var timeVal = form.querySelector('[data-rdv-time]').value;
-        S.updateAppointment(b.dataset.saverdv, { dateISO: dateVal, time: timeVal });
+        var svcEl = form.querySelector('[data-rdv-svc]');
+        var patch = { dateISO: dateVal, time: timeVal };
+        if (svcEl) patch.service = svcEl.value;
+        S.updateAppointment(b.dataset.saverdv, patch);
         toast('Rendez-vous mis à jour');
       });
     });
