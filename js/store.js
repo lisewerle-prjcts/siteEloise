@@ -19,9 +19,9 @@
   };
 
   var BUILTIN_CITIES = [
-    { id: 'sucy',     builtin: true, active: true, days: [1, 2, 3], mapLabel: 'Sucy-en-Brie · 94', name: 'Sucy-en-Brie', region: 'Val-de-Marne, France' },
-    { id: 'chesnay',  builtin: true, active: true, days: [3, 4, 5], mapLabel: 'Le Chesnay · 78',   name: 'Le Chesnay',   region: 'Yvelines, France' },
-    { id: 'wehingen', builtin: true, active: true, days: [5, 6, 0], mapLabel: 'Wehingen · DE',     name: 'Wehingen',     region: 'Bade-Wurtemberg, Allemagne' }
+    { id: 'sucy',     builtin: true, active: true, days: [1, 2, 3], mapLabel: 'Sucy-en-Brie · 94', name: 'Sucy-en-Brie', region: 'Val-de-Marne, France',       mapEmbed: 'https://www.openstreetmap.org/export/embed.html?bbox=2.49,48.76,2.54,48.79&layer=mapnik&marker=48.7726,2.5118' },
+    { id: 'chesnay',  builtin: true, active: true, days: [3, 4, 5], mapLabel: 'Le Chesnay · 78',   name: 'Le Chesnay',   region: 'Yvelines, France',           mapEmbed: 'https://www.openstreetmap.org/export/embed.html?bbox=2.10,48.80,2.15,48.83&layer=mapnik&marker=48.8153,2.1240' },
+    { id: 'wehingen', builtin: true, active: true, days: [5, 6, 0], mapLabel: 'Wehingen · DE',     name: 'Wehingen',     region: 'Bade-Wurtemberg, Allemagne', mapEmbed: 'https://www.openstreetmap.org/export/embed.html?bbox=8.81,48.13,8.85,48.16&layer=mapnik&marker=48.1453,8.8272' }
   ];
 
   /* Duration+price combos per service (Eloïse can override from admin) */
@@ -111,6 +111,28 @@
   function ensureServices() {
     if (!localStorage.getItem(KEYS.services)) writeRaw(KEYS.services, BUILTIN_SERVICES.slice());
   }
+  function migrateServicesV3() {
+    if (localStorage.getItem('ew_migrated_v3')) return;
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
+    if (!stored || !Array.isArray(stored)) return;
+    var changed = false;
+    stored.forEach(function(s) {
+      if (!s.builtin) return;
+      var def = null;
+      for (var i = 0; i < BUILTIN_SERVICES.length; i++) { if (BUILTIN_SERVICES[i].id === s.id) { def = BUILTIN_SERVICES[i]; break; } }
+      if (!def) return;
+      s.tag = def.tag;
+      s.description = def.description;
+      s.benefitsPhysical = def.benefitsPhysical.slice();
+      s.benefitsEmotional = def.benefitsEmotional.slice();
+      s.idealFor = def.idealFor.slice();
+      s.note = def.note || '';
+      changed = true;
+    });
+    if (changed) try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch(e) {}
+    localStorage.setItem('ew_migrated_v3', '1');
+  }
   function migrateServicesV2() {
     var stored = null;
     try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
@@ -146,6 +168,7 @@
     ensureCities();
     ensureServices();
     migrateServicesV2();
+    migrateServicesV3();
     ensureAppointments();
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
@@ -211,6 +234,7 @@
       if (c && c.builtin && !c.edited) return i18nRegion(id) || c.region || '';
       return (c && c.region) || i18nRegion(id) || ''; },
     cityMapLabel: function (id) { var c = cityById(id); return (c && c.mapLabel) || API.cityName(id); },
+    cityMapEmbed: function(id) { var c = cityById(id); return (c && c.mapEmbed) || ''; },
     cityDays: function (id) { var c = cityById(id); return (c && c.days && c.days.length) ? c.days : [2, 3, 4]; },
     activeCityIds: function () { return API.cities().filter(function (c) { return c.active !== false; }).map(function (c) { return c.id; }); },
     setCityActive: function (id, on) {
@@ -259,6 +283,13 @@
     },
     removeSubscriber: function (id) {
       write(KEYS.subs, read(KEYS.subs, []).filter(function (s) { return s.id !== id; }));
+    },
+    addSubscriberCity: function (id, city) {
+      var list = read(KEYS.subs, []);
+      var sub = list.filter(function (s) { return s.id === id; })[0];
+      if (!sub || !city) return;
+      if (sub.cities.indexOf(city) === -1) sub.cities.push(city);
+      write(KEYS.subs, list);
     },
     removeSubscriberCity: function (id, city) {
       var list = read(KEYS.subs, []);
@@ -488,6 +519,12 @@
     var _remSub = API.removeSubscriber;
     API.removeSubscriber = function (id) {
       _remSub.call(API, id); DB.del('subscribers', id);
+    };
+    var _addSubCity = API.addSubscriberCity;
+    API.addSubscriberCity = function (id, city) {
+      _addSubCity.call(API, id, city);
+      var s = API.subscriber(id);
+      if (s) DB.save('subscribers', s);
     };
     var _remSubCity = API.removeSubscriberCity;
     API.removeSubscriberCity = function (id, city) {

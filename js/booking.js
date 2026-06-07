@@ -216,7 +216,7 @@
       return `<button type="button" class="loc ${on}" data-loc="${l.id}">
         <span class="loc__pin">${locName(l.id).charAt(0)}</span>
         <span class="loc__tx"><b>${locName(l.id)}</b><small>${locRegion(l.id)}</small></span>
-        <span class="loc__days">${daysHint(l)}</span></button>`;
+        </button>`;
     }).join('');
     const durs = serviceOptions(S.service).map(o => {
       const on = S.duration === o.min ? 'on' : '';

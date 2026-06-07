@@ -38,7 +38,7 @@
     return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
   function cityName(id){ return S.cityName(id); }
   function cityRegion(id){ return S.cityRegion(id); }
-  function svcName(id){ return id ? t('svc.'+id+'.name') : ''; }
+  function svcName(id){ return id ? (S.serviceName ? S.serviceName(id) : t('svc.'+id+'.name')) : ''; }
   function fmtDate(iso){ return new Date(iso+'T00:00:00').toLocaleDateString(locale(),{weekday:'long',day:'numeric',month:'long'}); }
   function fmtShort(iso){ return new Date(iso+'T00:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'}); }
   function stars(n){ n=Math.max(0,Math.min(5,n||5)); var s=''; for(var i=0;i<5;i++) s+=i<n?'★':'☆'; return s; }
@@ -236,6 +236,14 @@
               '<span>'+s.cities.map(cityName).map(esc).join(', ')+'</span></div></div>'+
             '<div class="adm-item__actions">'+
               s.cities.map(function(city){ return '<button class="btn-mini" data-delcity="'+s.id+'" data-city="'+esc(city)+'">✕ '+esc(cityName(city))+'</button>'; }).join('')+
+              (function(){
+                var available = S.cityIds().filter(function(c){ return s.cities.indexOf(c) === -1; });
+                if(!available.length) return '';
+                return '<select data-addcitysel="'+s.id+'" style="font-size:.8rem;padding:2px 4px">'+
+                  available.map(function(c){ return '<option value="'+esc(c)+'">'+esc(cityName(c))+'</option>'; }).join('')+
+                  '</select>'+
+                  '<button class="btn-mini" data-addcity="'+s.id+'">+</button>';
+              })()+
               '<button class="btn-mini" data-history="'+s.id+'">'+esc(t('adm.s.history'))+'</button>'+
               '<button class="btn-mini danger" data-delsub="'+s.id+'">'+esc(t('adm.s.del'))+'</button></div>'+
           '</div>'; }).join('')+'</div>';
@@ -251,6 +259,15 @@
     });
     [].slice.call(panel.querySelectorAll('[data-delcity]')).forEach(function(b){
       b.addEventListener('click', function(e){ e.stopPropagation(); S.removeSubscriberCity(b.dataset.delcity, b.dataset.city); render(); });
+    });
+    [].slice.call(panel.querySelectorAll('[data-addcity]')).forEach(function(b){
+      b.addEventListener('click', function(e){
+        e.stopPropagation();
+        var sel = panel.querySelector('[data-addcitysel="'+b.dataset.addcity+'"]');
+        if(!sel) return;
+        S.addSubscriberCity(b.dataset.addcity, sel.value);
+        render();
+      });
     });
     [].slice.call(panel.querySelectorAll('[data-delsub]')).forEach(function(b){
       b.addEventListener('click', function(e){ e.stopPropagation(); S.removeSubscriber(b.dataset.delsub); render(); });

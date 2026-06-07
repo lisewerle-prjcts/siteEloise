@@ -165,13 +165,19 @@
     if (!S) return;
     document.querySelectorAll('[data-places]').forEach(host => {
       const ids = S.activeCityIds();
-      host.innerHTML = ids.map((id, i) => `
+      host.innerHTML = ids.map((id, i) => {
+        const embed = S.cityMapEmbed ? S.cityMapEmbed(id) : '';
+        const mapHtml = embed
+          ? `<iframe src="${embed}" width="100%" height="100%" style="border:0;pointer-events:none" loading="lazy" title="${esc(S.cityName(id))}"></iframe>`
+          : `<span>${esc(S.cityMapLabel(id))}</span>`;
+        return `
         <div class="place reveal"${i ? ` data-d="${i}"` : ''}>
           <span class="idx">${String(i + 1).padStart(2, '0')}</span>
           <h3>${esc(S.cityName(id))}</h3>
           <p class="reg">${esc(S.cityRegion(id))}</p>
-          <div class="map"><span>${esc(S.cityMapLabel(id))}</span></div>
-        </div>`).join('');
+          <div class="map">${mapHtml}</div>
+        </div>`;
+      }).join('');
     });
     if (window.ewObserveReveals) window.ewObserveReveals();
   }
