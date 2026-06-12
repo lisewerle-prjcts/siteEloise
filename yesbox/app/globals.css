@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-cream text-soft-black font-dm-sans;
+  }
+
+  h1, h2, h3, h4 {
+    @apply font-fraunces;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-magenta text-white font-dm-sans font-medium px-6 py-3 rounded-lg
+           hover:bg-[#bf3469] transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply border border-magenta text-magenta font-dm-sans font-medium px-6 py-3 rounded-lg
+           hover:bg-magenta hover:text-white transition-colors duration-200;
+  }
+
+  .btn-ghost {
+    @apply text-soft-black font-dm-sans font-medium px-6 py-3 rounded-lg
+           hover:bg-gray-border transition-colors duration-200;
+  }
+
+  .input-field {
+    @apply w-full border border-gray-border rounded-lg px-4 py-3 bg-white
+           font-dm-sans text-soft-black placeholder-gray-400
+           focus:outline-none focus:ring-2 focus:ring-magenta/30 focus:border-magenta
+           transition-colors duration-200;
+  }
+
+  .card {
+    @apply bg-white border border-gray-border rounded-2xl p-6;
+  }
+
+  .stripe-bg {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 8px,
+      rgba(255, 255, 255, 0.15) 8px,
+      rgba(255, 255, 255, 0.15) 16px
+    );
+  }
+}
