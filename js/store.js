@@ -404,12 +404,12 @@
     getAdminCode: function () { return localStorage.getItem('ew_admin_pw') || 'aum'; },
     setAdminCode: function (pw) {
       if (pw) localStorage.setItem('ew_admin_pw', pw); else localStorage.removeItem('ew_admin_pw');
-      if (window.EWDB) window.EWDB.save('services', { id: '_admin_pw', data: { code: pw || 'aum' } });
+      if (window.EWDB) window.EWDB.save('services', { id: '_admin_pw', code: pw || 'aum' });
     },
     getAdminEmail: function () { return localStorage.getItem('ew_admin_email') || ''; },
     setAdminEmail: function (email) {
       if (email) localStorage.setItem('ew_admin_email', email); else localStorage.removeItem('ew_admin_email');
-      if (window.EWDB) window.EWDB.save('services', { id: '_admin_email', data: { email: email } });
+      if (window.EWDB) window.EWDB.save('services', { id: '_admin_email', email: email });
     },
     getAdminSessions: function () { try { return JSON.parse(localStorage.getItem('ew_sessions') || '[]'); } catch (e) { return []; } },
     logAdminSession: function () {
@@ -691,12 +691,22 @@
     DB.load('services').then(function (rows) {
       // DB.load unwraps data, so pwEntry is already the inner object {id, code}
       var pwEntry = (rows || []).filter(function (r) { return r.id === '_admin_pw'; })[0];
-      if (pwEntry && pwEntry.code) {
-        localStorage.setItem('ew_admin_pw', pwEntry.code);
+      if (pwEntry) {
+        var pwCode = pwEntry.code || (pwEntry.data && pwEntry.data.code);
+        if (pwCode) {
+          localStorage.setItem('ew_admin_pw', pwCode);
+          // Fix corrupted record in Supabase if needed
+          if (!pwEntry.code) DB.save('services', { id: '_admin_pw', code: pwCode });
+        }
       }
       var emailEntry = (rows || []).filter(function (r) { return r.id === '_admin_email'; })[0];
-      if (emailEntry && emailEntry.email) {
-        localStorage.setItem('ew_admin_email', emailEntry.email);
+      if (emailEntry) {
+        var emailVal = emailEntry.email || (emailEntry.data && emailEntry.data.email);
+        if (emailVal) {
+          localStorage.setItem('ew_admin_email', emailVal);
+          // Fix corrupted record in Supabase if needed
+          if (!emailEntry.email) DB.save('services', { id: '_admin_email', email: emailVal });
+        }
       }
       // Merge non-password service rows into local store
       // DB.load already unwraps data, so each row IS the service object
@@ -737,20 +747,24 @@
       window.dispatchEvent(new Event('ew:datachange'));
     });
 
-    /* ---- one-time push: upload existing local data to Supabase ---- */
-    /* Runs once per device. Ensures any data created before sync existed
-       is uploaded. Last device to run wins (single-admin, safe). */
-    if (!localStorage.getItem('ew_sb_push_v1')) {
-      var pushAll = function() {
-        read(KEYS.cities, BUILTIN_CITIES).forEach(function(c) { DB.save('cities', c); });
-        read(KEYS.insta, []).forEach(function(p) { DB.save('insta', p); });
+    /* ---- one-time push: only from admin page, after initial load ---- */
+    if (!localStorage.getItem('ew_sb_push_v1') && /admin\.html/.test(window.location.pathname)) {
+      setTimeout(function() {
+        var saves = [];
+        read(KEYS.cities, BUILTIN_CITIES).forEach(function(c) { saves.push(DB.save('cities', c)); });
+        read(KEYS.insta, []).forEach(function(p) { saves.push(DB.save('insta', p)); });
         read(KEYS.services, BUILTIN_SERVICES).filter(function(s){
           return s.id && s.id !== '_admin_pw' && s.id !== '_admin_email';
-        }).forEach(function(s) { DB.save('services', s); });
-        localStorage.setItem('ew_sb_push_v1', '1');
-      };
-      /* Small delay to let the initial load finish first */
-      setTimeout(pushAll, 2000);
+        }).forEach(function(s) { saves.push(DB.save('services', s)); });
+        // Also push admin code so it exists in Supabase
+        var pw = localStorage.getItem('ew_admin_pw');
+        if (pw) saves.push(DB.save('services', { id: '_admin_pw', code: pw }));
+        var em = localStorage.getItem('ew_admin_email');
+        if (em) saves.push(DB.save('services', { id: '_admin_email', email: em }));
+        Promise.all(saves).then(function() {
+          localStorage.setItem('ew_sb_push_v1', '1');
+        }).catch(function(){});
+      }, 2500);
     }
   })();
 
