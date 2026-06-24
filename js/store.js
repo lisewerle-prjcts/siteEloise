@@ -736,6 +736,22 @@
     })).then(function () {
       window.dispatchEvent(new Event('ew:datachange'));
     });
+
+    /* ---- one-time push: upload existing local data to Supabase ---- */
+    /* Runs once per device. Ensures any data created before sync existed
+       is uploaded. Last device to run wins (single-admin, safe). */
+    if (!localStorage.getItem('ew_sb_push_v1')) {
+      var pushAll = function() {
+        read(KEYS.cities, BUILTIN_CITIES).forEach(function(c) { DB.save('cities', c); });
+        read(KEYS.insta, []).forEach(function(p) { DB.save('insta', p); });
+        read(KEYS.services, BUILTIN_SERVICES).filter(function(s){
+          return s.id && s.id !== '_admin_pw' && s.id !== '_admin_email';
+        }).forEach(function(s) { DB.save('services', s); });
+        localStorage.setItem('ew_sb_push_v1', '1');
+      };
+      /* Small delay to let the initial load finish first */
+      setTimeout(pushAll, 2000);
+    }
   })();
 
   window.EWStore = API;
