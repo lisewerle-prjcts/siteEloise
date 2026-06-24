@@ -553,7 +553,8 @@
       { key: KEYS.subs,   table: 'subscribers'  },
       { key: KEYS.appts,  table: 'appointments' },
       { key: KEYS.dates,  table: 'dates'        },
-      { key: KEYS.testi,  table: 'testimonials' }
+      { key: KEYS.testi,  table: 'testimonials' },
+      { key: KEYS.insta,  table: 'insta'        }
     ];
 
     /* ---- wrap write methods ---- */
@@ -649,6 +650,42 @@
       var ok = _remSvc.call(API, id); if (ok) DB.del('services', id); return ok;
     };
 
+    /* ---- cities ---- */
+    var _addCity = API.addCity;
+    API.addCity = function (c) {
+      var r = _addCity.call(API, c); if (r) DB.save('cities', r); return r;
+    };
+    var _updCity = API.updateCity;
+    API.updateCity = function (id, patch) {
+      _updCity.call(API, id, patch);
+      var c = read(KEYS.cities, BUILTIN_CITIES).filter(function(x){ return x.id === id; })[0];
+      if (c) DB.save('cities', c);
+    };
+    var _remCity = API.removeCity;
+    API.removeCity = function (id) {
+      _remCity.call(API, id); DB.del('cities', id);
+    };
+    /* also sync setCity active state */
+    var _setCityActive = API.setCityActive;
+    if (_setCityActive) API.setCityActive = function (id, on) {
+      _setCityActive.call(API, id, on);
+      var c = read(KEYS.cities, BUILTIN_CITIES).filter(function(x){ return x.id === id; })[0];
+      if (c) DB.save('cities', c);
+    };
+
+    /* ---- insta ---- */
+    var _addInsta = API.addInsta;
+    API.addInsta = function (p) {
+      _addInsta.call(API, p);
+      var list = read(KEYS.insta, []);
+      var last = list[list.length - 1];
+      if (last) DB.save('insta', last);
+    };
+    var _remInsta = API.removeInsta;
+    API.removeInsta = function (id) {
+      _remInsta.call(API, id); DB.del('insta', id);
+    };
+
     /* ---- initial load from DB ---- */
     // Sync admin code + custom/edited services from Supabase
     DB.load('services').then(function (rows) {
@@ -680,7 +717,21 @@
 
     Promise.all(SYNC.map(function (t) {
       return DB.load(t.table).then(function (rows) {
-        if (rows && rows.length) write(t.key, rows);
+        if (!rows || !rows.length) return;
+        if (t.table === 'cities') {
+          // Merge with builtins: update existing, append new custom ones
+          var local = read(KEYS.cities, BUILTIN_CITIES).slice();
+          rows.forEach(function(row) {
+            var found = false;
+            for (var i = 0; i < local.length; i++) {
+              if (local[i].id === row.id) { Object.assign(local[i], row); found = true; break; }
+            }
+            if (!found) local.push(row);
+          });
+          try { localStorage.setItem(KEYS.cities, JSON.stringify(local)); } catch(e) {}
+        } else {
+          write(t.key, rows);
+        }
       }).catch(function () {});
     })).then(function () {
       window.dispatchEvent(new Event('ew:datachange'));
