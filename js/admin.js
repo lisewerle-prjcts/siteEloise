@@ -76,6 +76,52 @@
         showApp();
       } else { err.textContent = t('adm.login.err'); f.code.value=''; }
     });
+
+    /* ---- forgot password flow ---- */
+    var forgotBtn  = $('#adm-forgot-btn');
+    var resetPanel = $('#adm-reset-panel');
+    var step1 = $('#adm-reset-step1'), step2 = $('#adm-reset-step2'), step3 = $('#adm-reset-step3');
+    var err1  = $('#adm-reset-err1'),  err2  = $('#adm-reset-err2');
+
+    forgotBtn.addEventListener('click', function(){
+      var visible = resetPanel.style.display !== 'none';
+      resetPanel.style.display = visible ? 'none' : 'block';
+      step1.style.display='block'; step2.style.display='none'; step3.style.display='none';
+      err1.textContent=''; err2.textContent='';
+      $('#adm-reset-email').value='';
+    });
+
+    $('#adm-reset-verify').addEventListener('click', function(){
+      var entered = ($('#adm-reset-email').value||'').trim().toLowerCase();
+      var stored  = (S.getAdminEmail ? S.getAdminEmail() : '').toLowerCase();
+      if (!stored) {
+        // No email configured yet — first use, accept and store it
+        if (!entered || !/^[^@]+@[^@]+\.[^@]+$/.test(entered)) {
+          err1.textContent = t('adm.reset.err.email') || 'Adresse e-mail invalide.'; return;
+        }
+        if (S.setAdminEmail) S.setAdminEmail(entered);
+        step1.style.display='none'; step2.style.display='block'; err1.textContent='';
+      } else if (entered === stored) {
+        step1.style.display='none'; step2.style.display='block'; err1.textContent='';
+      } else {
+        err1.textContent = t('adm.reset.err.nomatch') || 'Adresse e-mail incorrecte.';
+      }
+    });
+
+    $('#adm-reset-save').addEventListener('click', function(){
+      var np = ($('#adm-reset-new').value||'').trim();
+      var nc = ($('#adm-reset-confirm').value||'').trim();
+      if (!np || np.length < 3) { err2.textContent = t('adm.sec.pw.err.match') || 'Code trop court (3 caractères minimum).'; return; }
+      if (np !== nc) { err2.textContent = t('adm.sec.pw.err.match') || 'Les codes ne correspondent pas.'; return; }
+      if (S.setAdminCode) S.setAdminCode(np);
+      step2.style.display='none'; step3.style.display='block'; err2.textContent='';
+    });
+
+    $('#adm-reset-back').addEventListener('click', function(){
+      resetPanel.style.display='none';
+      step1.style.display='block'; step2.style.display='none'; step3.style.display='none';
+      f.code.value=''; f.code.focus();
+    });
   }
 
   /* ============================ TABS ============================ */
@@ -928,16 +974,28 @@
     var panel = $('[data-panel="securite"]'); if(!panel) return;
     var sessions = S.getAdminSessions ? S.getAdminSessions() : [];
 
+    var currentEmail = S.getAdminEmail ? S.getAdminEmail() : '';
     panel.innerHTML =
-      '<div class="adm-cols"><div class="adm-card">'+
-        '<h3>'+esc(t('adm.sec.pw.title'))+'</h3>'+
-        '<form class="adm-form" data-chpw autocomplete="off">'+
-          '<div><label>'+esc(t('adm.sec.pw.current'))+'</label><input type="password" name="cur" autocomplete="off"></div>'+
-          '<div><label>'+esc(t('adm.sec.pw.new'))+'</label><input type="password" name="nw" autocomplete="new-password"></div>'+
-          '<div><label>'+esc(t('adm.sec.pw.confirm'))+'</label><input type="password" name="conf" autocomplete="new-password"></div>'+
-          '<div class="err" data-pw-err></div>'+
-          '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.sec.pw.save'))+'</button>'+
-        '</form>'+
+      '<div class="adm-cols"><div class="adm-card" style="display:flex;flex-direction:column;gap:28px">'+
+        '<div>'+
+          '<h3>'+esc(t('adm.sec.pw.title'))+'</h3>'+
+          '<form class="adm-form" data-chpw autocomplete="off">'+
+            '<div><label>'+esc(t('adm.sec.pw.current'))+'</label><input type="password" name="cur" autocomplete="off"></div>'+
+            '<div><label>'+esc(t('adm.sec.pw.new'))+'</label><input type="password" name="nw" autocomplete="new-password"></div>'+
+            '<div><label>'+esc(t('adm.sec.pw.confirm'))+'</label><input type="password" name="conf" autocomplete="new-password"></div>'+
+            '<div class="err" data-pw-err></div>'+
+            '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.sec.pw.save'))+'</button>'+
+          '</form>'+
+        '</div>'+
+        '<div>'+
+          '<h3>'+esc(t('adm.sec.email.title'))+'</h3>'+
+          '<p style="color:var(--ink-3);font-size:.85rem;margin-bottom:12px">'+esc(t('adm.sec.email.hint'))+'</p>'+
+          '<form class="adm-form" data-chemail autocomplete="off">'+
+            '<div><label>'+esc(t('adm.sec.email.label'))+'</label><input type="email" name="email" value="'+esc(currentEmail)+'" placeholder="votre@email.com"></div>'+
+            '<div class="err" data-email-err></div>'+
+            '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.sec.pw.save'))+'</button>'+
+          '</form>'+
+        '</div>'+
       '</div>'+
       '<div>'+
         '<div class="adm-sub">'+esc(t('adm.sec.sessions.title'))+'</div>'+
@@ -969,6 +1027,17 @@
       if(S.setAdminCode) S.setAdminCode(nw.trim());
       toast(t('adm.sec.pw.ok'));
       f.reset();
+    });
+
+    var emailForm = $('[data-chemail]', panel);
+    if(emailForm) emailForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var errEl = $('[data-email-err]', emailForm);
+      var email = (emailForm.email.value||'').trim().toLowerCase();
+      errEl.textContent = '';
+      if (!email || !/^[^@]+@[^@]+\.[^@]+$/.test(email)) { errEl.textContent = t('adm.reset.err.email') || 'Adresse e-mail invalide.'; return; }
+      if (S.setAdminEmail) S.setAdminEmail(email);
+      toast(t('adm.sec.email.ok') || 'E-mail de récupération enregistré !');
     });
 
     var disc = $('[data-disconnectall]', panel);

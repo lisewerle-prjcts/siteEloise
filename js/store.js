@@ -406,6 +406,11 @@
       if (pw) localStorage.setItem('ew_admin_pw', pw); else localStorage.removeItem('ew_admin_pw');
       if (window.EWDB) window.EWDB.save('services', { id: '_admin_pw', data: { code: pw || 'aum' } });
     },
+    getAdminEmail: function () { return localStorage.getItem('ew_admin_email') || ''; },
+    setAdminEmail: function (email) {
+      if (email) localStorage.setItem('ew_admin_email', email); else localStorage.removeItem('ew_admin_email');
+      if (window.EWDB) window.EWDB.save('services', { id: '_admin_email', data: { email: email } });
+    },
     getAdminSessions: function () { try { return JSON.parse(localStorage.getItem('ew_sessions') || '[]'); } catch (e) { return []; } },
     logAdminSession: function () {
       var list = API.getAdminSessions();
@@ -652,9 +657,13 @@
       if (pwEntry && pwEntry.code) {
         localStorage.setItem('ew_admin_pw', pwEntry.code);
       }
+      var emailEntry = (rows || []).filter(function (r) { return r.id === '_admin_email'; })[0];
+      if (emailEntry && emailEntry.email) {
+        localStorage.setItem('ew_admin_email', emailEntry.email);
+      }
       // Merge non-password service rows into local store
       // DB.load already unwraps data, so each row IS the service object
-      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw'; });
+      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw' && r.id !== '_admin_email'; });
       if (svcRows.length) {
         var local = read(KEYS.services, BUILTIN_SERVICES).slice();
         svcRows.forEach(function(svc) {

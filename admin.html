@@ -33,12 +33,37 @@
       <svg class="lock" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4.5" y="10.5" width="15" height="10" rx="2.5" stroke="currentColor" stroke-width="1.6"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="15" r="1.4" fill="currentColor"/></svg>
       <h2 data-i18n="adm.login.title">Espace privé</h2>
       <p data-i18n="adm.login.text">Entrez votre code d’accès pour gérer votre activité.</p>
-      <form>
+      <form id="adm-login-form">
         <input type="password" name="code" autocomplete="off" data-i18n-ph="adm.login.ph" placeholder="Code d’accès" autofocus>
         <div class="err"></div>
         <button class="btn btn-primary" type="submit" data-i18n="adm.login.btn">Entrer</button>
         <div class="hint"></div>
       </form>
+      <button class="adm-forgot-link" id="adm-forgot-btn" data-i18n="adm.login.forgot">Mot de passe oublié ?</button>
+
+      <!-- Reset flow -->
+      <div id="adm-reset-panel" style="display:none;margin-top:24px;border-top:1px solid var(--line);padding-top:24px">
+        <!-- Step 1: enter email -->
+        <div id="adm-reset-step1">
+          <p style="font-size:.9rem;color:var(--ink-2);margin-bottom:14px" data-i18n="adm.reset.text">Entrez l’adresse e-mail associée à ce compte pour réinitialiser votre code.</p>
+          <input type="email" id="adm-reset-email" placeholder="Votre adresse e-mail" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:.95rem;margin-bottom:10px">
+          <div class="err" id="adm-reset-err1"></div>
+          <button class="btn btn-primary" id="adm-reset-verify" style="width:100%" data-i18n="adm.reset.verify">Vérifier</button>
+        </div>
+        <!-- Step 2: set new password -->
+        <div id="adm-reset-step2" style="display:none">
+          <p style="font-size:.9rem;color:var(--ink-2);margin-bottom:14px" data-i18n="adm.reset.newtext">Choisissez votre nouveau code d’accès.</p>
+          <input type="password" id="adm-reset-new" placeholder="Nouveau code" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:.95rem;margin-bottom:10px">
+          <input type="password" id="adm-reset-confirm" placeholder="Confirmer le code" style="width:100%;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:.95rem;margin-bottom:10px">
+          <div class="err" id="adm-reset-err2"></div>
+          <button class="btn btn-primary" id="adm-reset-save" style="width:100%" data-i18n="adm.reset.save">Enregistrer le nouveau code</button>
+        </div>
+        <!-- Step 3: success -->
+        <div id="adm-reset-step3" style="display:none;text-align:center;padding:16px 0">
+          <p style="color:var(--accent);font-weight:600" data-i18n="adm.reset.ok">Code réinitialisé avec succès !</p>
+          <button class="btn btn-primary" id="adm-reset-back" style="margin-top:12px" data-i18n="adm.reset.back">Retour à la connexion</button>
+        </div>
+      </div>
     </div>
   </div>
 

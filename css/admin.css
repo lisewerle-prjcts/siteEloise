@@ -20,6 +20,13 @@
 .adm-gate input:focus{ outline:none; border-color:var(--accent); }
 .adm-gate .err{ color:var(--clay-deep); font-size:.9rem; min-height:1.1em; }
 .adm-gate .hint{ color:var(--ink-3); font-size:.82rem; margin-top:6px; }
+.adm-forgot-link{ background:none; border:none; padding:0; margin-top:14px; width:100%;
+  text-align:center; font-size:.84rem; color:var(--ink-3); cursor:pointer; text-decoration:underline;
+  text-underline-offset:3px; }
+.adm-forgot-link:hover{ color:var(--accent); }
+#adm-reset-panel input{ width:100%; padding:10px 14px; border:1px solid var(--line);
+  border-radius:10px; font-size:.95rem; box-sizing:border-box; }
+#adm-reset-panel input:focus{ outline:none; border-color:var(--accent); }
 
 /* ---- tabs ---- */
 .adm-bar{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; justify-content:space-between;
