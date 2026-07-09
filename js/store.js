@@ -554,7 +554,8 @@
       { key: KEYS.appts,  table: 'appointments' },
       { key: KEYS.dates,  table: 'dates'        },
       { key: KEYS.testi,  table: 'testimonials' },
-      { key: KEYS.insta,  table: 'insta'        }
+      { key: KEYS.insta,  table: 'insta'        },
+      { key: KEYS.cities, table: 'cities'       }
     ];
 
     /* ---- wrap write methods ---- */
@@ -712,15 +713,17 @@
       // DB.load already unwraps data, so each row IS the service object
       var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw' && r.id !== '_admin_email'; });
       if (svcRows.length) {
-        var local = read(KEYS.services, BUILTIN_SERVICES).slice();
-        svcRows.forEach(function(svc) {
-          var found = false;
-          for (var i = 0; i < local.length; i++) {
-            if (local[i].id === svc.id) { Object.assign(local[i], svc); found = true; break; }
-          }
-          if (!found) local.push(svc);
+        // Same rule as cities: builtins always stay (overridden if edited),
+        // custom services come entirely from Supabase so deletions actually stick.
+        var byId = {};
+        svcRows.forEach(function (svc) { byId[svc.id] = svc; });
+        var merged = BUILTIN_SERVICES.map(function (b) {
+          return byId[b.id] ? Object.assign({}, b, byId[b.id]) : Object.assign({}, b);
         });
-        try { localStorage.setItem(KEYS.services, JSON.stringify(local)); } catch(e) {}
+        svcRows.forEach(function (svc) {
+          if (!merged.some(function (m) { return m.id === svc.id; })) merged.push(svc);
+        });
+        try { localStorage.setItem(KEYS.services, JSON.stringify(merged)); } catch(e) {}
         emit();
       }
     }).catch(function () {});
@@ -729,16 +732,18 @@
       return DB.load(t.table).then(function (rows) {
         if (!rows || !rows.length) return;
         if (t.table === 'cities') {
-          // Merge with builtins: update existing, append new custom ones
-          var local = read(KEYS.cities, BUILTIN_CITIES).slice();
-          rows.forEach(function(row) {
-            var found = false;
-            for (var i = 0; i < local.length; i++) {
-              if (local[i].id === row.id) { Object.assign(local[i], row); found = true; break; }
-            }
-            if (!found) local.push(row);
+          // Builtins always stay (overridden by a matching Supabase row if edited);
+          // custom cities come entirely from Supabase, so a deletion on one device
+          // removes the city everywhere instead of lingering in stale local caches.
+          var byId = {};
+          rows.forEach(function (row) { byId[row.id] = row; });
+          var merged = BUILTIN_CITIES.map(function (b) {
+            return byId[b.id] ? Object.assign({}, b, byId[b.id]) : Object.assign({}, b);
           });
-          try { localStorage.setItem(KEYS.cities, JSON.stringify(local)); } catch(e) {}
+          rows.forEach(function (row) {
+            if (!merged.some(function (m) { return m.id === row.id; })) merged.push(row);
+          });
+          try { localStorage.setItem(KEYS.cities, JSON.stringify(merged)); } catch (e) {}
         } else {
           write(t.key, rows);
         }
