@@ -855,6 +855,8 @@
             '<button class="btn btn-primary btn-sm" data-saverdv="'+a.id+'">Sauvegarder</button>'+
             '<button class="btn-mini" data-closeedit="'+a.id+'">Annuler</button>'+
           '</div>'+
+          (a.email ? '<label style="display:flex;align-items:center;gap:6px;font-size:.82rem;margin-top:10px;color:var(--ink-2)">'+
+            '<input type="checkbox" checked data-rdv-notify>'+esc(t('adm.rdv.notifyclient'))+'</label>' : '')+
         '</div>'+
       '</div>';
     }
@@ -930,41 +932,143 @@
         var dateVal = form.querySelector('[data-rdv-date]').value;
         var timeVal = form.querySelector('[data-rdv-time]').value;
         var svcEl = form.querySelector('[data-rdv-svc]');
+        var notifyEl = form.querySelector('[data-rdv-notify]');
         var patch = { dateISO: dateVal, time: timeVal };
         if (svcEl) patch.service = svcEl.value;
         S.updateAppointment(b.dataset.saverdv, patch);
+        var appt = S.appointments().filter(function(a){ return a.id === b.dataset.saverdv; })[0];
+        if(appt && appt.email && (!notifyEl || notifyEl.checked)) {
+          sendClientNotice('modify', {
+            name: appt.name, service: svcName(appt.service), location: cityName(appt.city),
+            date: appt.dateISO ? fmtDate(appt.dateISO) : '', time: appt.time,
+            duration: appt.duration, price: appt.price
+          }, appt.email);
+        }
         toast('Rendez-vous mis à jour');
       });
     });
     [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
-        if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);
+        if(!confirm(t('adm.rdv.cancelconfirm'))) return;
+        var appt = S.appointments().filter(function(a){ return a.id === b.dataset.cancelrdv; })[0];
+        if(appt && appt.email) {
+          sendClientNotice('cancel', {
+            name: appt.name, service: svcName(appt.service), location: cityName(appt.city),
+            date: appt.dateISO ? fmtDate(appt.dateISO) : '', time: appt.time,
+            duration: appt.duration, price: appt.price
+          }, appt.email);
+        }
+        S.removeAppointment(b.dataset.cancelrdv);
       });
     });
     [].slice.call(panel.querySelectorAll('[data-confirmrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
         if(!confirm(t('adm.rdv.confirmconfirm'))) return;
         if(S.confirmAppointment) S.confirmAppointment(b.dataset.confirmrdv);
-        if(b.dataset.email) {
-          fetch('/api/contact', {
-            method:'POST',
-            headers:{'Content-Type':'application/json'},
-            body: JSON.stringify({
-              type: 'confirm',
-              name: b.dataset.name,
-              email: b.dataset.email,
-              clientEmail: b.dataset.email,
-              service: b.dataset.service,
-              location: b.dataset.location,
-              date: b.dataset.date,
-              time: b.dataset.time,
-              duration: b.dataset.duration,
-              price: b.dataset.price,
-              message: 'Confirmation'
-            })
-          }).catch(function(){});
-        }
+        sendClientNotice('confirm', {
+          name: b.dataset.name, service: b.dataset.service, location: b.dataset.location,
+          date: b.dataset.date ? fmtDate(b.dataset.date) : '', time: b.dataset.time,
+          duration: b.dataset.duration, price: b.dataset.price
+        }, b.dataset.email);
         toast(t('adm.rdv.confirmok'));
+      });
+    });
+  }
+
+  function sendClientNotice(type, vars, toEmail){
+    if(!toEmail) return;
+    var rendered = S.renderMessageTemplate ? S.renderMessageTemplate(type, vars) : null;
+    if(!rendered) return;
+    fetch('/api/contact', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type: type,
+        name: vars.name,
+        email: toEmail,
+        clientEmail: toEmail,
+        subject: rendered.subject,
+        html: rendered.html,
+        message: msgTypeLabel(type)
+      })
+    }).catch(function(){});
+  }
+
+  /* ====================== MESSAGES TAB ====================== */
+  var MSG_TYPES = ['confirm', 'modify', 'cancel'];
+  var MSG_PREVIEW_VARS = {
+    name: 'Camille Dupont', service: 'Massage Balinais', location: 'Sucy-en-Brie',
+    date: '12 septembre 2026', time: '14:30', duration: '75', price: '85'
+  };
+  function msgTypeLabel(type){
+    return t('adm.msg.'+type) || type;
+  }
+  function msgDraftFromCard(card){
+    return {
+      subject: card.querySelector('[data-msg-subject]').value,
+      heading: card.querySelector('[data-msg-heading]').value,
+      body: card.querySelector('[data-msg-body]').value,
+      footer: card.querySelector('[data-msg-footer]').value
+    };
+  }
+  function openMessagePreview(type, draft){
+    ensureModal();
+    var box = $('.adm-modal__box', modal);
+    var rendered = S.renderMessageTemplate ? S.renderMessageTemplate(type, MSG_PREVIEW_VARS, draft) : null;
+    box.innerHTML = '<h3>'+esc(t('adm.msg.previewtitle'))+'</h3>'+
+      '<p style="color:var(--ink-2);margin-bottom:10px;font-size:.85rem">'+esc(t('adm.msg.subject'))+' : '+esc(rendered?rendered.subject:'')+'</p>'+
+      '<iframe style="width:100%;height:440px;border:1px solid var(--line);border-radius:10px;background:#fff" data-msg-frame></iframe>'+
+      '<div class="adm-modal__actions"><button class="btn-mini" data-close>'+esc(t('adm.h.close'))+'</button></div>';
+    modal.classList.add('on');
+    var frame = $('[data-msg-frame]', box);
+    frame.srcdoc = '<html><body style="margin:0;padding:24px;background:#F5F0E8">'+(rendered?rendered.html:'')+'</body></html>';
+  }
+  function renderMessages(){
+    var panel = $('[data-panel="messages"]'); if(!panel) return;
+    var templates = S.getMessageTemplates ? S.getMessageTemplates() : {};
+    panel.innerHTML =
+      '<p style="margin-bottom:18px;color:var(--ink-2);max-width:640px">'+esc(t('adm.msg.intro'))+'</p>'+
+      MSG_TYPES.map(function(type){
+        var tpl = templates[type] || {};
+        return '<div class="adm-card" data-msgcard="'+type+'" style="margin-bottom:18px">'+
+          '<h3>'+esc(msgTypeLabel(type))+'</h3>'+
+          '<div class="adm-form">'+
+            '<div><label>'+esc(t('adm.msg.subject'))+'</label><input type="text" data-msg-subject value="'+esc(tpl.subject||'')+'"></div>'+
+            '<div><label>'+esc(t('adm.msg.heading'))+'</label><input type="text" data-msg-heading value="'+esc(tpl.heading||'')+'"></div>'+
+            '<div><label>'+esc(t('adm.msg.body'))+'</label><textarea data-msg-body style="min-height:110px">'+esc(tpl.body||'')+'</textarea></div>'+
+            '<div><label>'+esc(t('adm.msg.footer'))+'</label><textarea data-msg-footer style="min-height:70px">'+esc(tpl.footer||'')+'</textarea></div>'+
+          '</div>'+
+          '<p style="font-size:.78rem;color:var(--ink-2);margin-top:4px">'+esc(t('adm.msg.placeholders'))+'</p>'+
+          '<div class="adm-modal__actions" style="margin-top:14px">'+
+            '<button class="btn btn-primary btn-sm" data-msg-save="'+type+'">'+esc(t('adm.msg.save'))+'</button>'+
+            '<button class="btn-mini" data-msg-preview="'+type+'">'+esc(t('adm.msg.preview'))+'</button>'+
+            '<button class="btn-mini danger" data-msg-reset="'+type+'">'+esc(t('adm.msg.reset'))+'</button>'+
+          '</div>'+
+        '</div>';
+      }).join('');
+
+    [].slice.call(panel.querySelectorAll('[data-msg-save]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var type = b.dataset.msgSave;
+        var card = panel.querySelector('[data-msgcard="'+type+'"]');
+        S.updateMessageTemplate(type, msgDraftFromCard(card));
+        toast(t('adm.msg.saved'));
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-msg-reset]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var type = b.dataset.msgReset;
+        if(!confirm(t('adm.msg.resetconfirm'))) return;
+        S.resetMessageTemplate(type);
+        renderMessages();
+        toast(t('adm.msg.saved'));
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-msg-preview]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var type = b.dataset.msgPreview;
+        var card = panel.querySelector('[data-msgcard="'+type+'"]');
+        openMessagePreview(type, msgDraftFromCard(card));
       });
     });
   }
@@ -1059,7 +1163,7 @@
   function safeRun(fn) { try { fn(); } catch(e) { console.error(fn.name, e); } }
   function render(){
     safeRun(renderAppointments); safeRun(renderDates); safeRun(renderSubs); safeRun(renderReviews);
-    safeRun(renderInsta); safeRun(renderPlaces); safeRun(renderServices); safeRun(renderSecurity);
+    safeRun(renderInsta); safeRun(renderPlaces); safeRun(renderServices); safeRun(renderMessages); safeRun(renderSecurity);
     updateBadges();
     // NOTE: do not call ewApplyI18n() here — dynamic panels already use t().
     // Calling it would dispatch ew:langchange and recurse via the listener below.
