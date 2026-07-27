@@ -665,16 +665,22 @@
     [].slice.call(panel.querySelectorAll('[data-downsvc]')).forEach(function(b){ b.addEventListener('click', function(){ if(S.reorderService) S.reorderService(b.dataset.downsvc, 1); }); });
   }
 
-  function openServiceEdit(id){
+  function openServiceEdit(id, editLang){
     var s = S.service(id); if(!s) return;
+    var lang = editLang || 'fr';
+    var isFr = lang === 'fr';
     ensureModal();
     var box = $('.adm-modal__box', modal);
     var customUrl = (s.img && s.img.indexOf('assets/') !== 0) ? s.img : '';
-    box.innerHTML =
-      '<h3>'+esc(t('adm.sv.editTitle'))+'</h3>'+
-      '<div class="adm-form" style="margin-top:10px">'+
-        '<div><label>'+esc(t('adm.sv.name'))+'</label><input data-e-name value="'+esc(S.serviceName(id))+'"></div>'+
-        '<div><label>'+esc(t('adm.sv.tag'))+'</label><input data-e-tag value="'+esc(S.serviceTag(id))+'"></div>'+
+    function F(field){ return S.serviceI18nField(id, lang, field); }
+
+    var langTabs = '<div style="display:flex;gap:6px;margin-bottom:14px">'+
+      ['fr','de','en'].map(function(l){
+        return '<button type="button" class="btn-mini'+(l===lang?' solid':'')+'" data-editlang="'+l+'">'+l.toUpperCase()+'</button>';
+      }).join('')+
+      '</div>';
+
+    var frOnlyFields = !isFr ? '' :
         '<div><label>'+esc(t('adm.sv.category'))+'</label><select data-e-category>'+
           ['massage','drainage','yoga'].map(function(c){
             var sel = (s.category||'massage')===c?' selected':'';
@@ -701,9 +707,9 @@
             }).join('')+
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addopt style="margin-top:6px">+ '+esc(t('adm.sv.addOption'))+'</button>'+
-        '</div>'+
-        '<div><label>'+esc(t('adm.sv.description'))+'</label>'+
-          '<textarea data-e-desc style="min-height:100px">'+esc(S.serviceDescription(id))+'</textarea></div>'+
+        '</div>';
+
+    var benefitsGenericField = !isFr ? '' :
         '<div><label>'+esc(t('adm.sv.benefits'))+'</label>'+
           '<div data-e-benefits style="display:grid;gap:6px;margin-top:6px">'+
             S.serviceBenefits(id).map(function(b){
@@ -713,10 +719,30 @@
             }).join('')+
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addben style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
-        '</div>'+
+        '</div>';
+
+    var imgField = !isFr ? '' :
+        '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
+          ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
+        '<div><label>'+esc(t('adm.sv.upload'))+'</label><input type="file" accept="image/*" data-e-upload>'+
+          '<span data-e-upload-status style="font-size:.78rem;color:var(--accent);margin-left:8px"></span></div>'+
+        '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
+        '<div class="adm-thumb adm-thumb--lg"><img data-e-thumb src="'+esc(S.serviceImg(id))+'" alt=""></div>';
+
+    box.innerHTML =
+      '<h3>'+esc(t('adm.sv.editTitle'))+'</h3>'+
+      langTabs +
+      (!isFr ? '<p style="font-size:.82rem;color:var(--ink-2);margin:-6px 0 14px">'+esc(t('adm.sv.i18nhint'))+'</p>' : '') +
+      '<div class="adm-form" style="margin-top:10px">'+
+        frOnlyFields +
+        '<div><label>'+esc(t('adm.sv.name'))+'</label><input data-e-name value="'+esc(F('name'))+'"></div>'+
+        '<div><label>'+esc(t('adm.sv.tag'))+'</label><input data-e-tag value="'+esc(F('tag'))+'"></div>'+
+        '<div><label>'+esc(t('adm.sv.description'))+'</label>'+
+          '<textarea data-e-desc style="min-height:100px">'+esc(F('description'))+'</textarea></div>'+
+        benefitsGenericField +
         '<div><label>'+esc(t('adm.sv.benefitsPhysical'))+'</label>'+
           '<div data-e-ben-phys style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceBenefitsPhysical(id).map(function(b){
+            F('benefitsPhysical').map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-ben-phys-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-ben-phys-del">×</button></div>';
@@ -726,7 +752,7 @@
         '</div>'+
         '<div><label>'+esc(t('adm.sv.benefitsEmotional'))+'</label>'+
           '<div data-e-ben-emot style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceBenefitsEmotional(id).map(function(b){
+            F('benefitsEmotional').map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-ben-emot-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-ben-emot-del">×</button></div>';
@@ -736,7 +762,7 @@
         '</div>'+
         '<div><label>'+esc(t('adm.sv.idealFor'))+'</label>'+
           '<div data-e-idealfor style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceIdealFor(id).map(function(b){
+            F('idealFor').map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-idealfor-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-idealfor-del">×</button></div>';
@@ -745,56 +771,59 @@
           '<button type="button" class="btn-mini" data-e-addidealfor style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
         '</div>'+
         '<div><label>'+esc(t('adm.sv.note'))+'</label>'+
-          '<textarea data-e-note style="min-height:80px">'+esc(S.serviceNote(id))+'</textarea></div>'+
-        '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
-          ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
-        '<div><label>'+esc(t('adm.sv.upload'))+'</label><input type="file" accept="image/*" data-e-upload>'+
-          '<span data-e-upload-status style="font-size:.78rem;color:var(--accent);margin-left:8px"></span></div>'+
-        '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
-        '<div class="adm-thumb adm-thumb--lg"><img data-e-thumb src="'+esc(S.serviceImg(id))+'" alt=""></div>'+
+          '<textarea data-e-note style="min-height:80px">'+esc(F('note'))+'</textarea></div>'+
+        imgField +
       '</div>'+
       '<div class="adm-modal__actions"><button class="btn btn-primary btn-sm" data-e-save>'+esc(t('adm.sv.saveEdit'))+'</button>'+
         '<button class="btn-mini" data-close>'+esc(t('adm.h.close'))+'</button></div>';
     modal.classList.add('on');
-    $('[data-e-upload]',box).addEventListener('change', function(e){
-      var file = e.target.files && e.target.files[0]; if(!file) return;
-      resizeImageFile(file, 1600, 0.82).then(function(dataUrl){
-        $('[data-e-url]',box).value = dataUrl;
-        var thumb = $('[data-e-thumb]',box); if(thumb) thumb.src = dataUrl;
-        var status = $('[data-e-upload-status]',box); if(status) status.textContent = t('adm.sv.uploaded');
-      }).catch(function(){ toast(t('adm.sv.uploaderr')); });
+
+    [].slice.call(box.querySelectorAll('[data-editlang]')).forEach(function(b){
+      b.addEventListener('click', function(){ openServiceEdit(id, b.dataset.editlang); });
     });
-    $('[data-e-addur]',box).addEventListener('click', function(){
-      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
-      row.innerHTML='<input type="number" class="e-dur-min" placeholder="min" style="width:72px"> min'+
-        '<input type="number" class="e-dur-price" placeholder="€" style="width:72px"> €'+
-        '<button type="button" class="btn-mini danger e-dur-del">×</button>';
-      row.querySelector('.e-dur-del').addEventListener('click',function(){ row.remove(); });
-      $('[data-e-durations]',box).appendChild(row);
-    });
-    [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
-      b.addEventListener('click',function(){ b.closest('div').remove(); });
-    });
-    $('[data-e-addopt]',box).addEventListener('click', function(){
-      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
-      row.innerHTML='<input class="e-opt-txt" style="flex:1">'+
-        '<button type="button" class="btn-mini danger e-opt-del">×</button>';
-      row.querySelector('.e-opt-del').addEventListener('click',function(){ row.remove(); });
-      $('[data-e-options]',box).appendChild(row);
-    });
-    [].slice.call(box.querySelectorAll('.e-opt-del')).forEach(function(b){
-      b.addEventListener('click',function(){ b.closest('div').remove(); });
-    });
-    $('[data-e-addben]',box).addEventListener('click', function(){
-      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
-      row.innerHTML='<input class="e-ben-txt" style="flex:1">'+
-        '<button type="button" class="btn-mini danger e-ben-del">×</button>';
-      row.querySelector('.e-ben-del').addEventListener('click',function(){ row.remove(); });
-      $('[data-e-benefits]',box).appendChild(row);
-    });
-    [].slice.call(box.querySelectorAll('.e-ben-del')).forEach(function(b){
-      b.addEventListener('click',function(){ b.closest('div').remove(); });
-    });
+
+    if (isFr) {
+      $('[data-e-upload]',box).addEventListener('change', function(e){
+        var file = e.target.files && e.target.files[0]; if(!file) return;
+        resizeImageFile(file, 1600, 0.82).then(function(dataUrl){
+          $('[data-e-url]',box).value = dataUrl;
+          var thumb = $('[data-e-thumb]',box); if(thumb) thumb.src = dataUrl;
+          var status = $('[data-e-upload-status]',box); if(status) status.textContent = t('adm.sv.uploaded');
+        }).catch(function(){ toast(t('adm.sv.uploaderr')); });
+      });
+      $('[data-e-addur]',box).addEventListener('click', function(){
+        var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+        row.innerHTML='<input type="number" class="e-dur-min" placeholder="min" style="width:72px"> min'+
+          '<input type="number" class="e-dur-price" placeholder="€" style="width:72px"> €'+
+          '<button type="button" class="btn-mini danger e-dur-del">×</button>';
+        row.querySelector('.e-dur-del').addEventListener('click',function(){ row.remove(); });
+        $('[data-e-durations]',box).appendChild(row);
+      });
+      [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
+        b.addEventListener('click',function(){ b.closest('div').remove(); });
+      });
+      $('[data-e-addopt]',box).addEventListener('click', function(){
+        var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+        row.innerHTML='<input class="e-opt-txt" style="flex:1">'+
+          '<button type="button" class="btn-mini danger e-opt-del">×</button>';
+        row.querySelector('.e-opt-del').addEventListener('click',function(){ row.remove(); });
+        $('[data-e-options]',box).appendChild(row);
+      });
+      [].slice.call(box.querySelectorAll('.e-opt-del')).forEach(function(b){
+        b.addEventListener('click',function(){ b.closest('div').remove(); });
+      });
+      $('[data-e-addben]',box).addEventListener('click', function(){
+        var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
+        row.innerHTML='<input class="e-ben-txt" style="flex:1">'+
+          '<button type="button" class="btn-mini danger e-ben-del">×</button>';
+        row.querySelector('.e-ben-del').addEventListener('click',function(){ row.remove(); });
+        $('[data-e-benefits]',box).appendChild(row);
+      });
+      [].slice.call(box.querySelectorAll('.e-ben-del')).forEach(function(b){
+        b.addEventListener('click',function(){ b.closest('div').remove(); });
+      });
+    }
+
     $('[data-e-addbenphys]',box).addEventListener('click', function(){
       var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
       row.innerHTML='<input class="e-ben-phys-txt" style="flex:1">'+
@@ -825,29 +854,37 @@
     [].slice.call(box.querySelectorAll('.e-idealfor-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+
     $('[data-e-save]',box).addEventListener('click', function(){
-      var img = ($('[data-e-url]',box).value||'').trim() || $('[data-e-asset]',box).value;
-      var rows = [].slice.call($('[data-e-durations]',box).querySelectorAll('div'));
-      var durations = rows.map(function(row){
-        return { min:+(row.querySelector('.e-dur-min').value)||60, price:+(row.querySelector('.e-dur-price').value)||0 };
-      }).filter(function(o){ return o.min > 0; });
-      var benInputs = [].slice.call($('[data-e-benefits]',box).querySelectorAll('.e-ben-txt'));
-      var benefits = benInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
-      var optInputs = [].slice.call($('[data-e-options]',box).querySelectorAll('.e-opt-txt'));
-      var options = optInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var benPhysInputs = [].slice.call($('[data-e-ben-phys]',box).querySelectorAll('.e-ben-phys-txt'));
       var benefitsPhysical = benPhysInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var benEmotInputs = [].slice.call($('[data-e-ben-emot]',box).querySelectorAll('.e-ben-emot-txt'));
       var benefitsEmotional = benEmotInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var idealForInputs = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt'));
       var idealFor = idealForInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
-      var note = ($('[data-e-note]',box).value||'').trim();
-      var catEl = box.querySelector('[data-e-category]');
-      S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value, category:catEl?catEl.value:'massage',
-        durations: durations.length ? durations : S.serviceDurations(id),
+      var patch = {
+        name: $('[data-e-name]',box).value,
+        tag: $('[data-e-tag]',box).value,
         description: ($('[data-e-desc]',box).value||'').trim(),
-        benefits: benefits, options: options, img:img,
-        benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note });
+        benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor,
+        note: ($('[data-e-note]',box).value||'').trim()
+      };
+      if (isFr) {
+        var img = ($('[data-e-url]',box).value||'').trim() || $('[data-e-asset]',box).value;
+        var rows = [].slice.call($('[data-e-durations]',box).querySelectorAll('div'));
+        var durations = rows.map(function(row){
+          return { min:+(row.querySelector('.e-dur-min').value)||60, price:+(row.querySelector('.e-dur-price').value)||0 };
+        }).filter(function(o){ return o.min > 0; });
+        var benInputs = [].slice.call($('[data-e-benefits]',box).querySelectorAll('.e-ben-txt'));
+        var benefits = benInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+        var optInputs = [].slice.call($('[data-e-options]',box).querySelectorAll('.e-opt-txt'));
+        var options = optInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+        var catEl = box.querySelector('[data-e-category]');
+        patch.category = catEl ? catEl.value : 'massage';
+        patch.durations = durations.length ? durations : S.serviceDurations(id);
+        patch.benefits = benefits; patch.options = options; patch.img = img;
+      }
+      S.updateServiceI18n(id, lang, patch);
       close();
     });
   }

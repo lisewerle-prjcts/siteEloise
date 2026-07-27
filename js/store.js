@@ -278,6 +278,19 @@
     return null;
   }
 
+  /* Per-service DE/EN overrides Eloïse can type from the admin "Mes soins" editor
+     (s.i18n = { de: {name,tag,description,note,benefits,benefitsPhysical,benefitsEmotional,idealFor}, en: {...} }).
+     French stays the base content on the service record itself; an empty/missing
+     override falls back to that French text. */
+  var SERVICE_I18N_ARRAY_FIELDS = { benefits: 1, benefitsPhysical: 1, benefitsEmotional: 1, idealFor: 1 };
+  function curLang() { return window.ewLang ? window.ewLang() : 'fr'; }
+  function svcOverride(s, field) {
+    if (curLang() === 'fr') return undefined;
+    var v = s.i18n && s.i18n[curLang()] && s.i18n[curLang()][field];
+    if (SERVICE_I18N_ARRAY_FIELDS[field]) return (v && v.length) ? v : undefined;
+    return v || undefined;
+  }
+
   /* ---------- public API ---------- */
   var API = {
     onChange: function (fn) { listeners.push(fn); return function () {
@@ -402,19 +415,48 @@
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
     publishedServices: function () { return API.services().filter(function (s) { return s.published !== false && s.id !== '_admin_pw'; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
-    serviceName: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
-      return (s && s.name) || id; },
-    serviceTag: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
-      return (s && s.tag) || ''; },
-    serviceDescription: function (id) { var s = API.service(id); return (s && s.description) || ''; },
-    serviceBenefits: function (id) { var s = API.service(id); return (s && s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
+    serviceName: function (id) { var s = API.service(id); if (!s) return id;
+      var ov = svcOverride(s, 'name'); if (ov) return ov;
+      if (s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
+      return s.name || id; },
+    serviceTag: function (id) { var s = API.service(id); if (!s) return '';
+      var ov = svcOverride(s, 'tag'); if (ov) return ov;
+      if (s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
+      return s.tag || ''; },
+    serviceDescription: function (id) { var s = API.service(id); if (!s) return '';
+      return svcOverride(s, 'description') || s.description || ''; },
+    serviceBenefits: function (id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'benefits'); if (ov) return ov.slice();
+      return (s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
     serviceOptions: function (id) { var s = API.service(id); return (s && Array.isArray(s.options)) ? s.options.slice() : []; },
-    serviceBenefitsPhysical: function(id) { var s = API.service(id); return (s && s.benefitsPhysical) ? s.benefitsPhysical.slice() : []; },
-    serviceBenefitsEmotional: function(id) { var s = API.service(id); return (s && s.benefitsEmotional) ? s.benefitsEmotional.slice() : []; },
-    serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
-    serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
+    serviceBenefitsPhysical: function(id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'benefitsPhysical'); if (ov) return ov.slice();
+      return s.benefitsPhysical ? s.benefitsPhysical.slice() : []; },
+    serviceBenefitsEmotional: function(id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'benefitsEmotional'); if (ov) return ov.slice();
+      return s.benefitsEmotional ? s.benefitsEmotional.slice() : []; },
+    serviceIdealFor: function(id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'idealFor'); if (ov) return ov.slice();
+      return s.idealFor ? s.idealFor.slice() : []; },
+    serviceNote: function(id) { var s = API.service(id); if (!s) return '';
+      return svcOverride(s, 'note') || s.note || ''; },
+    /* raw (unresolved) per-language field, for the admin editor: 'fr' reads/writes
+       the base service record, 'de'/'en' read/write the s.i18n override — blank
+       means "not translated yet, falls back to French" on the public site. */
+    serviceI18nField: function (id, lang, field) {
+      var s = API.service(id); var isArr = SERVICE_I18N_ARRAY_FIELDS[field];
+      if (!s) return isArr ? [] : '';
+      var v = (lang === 'fr') ? s[field] : (s.i18n && s.i18n[lang] && s.i18n[lang][field]);
+      if (isArr) return (v && v.length) ? v.slice() : [];
+      return v || '';
+    },
+    updateServiceI18n: function (id, lang, patch) {
+      if (lang === 'fr') { API.updateService(id, patch); return; }
+      var s = API.service(id); if (!s) return;
+      var i18n = Object.assign({}, s.i18n || {});
+      i18n[lang] = Object.assign({}, i18n[lang] || {}, patch);
+      API.updateService(id, { i18n: i18n });
+    },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;
