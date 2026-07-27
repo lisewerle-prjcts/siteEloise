@@ -56,6 +56,29 @@
     else { var ta=document.createElement('textarea'); ta.value=txt; document.body.appendChild(ta); ta.select();
       try{ document.execCommand('copy'); }catch(e){} document.body.removeChild(ta); }
   }
+  // Reads a local image file and downsizes it to a JPEG data URL, so photos
+  // uploaded from the admin stay small enough for localStorage/Supabase.
+  function resizeImageFile(file, maxDim, quality){
+    return new Promise(function(resolve, reject){
+      var reader = new FileReader();
+      reader.onerror = reject;
+      reader.onload = function(e){
+        var img = new Image();
+        img.onerror = reject;
+        img.onload = function(){
+          var scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+          var cw = Math.max(1, Math.round(img.width * scale));
+          var ch = Math.max(1, Math.round(img.height * scale));
+          var canvas = document.createElement('canvas');
+          canvas.width = cw; canvas.height = ch;
+          canvas.getContext('2d').drawImage(img, 0, 0, cw, ch);
+          resolve(canvas.toDataURL('image/jpeg', quality || 0.82));
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
 
   /* ============================ AUTH ============================ */
   var gate = $('#adm-gate'), app = $('#adm-app');
@@ -590,6 +613,9 @@
           '</div>'+
           '<div><label>'+esc(t('adm.sv.img'))+'</label><select name="asset">'+
             ASSETS.map(function(a){ return '<option value="'+a+'">'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
+          '<div><label>'+esc(t('adm.sv.upload'))+'</label><input type="file" accept="image/*" data-new-upload>'+
+            '<input type="hidden" name="uploadData">'+
+            '<span data-new-upload-status style="font-size:.78rem;color:var(--accent);margin-left:8px"></span></div>'+
           '<div><label>'+esc(t('adm.sv.url'))+'</label><input name="url" placeholder="https://…"></div>'+
           '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.sv.save'))+'</button>'+
           '<p style="color:var(--ink-3);font-size:.82rem;line-height:1.4">'+esc(t('adm.sv.hint'))+'</p>'+
@@ -612,17 +638,25 @@
     });
 
     var f = $('[data-addsvc]', panel);
+    $('[data-new-upload]', panel).addEventListener('change', function(e){
+      var file = e.target.files && e.target.files[0]; if(!file) return;
+      resizeImageFile(file, 1600, 0.82).then(function(dataUrl){
+        f.querySelector('input[name="uploadData"]').value = dataUrl;
+        var status = $('[data-new-upload-status]', panel); if(status) status.textContent = t('adm.sv.uploaded');
+      }).catch(function(){ toast(t('adm.sv.uploaderr')); });
+    });
     f.addEventListener('submit', function(e){
       e.preventDefault();
       var fd = new FormData(f);
       if(!(fd.get('name')||'').trim()) return;
-      var img = (fd.get('url')||'').trim() || fd.get('asset');
+      var img = (fd.get('uploadData')||'').trim() || (fd.get('url')||'').trim() || fd.get('asset');
       var durRows = [].slice.call($('[data-new-durations]', f).querySelectorAll('div'));
       var durations = durRows.map(function(row){
         return { min:+(row.querySelector('.nd-min').value)||60, price:+(row.querySelector('.nd-price').value)||0 };
       }).filter(function(o){ return o.min>0; });
       S.addService({ name:fd.get('name'), tag:fd.get('tag'), category:fd.get('category')||'massage', durations:durations.length?durations:[{min:60,price:70}], img:img, published:true });
       f.reset();
+      var status = $('[data-new-upload-status]', panel); if(status) status.textContent = '';
     });
     [].slice.call(panel.querySelectorAll('[data-togglesvc]')).forEach(function(b){ b.addEventListener('change', function(){ S.setServicePublished(b.dataset.togglesvc, b.checked); }); });
     [].slice.call(panel.querySelectorAll('[data-editsvc]')).forEach(function(b){ b.addEventListener('click', function(){ openServiceEdit(b.dataset.editsvc); }); });
@@ -714,12 +748,22 @@
           '<textarea data-e-note style="min-height:80px">'+esc(S.serviceNote(id))+'</textarea></div>'+
         '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
           ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
+        '<div><label>'+esc(t('adm.sv.upload'))+'</label><input type="file" accept="image/*" data-e-upload>'+
+          '<span data-e-upload-status style="font-size:.78rem;color:var(--accent);margin-left:8px"></span></div>'+
         '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
-        '<div class="adm-thumb adm-thumb--lg"><img src="'+esc(S.serviceImg(id))+'" alt=""></div>'+
+        '<div class="adm-thumb adm-thumb--lg"><img data-e-thumb src="'+esc(S.serviceImg(id))+'" alt=""></div>'+
       '</div>'+
       '<div class="adm-modal__actions"><button class="btn btn-primary btn-sm" data-e-save>'+esc(t('adm.sv.saveEdit'))+'</button>'+
         '<button class="btn-mini" data-close>'+esc(t('adm.h.close'))+'</button></div>';
     modal.classList.add('on');
+    $('[data-e-upload]',box).addEventListener('change', function(e){
+      var file = e.target.files && e.target.files[0]; if(!file) return;
+      resizeImageFile(file, 1600, 0.82).then(function(dataUrl){
+        $('[data-e-url]',box).value = dataUrl;
+        var thumb = $('[data-e-thumb]',box); if(thumb) thumb.src = dataUrl;
+        var status = $('[data-e-upload-status]',box); if(status) status.textContent = t('adm.sv.uploaded');
+      }).catch(function(){ toast(t('adm.sv.uploaderr')); });
+    });
     $('[data-e-addur]',box).addEventListener('click', function(){
       var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
       row.innerHTML='<input type="number" class="e-dur-min" placeholder="min" style="width:72px"> min'+

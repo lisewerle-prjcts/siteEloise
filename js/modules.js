@@ -21,7 +21,7 @@
   var IG_SVG = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.7"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor"/></svg>';
 
   function cityName(id) { return S.cityName(id); }
-  function svcName(id) { return id ? t('svc.' + id + '.name') : ''; }
+  function svcName(id) { return id ? (S.serviceName ? S.serviceName(id) : t('svc.' + id + '.name')) : ''; }
   function stars(n) { n = Math.max(0, Math.min(5, n || 5)); var s = ''; for (var i = 0; i < 5; i++) s += i < n ? '★' : '☆'; return s; }
 
   /* -------------------- upcoming dates -------------------- */
