@@ -95,6 +95,9 @@ Object.assign(window.I18N.de, {
   'sv.hero.jump.yoga': 'Yoga',
 
   'sv.bienfaits.label': 'Wirkung',
+  'sv.ben.physical': 'Körperliche Vorteile',
+  'sv.ben.emotional': 'Emotionale & energetische Vorteile',
+  'sv.ben.idealfor': 'Ideal für',
 
   'sv.thai.long': 'Am Boden auf einer Matte ausgeführt, verbindet die Thai-Yoga-Massage Druckpunkte, assistiertes Dehnen und sanfte Mobilisation. Ein „passives Yoga“, das Spannungen löst, Gelenke öffnet und den Energiefluss entlang der Körperlinien anregt.',
   'sv.thai.b1': 'Löst tiefe Muskelspannungen',
@@ -169,6 +172,9 @@ Object.assign(window.I18N.en, {
   'sv.hero.jump.yoga': 'Yoga',
 
   'sv.bienfaits.label': 'Benefits',
+  'sv.ben.physical': 'Physical benefits',
+  'sv.ben.emotional': 'Emotional & energetic benefits',
+  'sv.ben.idealfor': 'Ideal for',
 
   'sv.thai.long': 'Performed on a mat on the floor, Thai Yoga Massage blends pressure, assisted stretches and gentle mobilisation. A true “passive yoga” that releases tension, opens the joints and revives the flow of energy along the body’s lines.',
   'sv.thai.b1': 'Releases deep muscular tension',

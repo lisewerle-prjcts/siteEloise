@@ -2,7 +2,7 @@ module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { name, email, clientEmail, subject, message, type, service, location, date, time, duration, price, phone, notes } = req.body || {};
+  const { name, email, clientEmail, subject, html: htmlOverride, message, type, service, location, date, time, duration, price, phone, notes } = req.body || {};
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Champs requis manquants' });
@@ -10,24 +10,38 @@ module.exports = async function handler(req, res) {
 
   const apiKey = process.env.RESEND_API_KEY;
   const isBooking = type === 'booking';
-  const isConfirm = type === 'confirm';
+  const isClientNotice = type === 'confirm' || type === 'modify' || type === 'cancel';
 
-  // Handle confirm type: send confirmation email to client and return
-  if (isConfirm) {
-    const confirmClientEmail = clientEmail || email;
-    if (!confirmClientEmail) return res.status(200).json({ ok: true });
+  // Handle confirm/modify/cancel: send a client notice email and return.
+  // Eloïse can edit the subject/wording of these from her admin "Messages" tab —
+  // when the front-end sends a rendered subject/html we use it as-is; otherwise
+  // fall back to a default wording per type.
+  if (isClientNotice) {
+    const noticeEmail = clientEmail || email;
+    if (!noticeEmail) return res.status(200).json({ ok: true });
     if (!apiKey) {
-      console.warn('RESEND_API_KEY not set — confirm email not sent');
+      console.warn('RESEND_API_KEY not set — client notice email not sent');
       return res.status(200).json({ ok: true, warn: 'no_api_key' });
     }
-    const confirmHtml = `
+    const defaultHeading = {
+      confirm: 'Votre rendez-vous est confirmé ✓',
+      modify: 'Votre rendez-vous a été modifié',
+      cancel: 'Votre rendez-vous a été annulé',
+    }[type];
+    const defaultBody = {
+      confirm: 'Votre rendez-vous est bien confirmé. À très bientôt !',
+      modify: 'Votre rendez-vous a bien été modifié. Voici les informations à jour :',
+      cancel: 'Votre rendez-vous a bien été annulé. N\'hésitez pas à me contacter pour reprogrammer une nouvelle séance.',
+    }[type];
+    const finalSubject = subject || `${defaultHeading} — ${service || 'séance'}`;
+    const finalHtml = htmlOverride || `
       <div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#2C2C2A">
         <div style="background:#C8B89A;padding:32px 40px;border-radius:12px 12px 0 0">
-          <h1 style="color:#FBF5ED;font-size:24px;margin:0;font-weight:400">Votre rendez-vous est confirmé ✓</h1>
+          <h1 style="color:#FBF5ED;font-size:24px;margin:0;font-weight:400">${defaultHeading}</h1>
           <p style="color:#F0DECF;margin:6px 0 0;font-size:14px">Eloïse Werle — eloisewerle.com</p>
         </div>
         <div style="background:#FDFAF5;padding:32px 40px;border:1px solid #E8E0D5;border-top:none;border-radius:0 0 12px 12px">
-          <p style="font-size:1.05rem;margin:0 0 24px">Bonjour ${name},<br><br>Votre rendez-vous est bien confirmé. À très bientôt !</p>
+          <p style="font-size:1.05rem;margin:0 0 24px">Bonjour ${name},<br><br>${defaultBody}</p>
           <table style="width:100%;border-collapse:collapse">
             <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em;width:40%">Soin</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;font-weight:600">${service || '—'}</td></tr>
             <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Lieu</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5">${location || '—'}</td></tr>
@@ -35,7 +49,6 @@ module.exports = async function handler(req, res) {
             <tr><td style="padding:10px 0;border-bottom:1px solid #E8E0D5;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Durée</td><td style="padding:10px 0;border-bottom:1px solid #E8E0D5">${duration ? duration + ' min' : '—'}</td></tr>
             <tr><td style="padding:10px 0;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Total</td><td style="padding:10px 0;font-weight:700;font-size:18px;color:#C8B89A">${price ? price + ' €' : '—'}</td></tr>
           </table>
-          <p style="margin-top:28px;color:#7C6E5F;font-size:13px">Pour toute modification, contactez-moi en direct. Le règlement se fait sur place. Prévoyez une tenue décontractée et qui ne craint pas l'huile.</p>
         </div>
       </div>`;
     try {
@@ -44,13 +57,13 @@ module.exports = async function handler(req, res) {
         headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: 'Eloïse Werle <hello@eloisewerle.com>',
-          to: [confirmClientEmail],
+          to: [noticeEmail],
           reply_to: 'eloiserose.werle@gmail.com',
-          subject: `Votre rendez-vous est confirmé — ${service || 'séance'}`,
-          html: confirmHtml,
+          subject: finalSubject,
+          html: finalHtml,
         }),
       });
-    } catch(e) { console.error('Confirm email error:', e); }
+    } catch(e) { console.error('Client notice email error:', e); }
     return res.status(200).json({ ok: true });
   }
 

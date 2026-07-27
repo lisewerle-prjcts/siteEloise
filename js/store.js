@@ -15,7 +15,8 @@
     cities:    'ew_cities_v1',
     appts:     'ew_appointments_v1',
     services:  'ew_services_v2',   // v2: durations array replaces price+unit
-    seeded:    'ew_seeded_v1'
+    seeded:    'ew_seeded_v1',
+    msgTpl:    'ew_msg_templates_v1'
   };
 
   var BUILTIN_CITIES = [
@@ -78,6 +79,29 @@
       idealFor: ['Débutants souhaitant découvrir le yoga.', 'Personnes cherchant à compléter leur pratique sportive.', 'Ceux qui souhaitent un accompagnement personnalisé.'],
       note: '', benefits: [], options: [] }
   ];
+
+  /* Client-facing emails Eloïse can view/edit from the admin "Messages" tab.
+     Placeholders: {{name}} {{service}} {{location}} {{date}} {{time}} {{duration}} {{price}} */
+  var DEFAULT_MESSAGE_TEMPLATES = {
+    confirm: {
+      subject: 'Votre rendez-vous est confirmé — {{service}}',
+      heading: 'Votre rendez-vous est confirmé ✓',
+      body: 'Bonjour {{name}},\n\nVotre rendez-vous est bien confirmé. À très bientôt !',
+      footer: 'Pour toute modification, contactez-moi en direct. Le règlement se fait sur place. Prévoyez une tenue décontractée et qui ne craint pas l\'huile.'
+    },
+    modify: {
+      subject: 'Votre rendez-vous a été modifié — {{service}}',
+      heading: 'Votre rendez-vous a été modifié',
+      body: 'Bonjour {{name}},\n\nVotre rendez-vous a bien été modifié. Voici les informations à jour :',
+      footer: 'Pour toute question, contactez-moi en direct.'
+    },
+    cancel: {
+      subject: 'Votre rendez-vous a été annulé — {{service}}',
+      heading: 'Votre rendez-vous a été annulé',
+      body: 'Bonjour {{name}},\n\nVotre rendez-vous a bien été annulé. N\'hésitez pas à me contacter pour reprogrammer une nouvelle séance.',
+      footer: ''
+    }
+  };
 
   /* ---------- low-level ---------- */
   function read(key, fallback) {
@@ -254,6 +278,19 @@
     return null;
   }
 
+  /* Per-service DE/EN overrides Eloïse can type from the admin "Mes soins" editor
+     (s.i18n = { de: {name,tag,description,note,benefits,benefitsPhysical,benefitsEmotional,idealFor}, en: {...} }).
+     French stays the base content on the service record itself; an empty/missing
+     override falls back to that French text. */
+  var SERVICE_I18N_ARRAY_FIELDS = { benefits: 1, benefitsPhysical: 1, benefitsEmotional: 1, idealFor: 1 };
+  function curLang() { return window.ewLang ? window.ewLang() : 'fr'; }
+  function svcOverride(s, field) {
+    if (curLang() === 'fr') return undefined;
+    var v = s.i18n && s.i18n[curLang()] && s.i18n[curLang()][field];
+    if (SERVICE_I18N_ARRAY_FIELDS[field]) return (v && v.length) ? v : undefined;
+    return v || undefined;
+  }
+
   /* ---------- public API ---------- */
   var API = {
     onChange: function (fn) { listeners.push(fn); return function () {
@@ -378,19 +415,48 @@
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
     publishedServices: function () { return API.services().filter(function (s) { return s.published !== false && s.id !== '_admin_pw'; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
-    serviceName: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
-      return (s && s.name) || id; },
-    serviceTag: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
-      return (s && s.tag) || ''; },
-    serviceDescription: function (id) { var s = API.service(id); return (s && s.description) || ''; },
-    serviceBenefits: function (id) { var s = API.service(id); return (s && s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
+    serviceName: function (id) { var s = API.service(id); if (!s) return id;
+      var ov = svcOverride(s, 'name'); if (ov) return ov;
+      if (s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
+      return s.name || id; },
+    serviceTag: function (id) { var s = API.service(id); if (!s) return '';
+      var ov = svcOverride(s, 'tag'); if (ov) return ov;
+      if (s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
+      return s.tag || ''; },
+    serviceDescription: function (id) { var s = API.service(id); if (!s) return '';
+      return svcOverride(s, 'description') || s.description || ''; },
+    serviceBenefits: function (id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'benefits'); if (ov) return ov.slice();
+      return (s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
     serviceOptions: function (id) { var s = API.service(id); return (s && Array.isArray(s.options)) ? s.options.slice() : []; },
-    serviceBenefitsPhysical: function(id) { var s = API.service(id); return (s && s.benefitsPhysical) ? s.benefitsPhysical.slice() : []; },
-    serviceBenefitsEmotional: function(id) { var s = API.service(id); return (s && s.benefitsEmotional) ? s.benefitsEmotional.slice() : []; },
-    serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
-    serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
+    serviceBenefitsPhysical: function(id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'benefitsPhysical'); if (ov) return ov.slice();
+      return s.benefitsPhysical ? s.benefitsPhysical.slice() : []; },
+    serviceBenefitsEmotional: function(id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'benefitsEmotional'); if (ov) return ov.slice();
+      return s.benefitsEmotional ? s.benefitsEmotional.slice() : []; },
+    serviceIdealFor: function(id) { var s = API.service(id); if (!s) return [];
+      var ov = svcOverride(s, 'idealFor'); if (ov) return ov.slice();
+      return s.idealFor ? s.idealFor.slice() : []; },
+    serviceNote: function(id) { var s = API.service(id); if (!s) return '';
+      return svcOverride(s, 'note') || s.note || ''; },
+    /* raw (unresolved) per-language field, for the admin editor: 'fr' reads/writes
+       the base service record, 'de'/'en' read/write the s.i18n override — blank
+       means "not translated yet, falls back to French" on the public site. */
+    serviceI18nField: function (id, lang, field) {
+      var s = API.service(id); var isArr = SERVICE_I18N_ARRAY_FIELDS[field];
+      if (!s) return isArr ? [] : '';
+      var v = (lang === 'fr') ? s[field] : (s.i18n && s.i18n[lang] && s.i18n[lang][field]);
+      if (isArr) return (v && v.length) ? v.slice() : [];
+      return v || '';
+    },
+    updateServiceI18n: function (id, lang, patch) {
+      if (lang === 'fr') { API.updateService(id, patch); return; }
+      var s = API.service(id); if (!s) return;
+      var i18n = Object.assign({}, s.i18n || {});
+      i18n[lang] = Object.assign({}, i18n[lang] || {}, patch);
+      API.updateService(id, { i18n: i18n });
+    },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;
@@ -526,6 +592,72 @@
         recipients: c.recipients || [], count: (c.recipients || []).length, sentAt: Date.now() });
       write(KEYS.campaigns, list);
       if (c.dateId) API.updateDate(c.dateId, { notified: true });
+    },
+
+    /* client message templates (confirmation / modification / annulation) */
+    getMessageTemplates: function () {
+      var stored = read(KEYS.msgTpl, {});
+      var out = {};
+      Object.keys(DEFAULT_MESSAGE_TEMPLATES).forEach(function (k) {
+        out[k] = Object.assign({}, DEFAULT_MESSAGE_TEMPLATES[k], stored[k] || {});
+      });
+      return out;
+    },
+    messageTemplate: function (type) { return API.getMessageTemplates()[type] || null; },
+    updateMessageTemplate: function (type, patch) {
+      if (!DEFAULT_MESSAGE_TEMPLATES[type]) return;
+      var stored = read(KEYS.msgTpl, {});
+      stored[type] = Object.assign({}, DEFAULT_MESSAGE_TEMPLATES[type], stored[type] || {}, patch);
+      writeRaw(KEYS.msgTpl, stored); emit();
+      if (window.EWDB) window.EWDB.save('services', { id: '_msg_templates', templates: stored });
+    },
+    resetMessageTemplate: function (type) {
+      var stored = read(KEYS.msgTpl, {});
+      delete stored[type];
+      writeRaw(KEYS.msgTpl, stored); emit();
+      if (window.EWDB) window.EWDB.save('services', { id: '_msg_templates', templates: stored });
+    },
+    renderMessageTemplate: function (type, vars, tplOverride) {
+      var tpl = tplOverride || API.getMessageTemplates()[type]; if (!tpl) return null;
+      vars = vars || {};
+      function escHtml(s) {
+        return (s == null ? '' : String(s)).replace(/[&<>"]/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+        });
+      }
+      function fill(str) {
+        return (str || '').replace(/\{\{(\w+)\}\}/g, function (_, k) {
+          var v = vars[k]; return (v == null || v === '') ? '—' : String(v);
+        });
+      }
+      var subject = fill(tpl.subject);
+      var heading = escHtml(fill(tpl.heading));
+      var body = escHtml(fill(tpl.body)).replace(/\n/g, '<br>');
+      var footer = escHtml(fill(tpl.footer)).replace(/\n/g, '<br>');
+      var rows = [
+        ['Soin', vars.service], ['Lieu', vars.location],
+        ['Date', vars.date ? (vars.date + (vars.time ? ' à ' + vars.time : '')) : ''],
+        ['Durée', vars.duration ? vars.duration + ' min' : ''],
+        ['Total', vars.price ? vars.price + ' €' : '']
+      ].filter(function (r) { return r[1]; });
+      var rowsHtml = rows.map(function (r, i) {
+        var last = i === rows.length - 1;
+        return '<tr><td style="padding:10px 0;' + (last ? '' : 'border-bottom:1px solid #E8E0D5;') +
+          'color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em;width:40%">' + escHtml(r[0]) + '</td>' +
+          '<td style="padding:10px 0;' + (last ? 'font-weight:700;font-size:18px;color:#C8B89A' : 'border-bottom:1px solid #E8E0D5;font-weight:600') +
+          '">' + escHtml(String(r[1])) + '</td></tr>';
+      }).join('');
+      var html = '<div style="font-family:Georgia,serif;max-width:600px;margin:0 auto;color:#2C2C2A">' +
+        '<div style="background:#C8B89A;padding:32px 40px;border-radius:12px 12px 0 0">' +
+        '<h1 style="color:#FBF5ED;font-size:24px;margin:0;font-weight:400">' + heading + '</h1>' +
+        '<p style="color:#F0DECF;margin:6px 0 0;font-size:14px">Eloïse Werle — eloisewerle.com</p>' +
+        '</div>' +
+        '<div style="background:#FDFAF5;padding:32px 40px;border:1px solid #E8E0D5;border-top:none;border-radius:0 0 12px 12px">' +
+        '<p style="font-size:1.05rem;margin:0 0 24px">' + body + '</p>' +
+        (rowsHtml ? '<table style="width:100%;border-collapse:collapse">' + rowsHtml + '</table>' : '') +
+        (footer ? '<p style="margin-top:28px;color:#7C6E5F;font-size:13px">' + footer + '</p>' : '') +
+        '</div></div>';
+      return { subject: subject, html: html };
     },
 
     resetAll: function () {
@@ -709,9 +841,14 @@
           if (!emailEntry.email) DB.save('services', { id: '_admin_email', email: emailVal });
         }
       }
+      var tplEntry = (rows || []).filter(function (r) { return r.id === '_msg_templates'; })[0];
+      if (tplEntry) {
+        var tpls = tplEntry.templates || (tplEntry.data && tplEntry.data.templates);
+        if (tpls) { try { localStorage.setItem(KEYS.msgTpl, JSON.stringify(tpls)); } catch (e) {} }
+      }
       // Merge non-password service rows into local store
       // DB.load already unwraps data, so each row IS the service object
-      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw' && r.id !== '_admin_email'; });
+      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw' && r.id !== '_admin_email' && r.id !== '_msg_templates'; });
       if (svcRows.length) {
         // Same rule as cities: builtins always stay (overridden if edited),
         // custom services come entirely from Supabase so deletions actually stick.
