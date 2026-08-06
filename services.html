@@ -184,12 +184,14 @@
         ? '<div class="variants">' + options.map(function(o){ return '<span>' + esc(o) + '</span>'; }).join('') + '</div>'
         : '';
       var noteHtml = note ? '<p class="note">' + esc(note) + '</p>' : '';
-      var pack = EWS.servicePack ? EWS.servicePack(id) : null;
-      var packHtml = pack
-        ? '<div class="pack-promo"><span class="pack-promo__badge">' + esc(T('sv.pack.badge') || 'Offre pack') + '</span>' +
-          '<span>' + esc((T('sv.pack.text') || '{n} séances : {price}€ au lieu de {regular}€')
-            .replace('{n}', pack.sessions).replace('{price}', pack.price).replace('{regular}', pack.regularPrice)) + '</span></div>'
-        : '';
+      function durText(min) { return (min % 60 === 0) ? (min / 60) + 'h' : min + ' min'; }
+      var packs = EWS.servicePacks ? EWS.servicePacks(id) : [];
+      var packHtml = packs.map(function(pack) {
+        var durLbl = pack.duration ? durText(pack.duration) + ' — ' : '';
+        return '<div class="pack-promo"><span class="pack-promo__badge">' + esc(T('sv.pack.badge') || 'Offre pack') + '</span>' +
+          '<span>' + esc(durLbl + (T('sv.pack.text') || '{n} séances : {price}€ au lieu de {regular}€')
+            .replace('{n}', pack.sessions).replace('{price}', pack.price).replace('{regular}', pack.regularPrice)) + '</span></div>';
+      }).join('');
       return '<article class="svc-detail' + rev + '" id="' + id + '">' +
         '<div class="svc-detail__media reveal" data-svc-img="' + id + '">' +
           '<img src="' + esc(img) + '" alt="' + esc(name) + '"></div>' +

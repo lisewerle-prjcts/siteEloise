@@ -65,7 +65,10 @@
     }
     return { base, final: base, percent: 0 };
   }
-  function servicePack(id) { return (EWS && EWS.servicePack) ? EWS.servicePack(id) : null; }
+  function servicePackForDuration(id, duration) {
+    if (!EWS || !EWS.servicePackForDuration) return null;
+    return EWS.servicePackForDuration(id, duration);
+  }
 
   function iso(d) {
     const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
@@ -263,7 +266,7 @@
            return `<button type="button" class="dur ${on}" data-opt="${o}">${o}</button>`;
          }).join('')}</div>`
       : '';
-    const pack = servicePack(S.service);
+    const pack = servicePackForDuration(S.service, S.duration);
     const packHtml = pack
       ? `<div class="step__cat">${t('rv.pack.cat')}</div>
          <label class="consent" style="margin-top:0"><input type="checkbox" data-pack ${S.usePack ? 'checked' : ''}>
@@ -394,7 +397,7 @@
     const pr = pricing();
     const total = pr.base == null ? '—'
       : (pr.percent ? `<s style="opacity:.5;margin-right:6px;font-size:.75em">${pr.base}&nbsp;€</s>${pr.final}&nbsp;€` : `${pr.base}&nbsp;€`);
-    const pack = servicePack(S.service);
+    const pack = servicePackForDuration(S.service, S.duration);
     const packNote = (S.usePack && pack) ? `<p style="font-size:.8rem;color:var(--ink-2);margin-top:12px;line-height:1.4">${t('rv.pack.note')}</p>` : '';
     return `<div class="summary__img">${img}</div>
       <div class="summary__body">
@@ -435,7 +438,7 @@
       S.service = b.getAttribute('data-svc');
       const opts = serviceOptions(S.service);
       if (!opts.find(o => o.min === S.duration)) S.duration = opts[0].min;
-      if (!servicePack(S.service)) S.usePack = false;
+      if (!servicePackForDuration(S.service, S.duration)) S.usePack = false;
       save(); render();
     });
     const packCb = root.querySelector('[data-pack]');
@@ -444,7 +447,11 @@
       if (S.location !== b.getAttribute('data-loc')) { S.dateISO = null; S.time = null; }
       S.location = b.getAttribute('data-loc'); save(); render();
     });
-    root.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { S.duration = +b.getAttribute('data-dur'); save(); render(); });
+    root.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => {
+      S.duration = +b.getAttribute('data-dur');
+      if (!servicePackForDuration(S.service, S.duration)) S.usePack = false;
+      save(); render();
+    });
     root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { S.option = b.getAttribute('data-opt'); save(); render(); });
     root.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { S.dateISO = b.getAttribute('data-day'); S.time = null; save(); render(); });
     root.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { S.time = b.getAttribute('data-slot'); save(); render(); });

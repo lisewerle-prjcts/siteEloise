@@ -33,6 +33,7 @@
     'balinais':    [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
     'deep':        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
     'drainage':    [{min:60,price:80},{min:120,price:150}],
+    'drainage-visage': [{min:30,price:50},{min:60,price:100}],
     'ayurvedique': [{min:60,price:70},{min:90,price:100}],
     'yoga':        [{min:60,price:65},{min:90,price:90}]
   };
@@ -59,13 +60,21 @@
       benefitsEmotional: ['Très apprécié des sportifs.', 'Aide à récupérer après des efforts importants.', 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.'],
       idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau avec douleurs du dos, nuque et épaules.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
-    { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/drainage-visage.png',
-      pack: { sessions: 5, price: 600, regularPrice: 750 },
-      name: 'Drainage lymphatique', tag: 'Détox & légèreté',
+    { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/relaxation.png',
+      packs: [{ duration: 120, sessions: 5, price: 600, regularPrice: 750 }],
+      name: 'Drainage corps', tag: 'Détox & légèreté',
       description: 'Le drainage lymphatique est une technique très douce visant à stimuler la circulation de la lymphe.',
       benefitsPhysical: ['Réduit la rétention d\'eau.', 'Diminue les sensations de jambes lourdes.', 'Favorise l\'élimination des déchets métaboliques.'],
       benefitsEmotional: ['Aide à diminuer certains gonflements.', 'Peut affiner temporairement la silhouette lorsque celle-ci est liée à la rétention hydrique.', 'Améliore l\'aspect de certaines zones congestionnées.', 'Sensation de légèreté.', 'Effet relaxant sur le système nerveux.'],
       idealFor: ['Jambes lourdes.', 'Rétention d\'eau.', 'Sensation de gonflement.', 'Personnes restant longtemps debout ou assises.'],
+      note: '', benefits: [], options: [] },
+    { id: 'drainage-visage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage-visage'], img: 'assets/drainage-visage.png',
+      packs: [{ duration: 30, sessions: 5, price: 200, regularPrice: 250 }, { duration: 60, sessions: 5, price: 400, regularPrice: 500 }],
+      name: 'Drainage visage', tag: 'Éclat & légèreté du visage',
+      description: 'Le drainage lymphatique du visage est une technique très douce visant à stimuler la circulation de la lymphe au niveau du visage.',
+      benefitsPhysical: ['Réduit les poches et gonflements du visage.', 'Favorise l\'élimination des déchets métaboliques.', 'Redonne de l\'éclat au teint.'],
+      benefitsEmotional: ['Sensation de légèreté du visage.', 'Effet relaxant sur le système nerveux.'],
+      idealFor: ['Visage gonflé au réveil.', 'Peau terne ou fatiguée.', 'Envie d\'un soin doux et relaxant.'],
       note: '', benefits: [], options: [] },
     { id: 'ayurvedique', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
       name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',
@@ -186,6 +195,18 @@
     }
     localStorage.setItem('ew_migrated_v5', '1');
   }
+  function purgeInternalServiceRows() {
+    if (localStorage.getItem('ew_migrated_purge_internal_v1')) return;
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch (e) {}
+    if (stored && Array.isArray(stored)) {
+      var cleaned = stored.filter(function (s) { return !(s.id && s.id.charAt(0) === '_'); });
+      if (cleaned.length !== stored.length) {
+        try { localStorage.setItem(KEYS.services, JSON.stringify(cleaned)); } catch (e) {}
+      }
+    }
+    localStorage.setItem('ew_migrated_purge_internal_v1', '1');
+  }
   function migrateServicesV2() {
     var stored = null;
     try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
@@ -224,6 +245,7 @@
     migrateServicesV3();
     migrateServicesV4();
     migrateServicesV5();
+    purgeInternalServiceRows();
     ensureAppointments();
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
@@ -395,8 +417,8 @@
     },
 
     /* services */
-    services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
-    publishedServices: function () { return API.services().filter(function (s) { return s.published !== false && s.id !== '_admin_pw'; }); },
+    services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice().filter(function (s) { return !(s.id && s.id.charAt(0) === '_'); }); },
+    publishedServices: function () { return API.services().filter(function (s) { return s.published !== false; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
     serviceName: function (id) { var s = API.service(id);
       if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
@@ -411,7 +433,11 @@
     serviceBenefitsEmotional: function(id) { var s = API.service(id); return (s && s.benefitsEmotional) ? s.benefitsEmotional.slice() : []; },
     serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
     serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
-    servicePack: function(id) { var s = API.service(id); return (s && s.pack) || null; },
+    servicePacks: function(id) { var s = API.service(id); return (s && s.packs && s.packs.length) ? s.packs.slice() : []; },
+    servicePackForDuration: function(id, duration) {
+      var packs = API.servicePacks(id);
+      return packs.filter(function(p){ return p.duration === duration; })[0] || null;
+    },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;
@@ -843,9 +869,13 @@
           if (!emailEntry.email) DB.save('services', { id: '_admin_email', email: emailVal });
         }
       }
-      // Merge non-password service rows into local store
-      // DB.load already unwraps data, so each row IS the service object
-      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw' && r.id !== '_admin_email'; });
+      // Merge non-internal service rows into local store. Any id starting with "_"
+      // (other than the two recognized keys above) is a stray internal row — self-heal
+      // by deleting it from Supabase so it can't leak into the public services list.
+      (rows || []).forEach(function (r) {
+        if (r.id && r.id.charAt(0) === '_' && r.id !== '_admin_pw' && r.id !== '_admin_email') DB.del('services', r.id);
+      });
+      var svcRows = (rows || []).filter(function(r) { return r.id && r.id.charAt(0) !== '_'; });
       if (svcRows.length) {
         // Same rule as cities: builtins always stay (overridden if edited),
         // custom services come entirely from Supabase so deletions actually stick.
