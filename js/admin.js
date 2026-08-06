@@ -403,7 +403,7 @@
   function renderPacks(){
     var panel = $('[data-panel="packs"]'); if(!panel) return;
     var packs = S.packs ? S.packs() : [];
-    var loy = S.loyalty ? S.loyalty() : [];
+    var loy = S.loyalty ? S.loyalty().slice().sort(function(a,b){ return b.sessionsCompleted-a.sessionsCompleted; }) : [];
     var coupons = S.coupons ? S.coupons().slice().sort(function(a,b){ return b.createdAt-a.createdAt; }) : [];
 
     function packItem(p){
@@ -423,12 +423,15 @@
     function loyaltyItem(l){
       var pts = l.sessionsCompleted % 10;
       return '<div class="adm-item"><div class="adm-item__main">'+
-        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(l.name||l.email)+'</div>'+
+        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(l.name||l.email)+
+          ' <span class="pill-tag">'+l.sessionsCompleted+' '+esc(t('adm.lo.sessions'))+'</span></div>'+
         '<div class="adm-item__meta"><span>'+esc(l.email)+'</span>'+
-          '<span>'+l.sessionsCompleted+' '+esc(t('adm.lo.sessions'))+'</span>'+
-          '<span>'+pts+' / 10</span>'+
+          '<span>'+pts+' / 10 '+esc(t('adm.lo.progress'))+'</span>'+
           (l.rewardsIssued?'<span class="pill-tag ok">'+l.rewardsIssued+' '+esc(t('adm.lo.rewards'))+'</span>':'')+
-        '</div></div></div>';
+        '</div></div>'+
+        '<div class="adm-item__actions">'+
+          '<button class="btn-mini solid" data-sendfree="'+esc(l.email)+'" data-name="'+esc(l.name||'')+'">'+esc(t('adm.lo.sendfree'))+'</button>'+
+        '</div></div>';
     }
     function couponItem(c){
       var typeLabel = c.type==='review10' ? t('adm.co.type.review10') : (c.type==='loyalty-free' ? t('adm.co.type.loyaltyfree') : c.type);
@@ -475,6 +478,21 @@
     [].slice.call(panel.querySelectorAll('[data-usepack]')).forEach(function(b){ b.addEventListener('click', function(){ S.usePackSession(b.dataset.usepack); }); });
     [].slice.call(panel.querySelectorAll('[data-unusepack]')).forEach(function(b){ b.addEventListener('click', function(){ S.unusePackSession(b.dataset.unusepack); }); });
     [].slice.call(panel.querySelectorAll('[data-delpack]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.pk.delconfirm'))) S.removePack(b.dataset.delpack); }); });
+    [].slice.call(panel.querySelectorAll('[data-sendfree]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var email = b.dataset.sendfree, name = b.dataset.name;
+        if(!confirm(fill(t('adm.lo.sendfreeconfirm'), { name: name || email }))) return;
+        var coupon = S.addCoupon({ type:'loyalty-free', percent:100, email:email, name:name, prefix:'FIDELITE' });
+        fetch('/api/contact', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            type:'coupon', name: name||'Cliente', email:email, clientEmail:email,
+            code: coupon.code, percent: 100, reason:'fidelite', message:'Séance offerte fidélité'
+          })
+        }).catch(function(){});
+        toast(fill(t('adm.lo.sendfreeok'), { email:email }));
+      });
+    });
     [].slice.call(panel.querySelectorAll('[data-copycode]')).forEach(function(b){ b.addEventListener('click', function(){ copyText(b.dataset.copycode); toast(t('adm.n.copied')); }); });
     [].slice.call(panel.querySelectorAll('[data-delcoupon]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.co.delconfirm'))) S.removeCoupon(b.dataset.delcoupon); }); });
   }
