@@ -47,12 +47,27 @@ Object.assign(window.I18N.fr, {
   'rv.req': 'Ce champ est requis',
   'rv.req.email': 'Adresse e-mail non valide',
 
+  'rv.pack.cat': 'Pack séances',
+  'rv.pack.label': 'Je réserve dans le cadre de mon pack {n} séances ({price}€ les {n})',
+  'rv.pack.note': 'Cette séance fait partie d’un pack de séances — le règlement se fait avec Eloïse sur place.',
+  'rv.pack.short': 'Pack',
+  'rv.pack.yes': 'Oui',
+
+  'rv.promo.label': 'Code promo',
+  'rv.promo.ph': 'Ex. MERCI-4F2K',
+  'rv.promo.apply': 'Appliquer',
+  'rv.promo.applied': 'Code appliqué : -{percent}%',
+  'rv.promo.free': 'Code appliqué : séance offerte',
+  'rv.promo.invalid': 'Code invalide.',
+  'rv.promo.used': 'Ce code a déjà été utilisé.',
+
   'rv.summary': 'Récapitulatif',
   'rv.sum.service': 'Soin',
   'rv.sum.loc': 'Lieu',
   'rv.sum.when': 'Date',
   'rv.sum.duration': 'Durée',
   'rv.sum.total': 'Total estimé',
+  'rv.sum.discount': 'Réduction',
   'rv.sum.empty': 'À compléter',
 
   'rv.back': 'Retour',

@@ -56,6 +56,16 @@
     const opt = opts.find(o => o.min === min);
     return opt ? opt.price : (opts.length ? opts[0].price : 0);
   }
+  function pricing() {
+    const base = (S.service && S.duration) ? price(S.service, S.duration) : null;
+    if (base == null) return { base: null, final: null, percent: 0 };
+    if (S.promoApplied) {
+      const pct = S.promoApplied.percent;
+      return { base, final: Math.max(0, Math.round(base * (1 - pct / 100))), percent: pct };
+    }
+    return { base, final: base, percent: 0 };
+  }
+  function servicePack(id) { return (EWS && EWS.servicePack) ? EWS.servicePack(id) : null; }
 
   function iso(d) {
     const y = d.getFullYear(), m = d.getMonth() + 1, day = d.getDate();
@@ -101,7 +111,7 @@
   const SKEY = 'ew_booking';
   let S = { step: 1, service: null, option: null, duration: null, location: null, dateISO: null, time: null,
             form: { first: '', last: '', email: '', phone: '', notes: '', consent: false },
-            gift: false, done: false };
+            gift: false, done: false, usePack: false, promoCode: '', promoApplied: null };
   try {
     const sv = JSON.parse(localStorage.getItem(SKEY) || 'null');
     if (sv) {
@@ -253,10 +263,17 @@
            return `<button type="button" class="dur ${on}" data-opt="${o}">${o}</button>`;
          }).join('')}</div>`
       : '';
+    const pack = servicePack(S.service);
+    const packHtml = pack
+      ? `<div class="step__cat">${t('rv.pack.cat')}</div>
+         <label class="consent" style="margin-top:0"><input type="checkbox" data-pack ${S.usePack ? 'checked' : ''}>
+         <span>${t('rv.pack.label').replace(/\{n\}/g, pack.sessions).replace(/\{price\}/g, pack.price)}</span></label>`
+      : '';
     return `<div class="step__h"><h2>${t('rv.s2.title')}</h2></div>
       <div class="step__cat">${t('rv.s2.loc')}</div><div class="loc-list">${locs}</div>
       <div class="step__cat">${t('rv.s2.dur')}</div><div class="dur-row">${durs}</div>
-      ${optsHtml}`;
+      ${optsHtml}
+      ${packHtml}`;
   }
 
   function step3() {
@@ -314,6 +331,10 @@
       <input type="${type}" data-input="${name}" value="${val}">
       <span class="msg">${name === 'email' ? t('rv.req.email') : t('rv.req')}</span></div>`;
   }
+  function promoMsg() {
+    if (!S.promoApplied) return '';
+    return S.promoApplied.percent >= 100 ? t('rv.promo.free') : t('rv.promo.applied').replace('{percent}', S.promoApplied.percent);
+  }
   function step4() {
     return `<div class="step__h"><h2>${t('rv.s4.title')}</h2><p>${t('rv.s4.sub')}</p></div>
       <div class="form-grid">
@@ -322,6 +343,14 @@
         ${field('email', 'email', true)}
         ${field('phone', 'tel', false)}
         ${field('notes', 'textarea', false)}
+        <div class="field full">
+          <label>${t('rv.promo.label')}</label>
+          <div style="display:flex;gap:10px">
+            <input type="text" data-promo-input value="${(S.promoCode || '').replace(/"/g, '&quot;')}" placeholder="${t('rv.promo.ph')}" style="flex:1;text-transform:uppercase">
+            <button type="button" class="btn btn-ghost" data-promo-apply>${t('rv.promo.apply')}</button>
+          </div>
+          <span class="msg" data-promo-msg style="display:${S.promoApplied ? 'block' : 'none'};color:${S.promoApplied ? 'var(--sage-deep)' : '#C0533C'}">${promoMsg()}</span>
+        </div>
         <label class="consent"><input type="checkbox" data-input="consent" ${S.form.consent ? 'checked' : ''}>
           <span>${t('rv.f.consent')}</span></label>
       </div>`;
@@ -342,8 +371,10 @@
       [t('rv.f.first'), [f.first, f.last].filter(Boolean).join(' ') || '—'],
       [t('rv.f.email'), f.email || '—'],
       [t('rv.f.phone'), f.phone || '—'],
-    ].filter(r => r[0] !== '' || r[1] !== '');
-    const html = rows.map(r => r[0] === '' ?
+    ];
+    if (S.usePack) rows.push([t('rv.pack.short'), t('rv.pack.yes')]);
+    if (S.promoApplied) rows.push([t('rv.sum.discount'), promoMsg() + ' (' + S.promoApplied.code + ')']);
+    const html = rows.filter(r => r[0] !== '' || r[1] !== '').map(r => r[0] === '' ?
       `<div class="sum-line" style="border-top:1px solid var(--line);padding:6px 0"></div>` :
       `<div class="sum-line"><span class="k">${r[0]}</span><span class="v">${r[1]}</span></div>`).join('');
     return `<div class="recap" style="background:var(--cream);border:1px solid var(--line);border-radius:14px;padding:8px 20px">${html}</div>`;
@@ -360,7 +391,11 @@
   function summary() {
     const img = S.service ? `<img src="assets/${IMG[S.service]}.png" alt="">` : `<div class="ph">${t('brand.sub')}</div>`;
     const line = (k, v) => `<div class="sum-line"><span class="k">${k}</span><span class="v ${v ? '' : 'empty'}">${v || t('rv.sum.empty')}</span></div>`;
-    const total = (S.service && S.duration) ? price(S.service, S.duration) + ' €' : '—';
+    const pr = pricing();
+    const total = pr.base == null ? '—'
+      : (pr.percent ? `<s style="opacity:.5;margin-right:6px;font-size:.75em">${pr.base}&nbsp;€</s>${pr.final}&nbsp;€` : `${pr.base}&nbsp;€`);
+    const pack = servicePack(S.service);
+    const packNote = (S.usePack && pack) ? `<p style="font-size:.8rem;color:var(--ink-2);margin-top:12px;line-height:1.4">${t('rv.pack.note')}</p>` : '';
     return `<div class="summary__img">${img}</div>
       <div class="summary__body">
         <h3>${t('rv.summary')}</h3>
@@ -369,6 +404,7 @@
         ${line(t('rv.sum.when'), S.dateISO ? (fmtFull(S.dateISO) + (S.time ? ' · ' + S.time : '')) : '')}
         ${line(t('rv.sum.duration'), S.duration ? durLabel(S.duration) : '')}
         <div class="sum-total"><span class="k">${t('rv.sum.total')}</span><span class="v">${total}</span></div>
+        ${packNote}
       </div>`;
   }
 
@@ -399,8 +435,11 @@
       S.service = b.getAttribute('data-svc');
       const opts = serviceOptions(S.service);
       if (!opts.find(o => o.min === S.duration)) S.duration = opts[0].min;
+      if (!servicePack(S.service)) S.usePack = false;
       save(); render();
     });
+    const packCb = root.querySelector('[data-pack]');
+    if (packCb) packCb.onchange = () => { S.usePack = packCb.checked; save(); render(); };
     root.querySelectorAll('[data-loc]').forEach(b => b.onclick = () => {
       if (S.location !== b.getAttribute('data-loc')) { S.dateISO = null; S.time = null; }
       S.location = b.getAttribute('data-loc'); save(); render();
@@ -421,6 +460,21 @@
       };
     });
 
+    const promoInput = root.querySelector('[data-promo-input]');
+    if (promoInput) promoInput.oninput = () => { S.promoCode = promoInput.value; save(); };
+    const promoApply = root.querySelector('[data-promo-apply]');
+    if (promoApply) promoApply.onclick = () => {
+      const code = (promoInput.value || '').trim();
+      const msg = root.querySelector('[data-promo-msg]');
+      if (!code || !EWS) return;
+      const coupon = EWS.couponByCode(code);
+      if (!coupon) { S.promoApplied = null; if (msg) { msg.style.display = 'block'; msg.style.color = '#C0533C'; msg.textContent = t('rv.promo.invalid'); } save(); return; }
+      if (coupon.used) { S.promoApplied = null; if (msg) { msg.style.display = 'block'; msg.style.color = '#C0533C'; msg.textContent = t('rv.promo.used'); } save(); return; }
+      S.promoApplied = { code: coupon.code, percent: coupon.percent, type: coupon.type };
+      S.promoCode = coupon.code;
+      save(); render();
+    };
+
     const back = root.querySelector('[data-back]'); if (back) back.onclick = () => { S.step = Math.max(1, S.step - 1); save(); render(); };
     const next = root.querySelector('[data-next]'); if (next) next.onclick = () => {
       if (S.step === 4) { if (!validForm(true)) return; }
@@ -430,12 +484,15 @@
     };
     const conf = root.querySelector('[data-confirm]'); if (conf) conf.onclick = () => {
       const fullName = [S.form.first, S.form.last].filter(Boolean).join(' ');
+      const pr = pricing();
+      if (S.promoApplied && EWS) EWS.redeemCoupon(S.promoApplied.code);
       if (EWS && S.form.email && S.service && S.dateISO) {
         EWS.addAppointment({
           email: S.form.email,
           name: fullName,
           city: S.location, service: S.service, duration: S.duration,
-          price: price(S.service, S.duration), dateISO: S.dateISO, time: S.time
+          price: pr.final != null ? pr.final : price(S.service, S.duration), dateISO: S.dateISO, time: S.time,
+          packRequested: S.usePack, promoCode: S.promoApplied ? S.promoApplied.code : ''
         });
       }
       fetch('/api/contact', {
@@ -448,12 +505,16 @@
           clientEmail: S.form.email,
           phone: S.form.phone || '',
           notes: S.form.notes || '',
+          packRequested: S.usePack,
+          promoCode: S.promoApplied ? S.promoApplied.code : '',
+          promoPercent: S.promoApplied ? S.promoApplied.percent : '',
+          priceOriginal: pr.percent ? pr.base : '',
           service: S.service ? (svcName(S.service) + (S.option ? ' — ' + S.option : '')) : '',
           location: S.location ? locName(S.location) : '',
           date: S.dateISO || '',
           time: S.time || '',
           duration: S.duration || '',
-          price: (S.service && S.duration) ? price(S.service, S.duration) : '',
+          price: pr.final != null ? pr.final : '',
           message: S.form.notes || '(pas de notes)'
         })
       }).catch(() => {});
@@ -462,7 +523,8 @@
     };
     const again = root.querySelector('[data-again]'); if (again) again.onclick = () => {
       S = { step: 1, service: null, option: null, duration: null, location: null, dateISO: null, time: null,
-            form: { first: '', last: '', email: '', phone: '', notes: '', consent: false }, gift: S.gift, done: false };
+            form: { first: '', last: '', email: '', phone: '', notes: '', consent: false }, gift: S.gift, done: false,
+            usePack: false, promoCode: '', promoApplied: null };
       save(); render();
     };
     const ja = root.querySelector('[data-jump-alert]'); if (ja) ja.onclick = () => {

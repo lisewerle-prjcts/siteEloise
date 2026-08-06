@@ -15,6 +15,9 @@
     cities:    'ew_cities_v1',
     appts:     'ew_appointments_v1',
     services:  'ew_services_v2',   // v2: durations array replaces price+unit
+    packs:     'ew_packs_v1',
+    coupons:   'ew_coupons_v1',
+    loyalty:   'ew_loyalty_v1',
     seeded:    'ew_seeded_v1'
   };
 
@@ -57,6 +60,7 @@
       idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau avec douleurs du dos, nuque et épaules.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
     { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/drainage-visage.png',
+      pack: { sessions: 5, price: 600, regularPrice: 750 },
       name: 'Drainage lymphatique', tag: 'Détox & légèreté',
       description: 'Le drainage lymphatique est une technique très douce visant à stimuler la circulation de la lymphe.',
       benefitsPhysical: ['Réduit la rétention d\'eau.', 'Diminue les sensations de jambes lourdes.', 'Favorise l\'élimination des déchets métaboliques.'],
@@ -87,6 +91,21 @@
   function writeRaw(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
   function write(key, val) { writeRaw(key, val); emit(); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function genCode(prefix) {
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var s = '';
+    for (var i = 0; i < 4; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return (prefix || 'PROMO') + '-' + s;
+  }
+  function addCouponInternal(c) {
+    var list = read(KEYS.coupons, []);
+    var code;
+    do { code = genCode(c.prefix); } while (list.some(function (x) { return x.code === code; }));
+    var rec = { id: uid(), code: code, type: c.type || 'custom', percent: c.percent != null ? c.percent : 10,
+      email: (c.email || '').trim().toLowerCase(), name: (c.name || '').trim(),
+      testimonialId: c.testimonialId || '', used: false, usedAt: null, createdAt: Date.now() };
+    list.push(rec); write(KEYS.coupons, list); return rec;
+  }
   function slug(s) {
     return (s || '').toString().toLowerCase().trim()
       .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -357,7 +376,8 @@
       var list = read(KEYS.appts, []);
       var rec = { id: uid(), email: (a.email || '').toLowerCase(), name: a.name || '', city: a.city || '',
         service: a.service || '', duration: a.duration || 0, price: a.price || 0,
-        dateISO: a.dateISO || '', time: a.time || '', confirmed: false, createdAt: Date.now() };
+        dateISO: a.dateISO || '', time: a.time || '', confirmed: false, createdAt: Date.now(),
+        packRequested: !!a.packRequested, promoCode: a.promoCode || '' };
       list.push(rec); write(KEYS.appts, list); return rec;
     },
     removeAppointment: function (id) {
@@ -391,6 +411,7 @@
     serviceBenefitsEmotional: function(id) { var s = API.service(id); return (s && s.benefitsEmotional) ? s.benefitsEmotional.slice() : []; },
     serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
     serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
+    servicePack: function(id) { var s = API.service(id); return (s && s.pack) || null; },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;
@@ -491,7 +512,7 @@
     },
     addTestimonial: function (t) {
       var list = read(KEYS.testi, []);
-      var rec = { id: uid(), name: (t.name || '').trim(), city: t.city || '', service: t.service || '',
+      var rec = { id: uid(), name: (t.name || '').trim(), email: (t.email || '').trim().toLowerCase(), city: t.city || '', service: t.service || '',
         rating: t.rating || 5, text: (t.text || '').trim(), lang: t.lang || (window.ewLang ? window.ewLang() : 'fr'),
         status: t.status || 'pending', createdAt: Date.now() };
       list.push(rec); write(KEYS.testi, list); return rec;
@@ -528,6 +549,81 @@
       if (c.dateId) API.updateDate(c.dateId, { notified: true });
     },
 
+    /* packs (forfaits) */
+    packs: function () { return read(KEYS.packs, []); },
+    packsForEmail: function (email) {
+      email = (email || '').toLowerCase();
+      return read(KEYS.packs, []).filter(function (p) { return (p.email || '').toLowerCase() === email; });
+    },
+    addPack: function (p) {
+      var list = read(KEYS.packs, []);
+      var rec = { id: uid(), email: (p.email || '').trim().toLowerCase(), name: (p.name || '').trim(),
+        service: p.service || 'drainage', sessionsTotal: p.sessionsTotal || 5, sessionsUsed: 0,
+        price: p.price || 0, createdAt: Date.now() };
+      list.push(rec); write(KEYS.packs, list); return rec;
+    },
+    usePackSession: function (id) {
+      var list = read(KEYS.packs, []);
+      list.forEach(function (p) { if (p.id === id && p.sessionsUsed < p.sessionsTotal) p.sessionsUsed++; });
+      write(KEYS.packs, list);
+    },
+    unusePackSession: function (id) {
+      var list = read(KEYS.packs, []);
+      list.forEach(function (p) { if (p.id === id && p.sessionsUsed > 0) p.sessionsUsed--; });
+      write(KEYS.packs, list);
+    },
+    removePack: function (id) {
+      write(KEYS.packs, read(KEYS.packs, []).filter(function (p) { return p.id !== id; }));
+    },
+
+    /* coupons */
+    coupons: function () { return read(KEYS.coupons, []); },
+    couponByCode: function (code) {
+      code = (code || '').trim().toUpperCase();
+      if (!code) return null;
+      return read(KEYS.coupons, []).filter(function (c) { return c.code === code; })[0] || null;
+    },
+    hasCouponType: function (email, type) {
+      email = (email || '').toLowerCase();
+      if (!email) return false;
+      return read(KEYS.coupons, []).some(function (c) { return c.type === type && (c.email || '').toLowerCase() === email; });
+    },
+    addCoupon: function (c) { return addCouponInternal(c); },
+    redeemCoupon: function (code) {
+      var list = read(KEYS.coupons, []);
+      code = (code || '').trim().toUpperCase();
+      var rec = null;
+      list.forEach(function (c) { if (c.code === code) { c.used = true; c.usedAt = Date.now(); rec = c; } });
+      write(KEYS.coupons, list); return rec;
+    },
+    removeCoupon: function (id) {
+      write(KEYS.coupons, read(KEYS.coupons, []).filter(function (c) { return c.id !== id; }));
+    },
+
+    /* carte de fidélité (loyalty) — 1 point / séance effectuée, séance offerte tous les 10 points */
+    loyalty: function () { return read(KEYS.loyalty, []); },
+    loyaltyForEmail: function (email) {
+      email = (email || '').toLowerCase();
+      return read(KEYS.loyalty, []).filter(function (l) { return l.email === email; })[0] || null;
+    },
+    addLoyaltySession: function (email, name) {
+      email = (email || '').trim().toLowerCase();
+      if (!email) return null;
+      var list = read(KEYS.loyalty, []);
+      var rec = list.filter(function (l) { return l.email === email; })[0];
+      if (!rec) { rec = { id: uid(), email: email, name: name || '', sessionsCompleted: 0, rewardsIssued: 0, createdAt: Date.now() }; list.push(rec); }
+      rec.sessionsCompleted++;
+      if (name) rec.name = name;
+      var earnedCoupon = null;
+      var newRewards = Math.floor(rec.sessionsCompleted / 10);
+      if (newRewards > rec.rewardsIssued) {
+        rec.rewardsIssued = newRewards;
+        earnedCoupon = addCouponInternal({ type: 'loyalty-free', percent: 100, email: email, name: rec.name, prefix: 'FIDELITE' });
+      }
+      write(KEYS.loyalty, list);
+      return { record: rec, earnedCoupon: earnedCoupon };
+    },
+
     resetAll: function () {
       Object.keys(KEYS).forEach(function (k) { localStorage.removeItem(KEYS[k]); });
       seed();
@@ -555,7 +651,10 @@
       { key: KEYS.dates,  table: 'dates'        },
       { key: KEYS.testi,  table: 'testimonials' },
       { key: KEYS.insta,  table: 'insta'        },
-      { key: KEYS.cities, table: 'cities'       }
+      { key: KEYS.cities, table: 'cities'       },
+      { key: KEYS.packs,   table: 'packs'   },
+      { key: KEYS.coupons, table: 'coupons' },
+      { key: KEYS.loyalty, table: 'loyalty' }
     ];
 
     /* ---- wrap write methods ---- */
@@ -672,6 +771,41 @@
       _setCityActive.call(API, id, on);
       var c = read(KEYS.cities, BUILTIN_CITIES).filter(function(x){ return x.id === id; })[0];
       if (c) DB.save('cities', c);
+    };
+
+    /* ---- packs ---- */
+    var _addPack = API.addPack;
+    API.addPack = function (p) { var r = _addPack.call(API, p); if (r) DB.save('packs', r); return r; };
+    var _usePack = API.usePackSession;
+    API.usePackSession = function (id) {
+      _usePack.call(API, id);
+      var p = read(KEYS.packs, []).filter(function (x) { return x.id === id; })[0];
+      if (p) DB.save('packs', p);
+    };
+    var _unusePack = API.unusePackSession;
+    API.unusePackSession = function (id) {
+      _unusePack.call(API, id);
+      var p = read(KEYS.packs, []).filter(function (x) { return x.id === id; })[0];
+      if (p) DB.save('packs', p);
+    };
+    var _remPack = API.removePack;
+    API.removePack = function (id) { _remPack.call(API, id); DB.del('packs', id); };
+
+    /* ---- coupons ---- */
+    var _addCoupon = API.addCoupon;
+    API.addCoupon = function (c) { var r = _addCoupon.call(API, c); if (r) DB.save('coupons', r); return r; };
+    var _redeemCoupon = API.redeemCoupon;
+    API.redeemCoupon = function (code) { var r = _redeemCoupon.call(API, code); if (r) DB.save('coupons', r); return r; };
+    var _remCoupon = API.removeCoupon;
+    API.removeCoupon = function (id) { _remCoupon.call(API, id); DB.del('coupons', id); };
+
+    /* ---- loyalty ---- */
+    var _addLoyalty = API.addLoyaltySession;
+    API.addLoyaltySession = function (email, name) {
+      var r = _addLoyalty.call(API, email, name);
+      if (r && r.record) DB.save('loyalty', r.record);
+      if (r && r.earnedCoupon) DB.save('coupons', r.earnedCoupon);
+      return r;
     };
 
     /* ---- insta ---- */

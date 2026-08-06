@@ -377,9 +377,106 @@
       S.addTestimonial({ name:fd.get('name'), city:fd.get('city'), service:fd.get('service'),
         rating:+fd.get('rating'), text:fd.get('text'), status:'approved', lang:lang() });
     });
-    [].slice.call(panel.querySelectorAll('[data-approve]')).forEach(function(b){ b.addEventListener('click',function(){ S.setTestimonialStatus(b.dataset.approve,'approved'); }); });
+    [].slice.call(panel.querySelectorAll('[data-approve]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var id = b.dataset.approve;
+        S.setTestimonialStatus(id, 'approved');
+        var r = S.testimonials().filter(function(x){ return x.id===id; })[0];
+        if (!r || !r.email) { toast(t('adm.r.noemail')); return; }
+        if (S.hasCouponType && S.hasCouponType(r.email, 'review10')) { toast(t('adm.r.rewardskip')); return; }
+        var coupon = S.addCoupon({ type:'review10', percent:10, email:r.email, name:r.name, testimonialId:id, prefix:'MERCI' });
+        fetch('/api/contact', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            type:'coupon', name: r.name||'Cliente', email:r.email, clientEmail:r.email,
+            code:coupon.code, percent:coupon.percent, reason:'avis', message:'Bon de réduction avis'
+          })
+        }).catch(function(){});
+        toast(fill(t('adm.r.rewardsent'), { email:r.email }));
+      });
+    });
     [].slice.call(panel.querySelectorAll('[data-unpub]')).forEach(function(b){ b.addEventListener('click',function(){ S.setTestimonialStatus(b.dataset.unpub,'pending'); }); });
     [].slice.call(panel.querySelectorAll('[data-delrev]')).forEach(function(b){ b.addEventListener('click',function(){ S.removeTestimonial(b.dataset.delrev); }); });
+  }
+
+  /* ====================== PACKS & FIDÉLITÉ TAB ====================== */
+  function renderPacks(){
+    var panel = $('[data-panel="packs"]'); if(!panel) return;
+    var packs = S.packs ? S.packs() : [];
+    var loy = S.loyalty ? S.loyalty() : [];
+    var coupons = S.coupons ? S.coupons().slice().sort(function(a,b){ return b.createdAt-a.createdAt; }) : [];
+
+    function packItem(p){
+      var done = p.sessionsUsed >= p.sessionsTotal;
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(p.name||p.email)+
+          (done?' <span class="pill-tag ok">'+esc(t('adm.pk.done'))+'</span>':'')+'</div>'+
+        '<div class="adm-item__meta"><span>'+esc(p.email)+'</span><span class="svc">'+esc(svcName(p.service))+'</span>'+
+          '<span>'+p.sessionsUsed+' / '+p.sessionsTotal+' '+esc(t('adm.pk.used'))+'</span>'+
+          '<span>'+p.price+' €</span></div></div>'+
+        '<div class="adm-item__actions">'+
+          (done?'':'<button class="btn-mini solid" data-usepack="'+p.id+'">'+esc(t('adm.pk.useSession'))+'</button>')+
+          (p.sessionsUsed>0?'<button class="btn-mini" data-unusepack="'+p.id+'">'+esc(t('adm.pk.undo'))+'</button>':'')+
+          '<button class="btn-mini danger" data-delpack="'+p.id+'">'+esc(t('adm.pk.del'))+'</button>'+
+        '</div></div>';
+    }
+    function loyaltyItem(l){
+      var pts = l.sessionsCompleted % 10;
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(l.name||l.email)+'</div>'+
+        '<div class="adm-item__meta"><span>'+esc(l.email)+'</span>'+
+          '<span>'+l.sessionsCompleted+' '+esc(t('adm.lo.sessions'))+'</span>'+
+          '<span>'+pts+' / 10</span>'+
+          (l.rewardsIssued?'<span class="pill-tag ok">'+l.rewardsIssued+' '+esc(t('adm.lo.rewards'))+'</span>':'')+
+        '</div></div></div>';
+    }
+    function couponItem(c){
+      var typeLabel = c.type==='review10' ? t('adm.co.type.review10') : (c.type==='loyalty-free' ? t('adm.co.type.loyaltyfree') : c.type);
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1rem;font-family:var(--body);font-weight:700;letter-spacing:.04em">'+esc(c.code)+
+          ' <span class="pill-tag '+(c.used?'':'ok')+'">'+esc(c.used?t('adm.co.used'):t('adm.co.active'))+'</span></div>'+
+        '<div class="adm-item__meta"><span>'+esc(typeLabel)+'</span><span>'+esc(c.email)+'</span></div></div>'+
+        '<div class="adm-item__actions">'+
+          '<button class="btn-mini" data-copycode="'+esc(c.code)+'">'+esc(t('adm.co.copy'))+'</button>'+
+          '<button class="btn-mini danger" data-delcoupon="'+c.id+'">'+esc(t('adm.co.del'))+'</button>'+
+        '</div></div>';
+    }
+
+    panel.innerHTML =
+      '<div class="adm-cols"><div class="adm-card">'+
+        '<h3>'+esc(t('adm.pk.add'))+'</h3>'+
+        '<form class="adm-form" data-addpack>'+
+          '<div><label>'+esc(t('adm.pk.name'))+'</label><input name="pname" required></div>'+
+          '<div><label>'+esc(t('adm.pk.email'))+'</label><input name="pemail" type="email" required></div>'+
+          '<div><label>'+esc(t('adm.pk.service'))+'</label>'+svcSelect('pservice','drainage')+'</div>'+
+          '<div class="row2">'+
+            '<div><label>'+esc(t('adm.pk.sessions'))+'</label><input type="number" name="psessions" value="5" min="1"></div>'+
+            '<div><label>'+esc(t('adm.pk.price'))+'</label><input type="number" name="pprice" value="600" min="0"></div>'+
+          '</div>'+
+          '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.pk.save'))+'</button>'+
+        '</form></div>'+
+        '<div><div class="adm-sub">'+esc(t('adm.pk.list'))+'</div>'+
+          '<div class="adm-list">'+(packs.length?packs.map(packItem).join(''):'<div class="adm-empty">'+esc(t('adm.pk.none'))+'</div>')+'</div>'+
+        '</div></div>'+
+      '<div class="adm-sub" style="margin-top:32px">'+esc(t('adm.lo.title'))+'</div>'+
+      '<div class="adm-list">'+(loy.length?loy.map(loyaltyItem).join(''):'<div class="adm-empty">'+esc(t('adm.lo.none'))+'</div>')+'</div>'+
+      '<div class="adm-sub" style="margin-top:32px">'+esc(t('adm.co.title'))+'</div>'+
+      '<div class="adm-list">'+(coupons.length?coupons.map(couponItem).join(''):'<div class="adm-empty">'+esc(t('adm.co.none'))+'</div>')+'</div>';
+
+    var f = $('[data-addpack]', panel);
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var fd = new FormData(f);
+      if(!(fd.get('pemail')||'').trim()) return;
+      S.addPack({ name:fd.get('pname'), email:fd.get('pemail'), service:fd.get('pservice'),
+        sessionsTotal:+(fd.get('psessions')||5), price:+(fd.get('pprice')||0) });
+      f.reset();
+    });
+    [].slice.call(panel.querySelectorAll('[data-usepack]')).forEach(function(b){ b.addEventListener('click', function(){ S.usePackSession(b.dataset.usepack); }); });
+    [].slice.call(panel.querySelectorAll('[data-unusepack]')).forEach(function(b){ b.addEventListener('click', function(){ S.unusePackSession(b.dataset.unusepack); }); });
+    [].slice.call(panel.querySelectorAll('[data-delpack]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.pk.delconfirm'))) S.removePack(b.dataset.delpack); }); });
+    [].slice.call(panel.querySelectorAll('[data-copycode]')).forEach(function(b){ b.addEventListener('click', function(){ copyText(b.dataset.copycode); toast(t('adm.n.copied')); }); });
+    [].slice.call(panel.querySelectorAll('[data-delcoupon]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.co.delconfirm'))) S.removeCoupon(b.dataset.delcoupon); }); });
   }
 
   /* ====================== INSTAGRAM TAB ====================== */
@@ -824,6 +921,8 @@
       if(a.duration) bits.push('<span>'+a.duration+' min</span>');
       if(a.time) bits.push('<span>'+esc(a.time)+'</span>');
       if(a.price) bits.push('<span style="font-weight:700;color:var(--accent)">'+a.price+' €</span>');
+      if(a.packRequested) bits.push('<span class="pill-tag warn">'+esc(t('adm.rdv.packflag'))+'</span>');
+      if(a.promoCode) bits.push('<span class="pill-tag ok">'+esc(a.promoCode)+'</span>');
       return '<div class="adm-item" style="flex-direction:column;align-items:stretch;gap:8px">'+
         '<div style="display:flex;align-items:flex-start;gap:12px">'+
           '<div class="adm-item__main" style="flex:1">'+
@@ -841,6 +940,11 @@
             (a.confirmed
               ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.confirmed'))+'</span>'
               : '<button class="btn-mini solid" data-confirmrdv="'+a.id+'" data-email="'+esc(a.email||'')+'" data-name="'+esc(a.name||'')+'" data-service="'+esc(svcName(a.service)||'')+'" data-location="'+esc(cityName(a.city)||'')+'" data-date="'+esc(a.dateISO||'')+'" data-time="'+esc(a.time||'')+'" data-duration="'+esc(a.duration||'')+'" data-price="'+esc(a.price||'')+'">'+esc(t('adm.rdv.confirm'))+'</button>')+
+            (a.email
+              ? (a.loyaltyDone
+                  ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.loyaltydone'))+'</span>'
+                  : '<button class="btn-mini" data-loyaltyrdv="'+a.id+'" data-email="'+esc(a.email)+'" data-name="'+esc(a.name||'')+'">'+esc(t('adm.rdv.loyalty'))+'</button>')
+              : '')+
             '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
           '</div>'+
         '</div>'+
@@ -939,6 +1043,25 @@
     [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
         if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-loyaltyrdv]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        if(!confirm(fill(t('adm.rdv.loyaltyconfirm'), { name: b.dataset.name || b.dataset.email }))) return;
+        var res = S.addLoyaltySession(b.dataset.email, b.dataset.name);
+        S.updateAppointment(b.dataset.loyaltyrdv, { loyaltyDone: true });
+        if (res && res.earnedCoupon) {
+          fetch('/api/contact', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              type:'coupon', name: b.dataset.name||'Cliente', email:b.dataset.email, clientEmail:b.dataset.email,
+              code: res.earnedCoupon.code, percent: 100, reason:'fidelite', message:'Séance offerte fidélité'
+            })
+          }).catch(function(){});
+          toast(t('adm.rdv.loyaltyfree'));
+        } else {
+          toast(t('adm.rdv.loyaltyok'));
+        }
       });
     });
     [].slice.call(panel.querySelectorAll('[data-confirmrdv]')).forEach(function(b){
@@ -1059,6 +1182,7 @@
   function safeRun(fn) { try { fn(); } catch(e) { console.error(fn.name, e); } }
   function render(){
     safeRun(renderAppointments); safeRun(renderDates); safeRun(renderSubs); safeRun(renderReviews);
+    safeRun(renderPacks);
     safeRun(renderInsta); safeRun(renderPlaces); safeRun(renderServices); safeRun(renderSecurity);
     updateBadges();
     // NOTE: do not call ewApplyI18n() here — dynamic panels already use t().

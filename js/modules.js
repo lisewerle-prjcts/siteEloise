@@ -150,6 +150,8 @@
             cityOpts.map(function (c) { return '<option value="' + c + '">' + esc(cityName(c)) + '</option>'; }).join('') +
           '</select></div>' +
         '</div>' +
+        '<div class="field"><label data-i18n="rev.email">Votre e-mail</label><input type="email" name="email" required>' +
+          '<small class="rev-perk" data-i18n="rev.perk">Pour vous remercier, un bon de -10% sur votre prochain soin vous sera envoyé par e-mail dès que votre avis sera validé (1 bon par personne).</small></div>' +
         '<div class="field"><label data-i18n="rev.service">Soin reçu (facultatif)</label><select name="service">' +
           '<option value="">—</option>' +
           svcOpts.map(function (s) { return '<option value="' + s + '">' + esc(svcName(s)) + '</option>'; }).join('') +
@@ -171,9 +173,11 @@
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var fd = new FormData(form);
+      var email = (fd.get('email') || '').trim();
       if (!(fd.get('text') || '').trim() || !(fd.get('name') || '').trim()) return;
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { host.querySelector('[name="email"]').focus(); return; }
       S.addTestimonial({
-        name: fd.get('name'), city: fd.get('city'), service: fd.get('service'),
+        name: fd.get('name'), email: email, city: fd.get('city'), service: fd.get('service'),
         text: fd.get('text'), rating: rating, status: 'pending', lang: lang()
       });
       host.innerHTML = '<div class="review-thanks"><div class="mk">♥</div><p class="lead" data-i18n="rev.thanks">' +

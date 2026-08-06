@@ -14,6 +14,9 @@ Object.assign(window.I18N.fr, {
   'sv.ben.emotional': 'Bienfaits émotionnels & énergétiques',
   'sv.ben.idealfor': 'Idéal pour',
 
+  'sv.pack.badge': 'Offre pack',
+  'sv.pack.text': '{n} séances : {price}€ au lieu de {regular}€',
+
   // Thaï
   'sv.thai.long': 'Pratiqué au sol sur un tapis, le Thaï Yoga Massage mêle pressions, étirements assistés et mobilisations douces. Un véritable « yoga passif » qui dénoue les tensions, ouvre les articulations et relance la circulation de l’énergie le long des lignes du corps.',
   'sv.thai.b1': 'Relâche les tensions musculaires en profondeur',
