@@ -47,11 +47,10 @@ Object.assign(window.I18N.fr, {
   'rv.req': 'Ce champ est requis',
   'rv.req.email': 'Adresse e-mail non valide',
 
-  'rv.pack.cat': 'Pack séances',
-  'rv.pack.label': 'Je réserve dans le cadre de mon pack {n} séances ({price}€ les {n})',
-  'rv.pack.note': 'Cette séance fait partie d’un pack de séances — le règlement se fait avec Eloïse sur place.',
-  'rv.pack.short': 'Pack',
-  'rv.pack.yes': 'Oui',
+  'rv.pack.cat': 'Offres & packs',
+  'rv.pack.offerLabel': '{label} — {price}€ au lieu de {regular}€',
+  'rv.pack.note': 'Cette offre sera à valider avec Eloïse — le règlement se fait sur place.',
+  'rv.pack.short': 'Offre',
 
   'rv.promo.label': 'Code promo',
   'rv.promo.ph': 'Ex. MERCI-4F2K',

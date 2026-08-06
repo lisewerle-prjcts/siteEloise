@@ -3,7 +3,7 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { name, email, clientEmail, subject, message, type, service, location, date, time, duration, price, phone, notes,
-          code, percent, reason, packRequested, promoCode, promoPercent, priceOriginal } = req.body || {};
+          code, percent, reason, offerLabel, promoCode, promoPercent, priceOriginal } = req.body || {};
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Champs requis manquants' });
@@ -122,7 +122,7 @@ module.exports = async function handler(req, res) {
           <tr><td style="padding:10px 0;${promoCode ? 'border-bottom:1px solid #E8E0D5;' : ''}color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Total</td><td style="padding:10px 0;${promoCode ? 'border-bottom:1px solid #E8E0D5;' : ''}font-weight:700;font-size:18px;color:#C8B89A">${priceOriginal ? `<s style="opacity:.5;font-size:14px;margin-right:6px">${priceOriginal} €</s>` : ''}${price ? price + ' €' : '—'}</td></tr>
           ${promoCode ? `<tr><td style="padding:10px 0;color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em">Code promo</td><td style="padding:10px 0;font-weight:600">${promoCode}${promoPercent ? ` (-${promoPercent}%)` : ''}</td></tr>` : ''}
         </table>
-        ${packRequested ? `<div style="margin-top:20px;padding:14px 16px;background:#EFD9B6;border-radius:8px"><p style="margin:0;font-weight:600">⚠️ Réservation dans le cadre du pack 5 séances — vérifiez le solde de séances de la cliente dans l'onglet "Cartes & forfaits".</p></div>` : ''}
+        ${offerLabel ? `<div style="margin-top:20px;padding:14px 16px;background:#EFD9B6;border-radius:8px"><p style="margin:0;font-weight:600">⚠️ Offre demandée : ${offerLabel} — vérifiez les conditions avec la cliente avant l'encaissement.</p></div>` : ''}
         ${notes ? `<div style="margin-top:20px;padding:16px;background:#F5F0E8;border-radius:8px"><p style="color:#7C6E5F;font-size:13px;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px">Notes</p><p style="margin:0">${notes}</p></div>` : ''}
         <p style="margin-top:28px;font-size:13px;color:#7C6E5F">Répondez à cet e-mail pour confirmer le rendez-vous avec ${name}. Une fois confirmé, pensez à cliquer sur 'Confirmer' dans votre espace admin pour envoyer la confirmation au client.</p>
       </div>

@@ -180,6 +180,10 @@ Object.assign(window.I18N.fr, {
   'adm.rdv.save': 'Enregistrer',
   'adm.sv.durations': 'Durées & tarifs',
   'adm.sv.addDur': 'Ajouter une durée',
+  'adm.sv.offers': 'Offres & packs',
+  'adm.sv.offerLabel': 'Libellé de l\'offre (ex. Pack 5 séances)',
+  'adm.sv.offerInsteadOf': 'au lieu de',
+  'adm.sv.addOffer': 'Ajouter une offre',
   'adm.sv.description': 'Description',
   'adm.sv.benefits': 'Bienfaits',
   'adm.sv.addBenefit': 'Ajouter un bienfait',
@@ -198,7 +202,6 @@ Object.assign(window.I18N.fr, {
   'adm.rdv.loyaltyconfirm': 'Compter cette séance pour la carte de fidélité de {name} ?',
   'adm.rdv.loyaltyok': 'Séance comptée pour la carte de fidélité.',
   'adm.rdv.loyaltyfree': 'Séance offerte débloquée ! Un code a été envoyé à la cliente.',
-  'adm.rdv.packflag': 'Pack demandé',
 
   /* reviews → coupon reward */
   'adm.r.rewardsent': 'Bon de -10% envoyé à {email}.',

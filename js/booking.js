@@ -65,9 +65,13 @@
     }
     return { base, final: base, percent: 0 };
   }
-  function servicePackForDuration(id, duration) {
-    if (!EWS || !EWS.servicePackForDuration) return null;
-    return EWS.servicePackForDuration(id, duration);
+  function serviceOffers(id) {
+    if (!EWS || !EWS.serviceOffers) return [];
+    return EWS.serviceOffers(id);
+  }
+  function selectedOffer() {
+    if (!S.offerId) return null;
+    return serviceOffers(S.service).find(o => o.id === S.offerId) || null;
   }
 
   function iso(d) {
@@ -114,7 +118,7 @@
   const SKEY = 'ew_booking';
   let S = { step: 1, service: null, option: null, duration: null, location: null, dateISO: null, time: null,
             form: { first: '', last: '', email: '', phone: '', notes: '', consent: false },
-            gift: false, done: false, usePack: false, promoCode: '', promoApplied: null };
+            gift: false, done: false, offerId: null, promoCode: '', promoApplied: null };
   try {
     const sv = JSON.parse(localStorage.getItem(SKEY) || 'null');
     if (sv) {
@@ -266,17 +270,20 @@
            return `<button type="button" class="dur ${on}" data-opt="${o}">${o}</button>`;
          }).join('')}</div>`
       : '';
-    const pack = servicePackForDuration(S.service, S.duration);
-    const packHtml = pack
+    const offers = serviceOffers(S.service);
+    const offersHtml = offers.length
       ? `<div class="step__cat">${t('rv.pack.cat')}</div>
-         <label class="consent" style="margin-top:0"><input type="checkbox" data-pack ${S.usePack ? 'checked' : ''}>
-         <span>${t('rv.pack.label').replace(/\{n\}/g, pack.sessions).replace(/\{price\}/g, pack.price)}</span></label>`
+         <div style="display:flex;flex-direction:column;gap:8px">${offers.map(o => {
+           const checked = S.offerId === o.id ? 'checked' : '';
+           const label = t('rv.pack.offerLabel').replace('{label}', o.label).replace('{price}', o.price).replace('{regular}', o.regularPrice);
+           return `<label class="consent" style="margin-top:0"><input type="checkbox" data-offer="${o.id}" ${checked}><span>${label}</span></label>`;
+         }).join('')}</div>`
       : '';
     return `<div class="step__h"><h2>${t('rv.s2.title')}</h2></div>
       <div class="step__cat">${t('rv.s2.loc')}</div><div class="loc-list">${locs}</div>
       <div class="step__cat">${t('rv.s2.dur')}</div><div class="dur-row">${durs}</div>
       ${optsHtml}
-      ${packHtml}`;
+      ${offersHtml}`;
   }
 
   function step3() {
@@ -375,7 +382,8 @@
       [t('rv.f.email'), f.email || '—'],
       [t('rv.f.phone'), f.phone || '—'],
     ];
-    if (S.usePack) rows.push([t('rv.pack.short'), t('rv.pack.yes')]);
+    const selOffer = selectedOffer();
+    if (selOffer) rows.push([t('rv.pack.short'), selOffer.label]);
     if (S.promoApplied) rows.push([t('rv.sum.discount'), promoMsg() + ' (' + S.promoApplied.code + ')']);
     const html = rows.filter(r => r[0] !== '' || r[1] !== '').map(r => r[0] === '' ?
       `<div class="sum-line" style="border-top:1px solid var(--line);padding:6px 0"></div>` :
@@ -397,8 +405,8 @@
     const pr = pricing();
     const total = pr.base == null ? '—'
       : (pr.percent ? `<s style="opacity:.5;margin-right:6px;font-size:.75em">${pr.base}&nbsp;€</s>${pr.final}&nbsp;€` : `${pr.base}&nbsp;€`);
-    const pack = servicePackForDuration(S.service, S.duration);
-    const packNote = (S.usePack && pack) ? `<p style="font-size:.8rem;color:var(--ink-2);margin-top:12px;line-height:1.4">${t('rv.pack.note')}</p>` : '';
+    const selOffer = selectedOffer();
+    const packNote = selOffer ? `<p style="font-size:.8rem;color:var(--ink-2);margin-top:12px;line-height:1.4">${t('rv.pack.note')}</p>` : '';
     return `<div class="summary__img">${img}</div>
       <div class="summary__body">
         <h3>${t('rv.summary')}</h3>
@@ -438,20 +446,18 @@
       S.service = b.getAttribute('data-svc');
       const opts = serviceOptions(S.service);
       if (!opts.find(o => o.min === S.duration)) S.duration = opts[0].min;
-      if (!servicePackForDuration(S.service, S.duration)) S.usePack = false;
+      S.offerId = null;
       save(); render();
     });
-    const packCb = root.querySelector('[data-pack]');
-    if (packCb) packCb.onchange = () => { S.usePack = packCb.checked; save(); render(); };
+    root.querySelectorAll('[data-offer]').forEach(b => b.onchange = () => {
+      S.offerId = b.checked ? b.getAttribute('data-offer') : null;
+      save(); render();
+    });
     root.querySelectorAll('[data-loc]').forEach(b => b.onclick = () => {
       if (S.location !== b.getAttribute('data-loc')) { S.dateISO = null; S.time = null; }
       S.location = b.getAttribute('data-loc'); save(); render();
     });
-    root.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => {
-      S.duration = +b.getAttribute('data-dur');
-      if (!servicePackForDuration(S.service, S.duration)) S.usePack = false;
-      save(); render();
-    });
+    root.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { S.duration = +b.getAttribute('data-dur'); save(); render(); });
     root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => {
       const val = b.getAttribute('data-opt');
       S.option = (S.option === val) ? null : val;
@@ -496,6 +502,7 @@
     const conf = root.querySelector('[data-confirm]'); if (conf) conf.onclick = () => {
       const fullName = [S.form.first, S.form.last].filter(Boolean).join(' ');
       const pr = pricing();
+      const selOffer = selectedOffer();
       if (S.promoApplied && EWS) EWS.redeemCoupon(S.promoApplied.code);
       if (EWS && S.form.email && S.service && S.dateISO) {
         EWS.addAppointment({
@@ -503,7 +510,7 @@
           name: fullName,
           city: S.location, service: S.service, duration: S.duration,
           price: pr.final != null ? pr.final : price(S.service, S.duration), dateISO: S.dateISO, time: S.time,
-          packRequested: S.usePack, promoCode: S.promoApplied ? S.promoApplied.code : ''
+          offerLabel: selOffer ? selOffer.label : '', promoCode: S.promoApplied ? S.promoApplied.code : ''
         });
       }
       fetch('/api/contact', {
@@ -516,7 +523,7 @@
           clientEmail: S.form.email,
           phone: S.form.phone || '',
           notes: S.form.notes || '',
-          packRequested: S.usePack,
+          offerLabel: selOffer ? selOffer.label : '',
           promoCode: S.promoApplied ? S.promoApplied.code : '',
           promoPercent: S.promoApplied ? S.promoApplied.percent : '',
           priceOriginal: pr.percent ? pr.base : '',
@@ -535,7 +542,7 @@
     const again = root.querySelector('[data-again]'); if (again) again.onclick = () => {
       S = { step: 1, service: null, option: null, duration: null, location: null, dateISO: null, time: null,
             form: { first: '', last: '', email: '', phone: '', notes: '', consent: false }, gift: S.gift, done: false,
-            usePack: false, promoCode: '', promoApplied: null };
+            offerId: null, promoCode: '', promoApplied: null };
       save(); render();
     };
     const ja = root.querySelector('[data-jump-alert]'); if (ja) ja.onclick = () => {

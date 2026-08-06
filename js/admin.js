@@ -773,6 +773,19 @@
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addur style="margin-top:8px">+ '+esc(t('adm.sv.addDur'))+'</button>'+
         '</div>'+
+        '<div><label>'+esc(t('adm.sv.offers'))+'</label>'+
+          '<div data-e-offers style="display:grid;gap:8px;margin-top:6px">'+
+            S.serviceOffers(id).map(function(o){
+              return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+                '<input class="e-off-label" placeholder="'+esc(t('adm.sv.offerLabel'))+'" value="'+esc(o.label)+'" style="flex:1;min-width:160px">'+
+                '<input type="number" class="e-off-price" placeholder="€" value="'+o.price+'" style="width:72px"> €'+
+                '<span style="font-size:.78rem;color:var(--ink-2)">'+esc(t('adm.sv.offerInsteadOf'))+'</span>'+
+                '<input type="number" class="e-off-regular" placeholder="€" value="'+o.regularPrice+'" style="width:72px"> €'+
+                '<button type="button" class="btn-mini danger e-off-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addoff style="margin-top:8px">+ '+esc(t('adm.sv.addOffer'))+'</button>'+
+        '</div>'+
         '<div><label>'+esc(t('adm.sv.options'))+'</label>'+
           '<div data-e-options style="display:grid;gap:6px;margin-top:6px">'+
             S.serviceOptions(id).map(function(o){
@@ -846,6 +859,19 @@
     [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+    $('[data-e-addoff]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+      row.innerHTML='<input class="e-off-label" placeholder="'+esc(t('adm.sv.offerLabel'))+'" style="flex:1;min-width:160px">'+
+        '<input type="number" class="e-off-price" placeholder="€" style="width:72px"> €'+
+        '<span style="font-size:.78rem;color:var(--ink-2)">'+esc(t('adm.sv.offerInsteadOf'))+'</span>'+
+        '<input type="number" class="e-off-regular" placeholder="€" style="width:72px"> €'+
+        '<button type="button" class="btn-mini danger e-off-del">×</button>';
+      row.querySelector('.e-off-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-offers]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-off-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
     $('[data-e-addopt]',box).addEventListener('click', function(){
       var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center';
       row.innerHTML='<input class="e-opt-txt" style="flex:1">'+
@@ -912,12 +938,18 @@
       var benefitsEmotional = benEmotInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var idealForInputs = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt'));
       var idealFor = idealForInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var offRows = [].slice.call($('[data-e-offers]',box).querySelectorAll('div'));
+      var offers = offRows.map(function(row, i){
+        var label = (row.querySelector('.e-off-label').value||'').trim();
+        return { id:'o'+i, label:label, price:+(row.querySelector('.e-off-price').value)||0,
+          regularPrice:+(row.querySelector('.e-off-regular').value)||0 };
+      }).filter(function(o){ return o.label; });
       var note = ($('[data-e-note]',box).value||'').trim();
       var catEl = box.querySelector('[data-e-category]');
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value, category:catEl?catEl.value:'massage',
         durations: durations.length ? durations : S.serviceDurations(id),
         description: ($('[data-e-desc]',box).value||'').trim(),
-        benefits: benefits, options: options, img:img,
+        benefits: benefits, options: options, offers: offers, img:img,
         benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note });
       close();
     });
@@ -939,7 +971,7 @@
       if(a.duration) bits.push('<span>'+a.duration+' min</span>');
       if(a.time) bits.push('<span>'+esc(a.time)+'</span>');
       if(a.price) bits.push('<span style="font-weight:700;color:var(--accent)">'+a.price+' €</span>');
-      if(a.packRequested) bits.push('<span class="pill-tag warn">'+esc(t('adm.rdv.packflag'))+'</span>');
+      if(a.offerLabel) bits.push('<span class="pill-tag warn">'+esc(a.offerLabel)+'</span>');
       if(a.promoCode) bits.push('<span class="pill-tag ok">'+esc(a.promoCode)+'</span>');
       return '<div class="adm-item" style="flex-direction:column;align-items:stretch;gap:8px">'+
         '<div style="display:flex;align-items:flex-start;gap:12px">'+

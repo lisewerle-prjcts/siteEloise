@@ -61,7 +61,10 @@
       idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau avec douleurs du dos, nuque et épaules.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
     { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/relaxation.png',
-      packs: [{ duration: 120, sessions: 5, price: 600, regularPrice: 750 }],
+      offers: [
+        { id: 'o1', label: 'Pack 5 séances', price: 600, regularPrice: 750 },
+        { id: 'o2', label: 'Pack visage 1h + corps', price: 200, regularPrice: 250 }
+      ],
       name: 'Drainage corps', tag: 'Détox & légèreté',
       description: 'Le drainage lymphatique est une technique très douce visant à stimuler la circulation de la lymphe.',
       benefitsPhysical: ['Réduit la rétention d\'eau.', 'Diminue les sensations de jambes lourdes.', 'Favorise l\'élimination des déchets métaboliques.'],
@@ -69,21 +72,16 @@
       idealFor: ['Jambes lourdes.', 'Rétention d\'eau.', 'Sensation de gonflement.', 'Personnes restant longtemps debout ou assises.'],
       note: '', benefits: [], options: [] },
     { id: 'drainage-visage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage-visage'], img: 'assets/drainage-visage.png',
-      packs: [{ duration: 30, sessions: 5, price: 200, regularPrice: 250 }, { duration: 60, sessions: 5, price: 400, regularPrice: 500 }],
+      offers: [
+        { id: 'o1', label: 'Pack 5 séances de 30 min', price: 200, regularPrice: 250 },
+        { id: 'o2', label: 'Pack 5 séances d\'1h', price: 400, regularPrice: 500 }
+      ],
       name: 'Drainage visage', tag: 'Éclat & légèreté du visage',
       description: 'Le drainage lymphatique du visage est une technique très douce visant à stimuler la circulation de la lymphe au niveau du visage.',
       benefitsPhysical: ['Réduit les poches et gonflements du visage.', 'Favorise l\'élimination des déchets métaboliques.', 'Redonne de l\'éclat au teint.'],
       benefitsEmotional: ['Sensation de légèreté du visage.', 'Effet relaxant sur le système nerveux.'],
       idealFor: ['Visage gonflé au réveil.', 'Peau terne ou fatiguée.', 'Envie d\'un soin doux et relaxant.'],
       note: '', benefits: [], options: [] },
-    { id: 'drainage-mixte', builtin: true, published: true, category: 'drainage', durations: [{ min: 180, price: 200 }], img: 'assets/drainage-visage.png',
-      combo: { regularPrice: 250 },
-      name: 'Pack mixte Visage + Corps', tag: 'Drainage visage 1h + Drainage corps 2h',
-      description: 'Une séance combinée : 1h de drainage lymphatique du visage suivie de 2h de drainage lymphatique du corps, en un seul rendez-vous.',
-      benefitsPhysical: ['Réduit la rétention d\'eau et les gonflements, du visage au corps.', 'Favorise l\'élimination des déchets métaboliques.'],
-      benefitsEmotional: ['Sensation de légèreté généralisée.', 'Effet relaxant sur le système nerveux.'],
-      idealFor: ['Celles qui veulent traiter visage et corps en une seule séance.', 'Occasions particulières, besoin de résultats visibles rapidement.'],
-      note: 'Prix habituel des deux soins réservés séparément : 250€.', benefits: [], options: [] },
     { id: 'ayurvedique', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
       name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',
       description: 'L\'Abhyanga est un massage traditionnel issu de l\'Inde et de l\'Ayurvéda. Il est généralement réalisé avec une grande quantité d\'huile (de sésame chaude de préférence).',
@@ -215,6 +213,28 @@
     }
     localStorage.setItem('ew_migrated_purge_internal_v1', '1');
   }
+  function migrateServicesOffersV1() {
+    if (localStorage.getItem('ew_migrated_offers_v1')) return;
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch (e) {}
+    if (stored && Array.isArray(stored)) {
+      // "drainage-mixte" was briefly a standalone service; it's now an offer under "drainage".
+      stored = stored.filter(function (s) { return s.id !== 'drainage-mixte'; });
+      stored.forEach(function (s) {
+        if (s.offers) return;
+        var def = null;
+        for (var i = 0; i < BUILTIN_SERVICES.length; i++) { if (BUILTIN_SERVICES[i].id === s.id) { def = BUILTIN_SERVICES[i]; break; } }
+        if (def && def.offers) s.offers = def.offers.slice();
+      });
+      // Also add any brand-new builtin service (e.g. "drainage-visage") that a stale
+      // cache predating it wouldn't otherwise pick up without a Supabase round-trip.
+      BUILTIN_SERVICES.forEach(function (def) {
+        if (!stored.some(function (s) { return s.id === def.id; })) stored.push(Object.assign({}, def));
+      });
+      try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch (e) {}
+    }
+    localStorage.setItem('ew_migrated_offers_v1', '1');
+  }
   function migrateServicesV2() {
     var stored = null;
     try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
@@ -254,6 +274,7 @@
     migrateServicesV4();
     migrateServicesV5();
     purgeInternalServiceRows();
+    migrateServicesOffersV1();
     ensureAppointments();
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
@@ -407,7 +428,7 @@
       var rec = { id: uid(), email: (a.email || '').toLowerCase(), name: a.name || '', city: a.city || '',
         service: a.service || '', duration: a.duration || 0, price: a.price || 0,
         dateISO: a.dateISO || '', time: a.time || '', confirmed: false, createdAt: Date.now(),
-        packRequested: !!a.packRequested, promoCode: a.promoCode || '' };
+        offerLabel: a.offerLabel || '', promoCode: a.promoCode || '' };
       list.push(rec); write(KEYS.appts, list); return rec;
     },
     removeAppointment: function (id) {
@@ -441,12 +462,7 @@
     serviceBenefitsEmotional: function(id) { var s = API.service(id); return (s && s.benefitsEmotional) ? s.benefitsEmotional.slice() : []; },
     serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
     serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
-    servicePacks: function(id) { var s = API.service(id); return (s && s.packs && s.packs.length) ? s.packs.slice() : []; },
-    serviceCombo: function(id) { var s = API.service(id); return (s && s.combo) || null; },
-    servicePackForDuration: function(id, duration) {
-      var packs = API.servicePacks(id);
-      return packs.filter(function(p){ return p.duration === duration; })[0] || null;
-    },
+    serviceOffers: function(id) { var s = API.service(id); return (s && s.offers && s.offers.length) ? s.offers.slice() : []; },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;
@@ -883,8 +899,10 @@
       // by deleting it from Supabase so it can't leak into the public services list.
       (rows || []).forEach(function (r) {
         if (r.id && r.id.charAt(0) === '_' && r.id !== '_admin_pw' && r.id !== '_admin_email') DB.del('services', r.id);
+        // "drainage-mixte" was briefly a standalone service; it's now an offer under "drainage".
+        if (r.id === 'drainage-mixte') DB.del('services', r.id);
       });
-      var svcRows = (rows || []).filter(function(r) { return r.id && r.id.charAt(0) !== '_'; });
+      var svcRows = (rows || []).filter(function(r) { return r.id && r.id.charAt(0) !== '_' && r.id !== 'drainage-mixte'; });
       if (svcRows.length) {
         // Same rule as cities: builtins always stay (overridden if edited),
         // custom services come entirely from Supabase so deletions actually stick.
