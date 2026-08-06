@@ -76,6 +76,14 @@
       benefitsEmotional: ['Sensation de légèreté du visage.', 'Effet relaxant sur le système nerveux.'],
       idealFor: ['Visage gonflé au réveil.', 'Peau terne ou fatiguée.', 'Envie d\'un soin doux et relaxant.'],
       note: '', benefits: [], options: [] },
+    { id: 'drainage-mixte', builtin: true, published: true, category: 'drainage', durations: [{ min: 180, price: 200 }], img: 'assets/drainage-visage.png',
+      combo: { regularPrice: 250 },
+      name: 'Pack mixte Visage + Corps', tag: 'Drainage visage 1h + Drainage corps 2h',
+      description: 'Une séance combinée : 1h de drainage lymphatique du visage suivie de 2h de drainage lymphatique du corps, en un seul rendez-vous.',
+      benefitsPhysical: ['Réduit la rétention d\'eau et les gonflements, du visage au corps.', 'Favorise l\'élimination des déchets métaboliques.'],
+      benefitsEmotional: ['Sensation de légèreté généralisée.', 'Effet relaxant sur le système nerveux.'],
+      idealFor: ['Celles qui veulent traiter visage et corps en une seule séance.', 'Occasions particulières, besoin de résultats visibles rapidement.'],
+      note: 'Prix habituel des deux soins réservés séparément : 250€.', benefits: [], options: [] },
     { id: 'ayurvedique', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
       name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',
       description: 'L\'Abhyanga est un massage traditionnel issu de l\'Inde et de l\'Ayurvéda. Il est généralement réalisé avec une grande quantité d\'huile (de sésame chaude de préférence).',
@@ -434,6 +442,7 @@
     serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
     serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
     servicePacks: function(id) { var s = API.service(id); return (s && s.packs && s.packs.length) ? s.packs.slice() : []; },
+    serviceCombo: function(id) { var s = API.service(id); return (s && s.combo) || null; },
     servicePackForDuration: function(id, duration) {
       var packs = API.servicePacks(id);
       return packs.filter(function(p){ return p.duration === duration; })[0] || null;

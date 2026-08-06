@@ -392,7 +392,7 @@
   }
 
   function summary() {
-    const img = S.service ? `<img src="assets/${IMG[S.service]}.png" alt="">` : `<div class="ph">${t('brand.sub')}</div>`;
+    const img = S.service ? `<img src="${svcImg(S.service)}" alt="">` : `<div class="ph">${t('brand.sub')}</div>`;
     const line = (k, v) => `<div class="sum-line"><span class="k">${k}</span><span class="v ${v ? '' : 'empty'}">${v || t('rv.sum.empty')}</span></div>`;
     const pr = pricing();
     const total = pr.base == null ? '—'
@@ -452,7 +452,11 @@
       if (!servicePackForDuration(S.service, S.duration)) S.usePack = false;
       save(); render();
     });
-    root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { S.option = b.getAttribute('data-opt'); save(); render(); });
+    root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => {
+      const val = b.getAttribute('data-opt');
+      S.option = (S.option === val) ? null : val;
+      save(); render();
+    });
     root.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { S.dateISO = b.getAttribute('data-day'); S.time = null; save(); render(); });
     root.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { S.time = b.getAttribute('data-slot'); save(); render(); });
 
