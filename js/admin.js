@@ -377,9 +377,172 @@
       S.addTestimonial({ name:fd.get('name'), city:fd.get('city'), service:fd.get('service'),
         rating:+fd.get('rating'), text:fd.get('text'), status:'approved', lang:lang() });
     });
-    [].slice.call(panel.querySelectorAll('[data-approve]')).forEach(function(b){ b.addEventListener('click',function(){ S.setTestimonialStatus(b.dataset.approve,'approved'); }); });
+    [].slice.call(panel.querySelectorAll('[data-approve]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var id = b.dataset.approve;
+        S.setTestimonialStatus(id, 'approved');
+        var r = S.testimonials().filter(function(x){ return x.id===id; })[0];
+        if (!r || !r.email) { toast(t('adm.r.noemail')); return; }
+        if (S.hasCouponType && S.hasCouponType(r.email, 'review10')) { toast(t('adm.r.rewardskip')); return; }
+        var coupon = S.addCoupon({ type:'review10', percent:10, email:r.email, name:r.name, testimonialId:id, prefix:'MERCI' });
+        fetch('/api/contact', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({
+            type:'coupon', name: r.name||'Cliente', email:r.email, clientEmail:r.email,
+            code:coupon.code, percent:coupon.percent, reason:'avis', message:'Bon de réduction avis'
+          })
+        }).catch(function(){});
+        toast(fill(t('adm.r.rewardsent'), { email:r.email }));
+      });
+    });
     [].slice.call(panel.querySelectorAll('[data-unpub]')).forEach(function(b){ b.addEventListener('click',function(){ S.setTestimonialStatus(b.dataset.unpub,'pending'); }); });
     [].slice.call(panel.querySelectorAll('[data-delrev]')).forEach(function(b){ b.addEventListener('click',function(){ S.removeTestimonial(b.dataset.delrev); }); });
+  }
+
+  /* ====================== PACKS & FIDÉLITÉ TAB ====================== */
+  function sendCoupon(email, name, percent, reason, message){
+    var coupon = S.addCoupon({ type: percent>=100?'loyalty-free':'custom', percent:percent, email:email, name:name, prefix: percent>=100?'FIDELITE':'CADEAU' });
+    fetch('/api/contact', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        type:'coupon', name: name||'Cliente', email:email, clientEmail:email,
+        code: coupon.code, percent: percent, reason: reason||'cadeau', message: message||'Code promo'
+      })
+    }).catch(function(){});
+    return coupon;
+  }
+  function clientAppointmentStats(){
+    var byEmail = {};
+    S.appointments().forEach(function(a){
+      var email = (a.email||'').trim().toLowerCase();
+      if(!email) return;
+      if(!byEmail[email]) byEmail[email] = { email:email, name:a.name||email, count:0 };
+      byEmail[email].count++;
+      if(a.name) byEmail[email].name = a.name;
+    });
+    return Object.keys(byEmail).map(function(k){ return byEmail[k]; }).sort(function(a,b){ return b.count-a.count; });
+  }
+  function renderPacks(){
+    var panel = $('[data-panel="packs"]'); if(!panel) return;
+    var packs = S.packs ? S.packs() : [];
+    var clients = clientAppointmentStats();
+    var coupons = S.coupons ? S.coupons().slice().sort(function(a,b){ return b.createdAt-a.createdAt; }) : [];
+
+    function packItem(p){
+      var done = p.sessionsUsed >= p.sessionsTotal;
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(p.name||p.email)+
+          (done?' <span class="pill-tag ok">'+esc(t('adm.pk.done'))+'</span>':'')+'</div>'+
+        '<div class="adm-item__meta"><span>'+esc(p.email)+'</span><span class="svc">'+esc(svcName(p.service))+'</span>'+
+          '<span>'+p.sessionsUsed+' / '+p.sessionsTotal+' '+esc(t('adm.pk.used'))+'</span>'+
+          '<span>'+p.price+' €</span></div></div>'+
+        '<div class="adm-item__actions">'+
+          (done?'':'<button class="btn-mini solid" data-usepack="'+p.id+'">'+esc(t('adm.pk.useSession'))+'</button>')+
+          (p.sessionsUsed>0?'<button class="btn-mini" data-unusepack="'+p.id+'">'+esc(t('adm.pk.undo'))+'</button>':'')+
+          '<button class="btn-mini danger" data-delpack="'+p.id+'">'+esc(t('adm.pk.del'))+'</button>'+
+        '</div></div>';
+    }
+    function clientItem(c){
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1.05rem">'+esc(c.name)+
+          ' <span class="pill-tag">'+c.count+' '+esc(t('adm.lo.sessions'))+'</span></div>'+
+        '<div class="adm-item__meta"><span>'+esc(c.email)+'</span></div></div>'+
+        '<div class="adm-item__actions">'+
+          '<button class="btn-mini solid" data-sendfree="'+esc(c.email)+'" data-name="'+esc(c.name||'')+'">'+esc(t('adm.lo.sendfree'))+'</button>'+
+          '<div style="display:flex;gap:6px;align-items:center">'+
+            '<input type="number" class="cl-pct" value="10" min="1" max="99" style="width:56px;padding:6px 8px;border:1px solid var(--line);border-radius:8px;font-size:.85rem">'+
+            '<button class="btn-mini" data-sendpct="'+esc(c.email)+'" data-name="'+esc(c.name||'')+'">'+esc(t('adm.lo.sendpct'))+'</button>'+
+          '</div>'+
+        '</div></div>';
+    }
+    function couponItem(c){
+      var typeLabel = c.type==='review10' ? t('adm.co.type.review10') : (c.type==='loyalty-free' ? t('adm.co.type.loyaltyfree') : t('adm.co.type.custom'));
+      return '<div class="adm-item"><div class="adm-item__main">'+
+        '<div class="adm-item__title" style="font-size:1rem;font-family:var(--body);font-weight:700;letter-spacing:.04em">'+esc(c.code)+
+          ' <span class="pill-tag '+(c.used?'':'ok')+'">'+esc(c.used?t('adm.co.used'):t('adm.co.active'))+'</span></div>'+
+        '<div class="adm-item__meta"><span>'+esc(typeLabel)+' · '+c.percent+'%</span><span>'+esc(c.email)+'</span></div></div>'+
+        '<div class="adm-item__actions">'+
+          '<button class="btn-mini" data-copycode="'+esc(c.code)+'">'+esc(t('adm.co.copy'))+'</button>'+
+          '<button class="btn-mini danger" data-delcoupon="'+c.id+'">'+esc(t('adm.co.del'))+'</button>'+
+        '</div></div>';
+    }
+
+    panel.innerHTML =
+      '<div class="adm-cols"><div class="adm-card">'+
+        '<h3>'+esc(t('adm.pk.add'))+'</h3>'+
+        '<form class="adm-form" data-addpack>'+
+          '<div><label>'+esc(t('adm.pk.name'))+'</label><input name="pname" required></div>'+
+          '<div><label>'+esc(t('adm.pk.email'))+'</label><input name="pemail" type="email" required></div>'+
+          '<div><label>'+esc(t('adm.pk.service'))+'</label>'+svcSelect('pservice','drainage')+'</div>'+
+          '<div class="row2">'+
+            '<div><label>'+esc(t('adm.pk.sessions'))+'</label><input type="number" name="psessions" value="5" min="1"></div>'+
+            '<div><label>'+esc(t('adm.pk.price'))+'</label><input type="number" name="pprice" value="600" min="0"></div>'+
+          '</div>'+
+          '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.pk.save'))+'</button>'+
+        '</form></div>'+
+        '<div><div class="adm-sub">'+esc(t('adm.pk.list'))+'</div>'+
+          '<div class="adm-list">'+(packs.length?packs.map(packItem).join(''):'<div class="adm-empty">'+esc(t('adm.pk.none'))+'</div>')+'</div>'+
+        '</div></div>'+
+      '<div class="adm-cols" style="margin-top:32px"><div class="adm-card">'+
+        '<h3>'+esc(t('adm.co.add'))+'</h3>'+
+        '<form class="adm-form" data-addcoupon>'+
+          '<div><label>'+esc(t('adm.pk.name'))+'</label><input name="cname"></div>'+
+          '<div><label>'+esc(t('adm.pk.email'))+'</label><input name="cemail" type="email" required></div>'+
+          '<div><label>'+esc(t('adm.co.percent'))+'</label><input type="number" name="cpercent" value="10" min="1" max="100">'+
+            '<small style="color:var(--ink-3);font-size:.78rem">'+esc(t('adm.co.percenthint'))+'</small></div>'+
+          '<button class="btn btn-primary btn-sm" type="submit">'+esc(t('adm.co.save'))+'</button>'+
+        '</form></div>'+
+        '<div><div class="adm-sub">'+esc(t('adm.co.title'))+'</div>'+
+          '<div class="adm-list">'+(coupons.length?coupons.map(couponItem).join(''):'<div class="adm-empty">'+esc(t('adm.co.none'))+'</div>')+'</div>'+
+        '</div></div>'+
+      '<div class="adm-sub" style="margin-top:32px">'+esc(t('adm.lo.title'))+'</div>'+
+      '<div class="adm-list">'+(clients.length?clients.map(clientItem).join(''):'<div class="adm-empty">'+esc(t('adm.lo.none'))+'</div>')+'</div>';
+
+    var f = $('[data-addpack]', panel);
+    f.addEventListener('submit', function(e){
+      e.preventDefault();
+      var fd = new FormData(f);
+      if(!(fd.get('pemail')||'').trim()) return;
+      S.addPack({ name:fd.get('pname'), email:fd.get('pemail'), service:fd.get('pservice'),
+        sessionsTotal:+(fd.get('psessions')||5), price:+(fd.get('pprice')||0) });
+      f.reset();
+    });
+    [].slice.call(panel.querySelectorAll('[data-usepack]')).forEach(function(b){ b.addEventListener('click', function(){ S.usePackSession(b.dataset.usepack); }); });
+    [].slice.call(panel.querySelectorAll('[data-unusepack]')).forEach(function(b){ b.addEventListener('click', function(){ S.unusePackSession(b.dataset.unusepack); }); });
+    [].slice.call(panel.querySelectorAll('[data-delpack]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.pk.delconfirm'))) S.removePack(b.dataset.delpack); }); });
+
+    var cf = $('[data-addcoupon]', panel);
+    cf.addEventListener('submit', function(e){
+      e.preventDefault();
+      var fd = new FormData(cf);
+      var email = (fd.get('cemail')||'').trim();
+      if(!email) return;
+      var pct = Math.min(100, Math.max(1, +(fd.get('cpercent')||10)));
+      sendCoupon(email, (fd.get('cname')||'').trim(), pct, 'cadeau', 'Code promo créé par Eloïse');
+      toast(fill(t('adm.co.createok'), { email:email }));
+      cf.reset();
+    });
+
+    [].slice.call(panel.querySelectorAll('[data-sendfree]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var email = b.dataset.sendfree, name = b.dataset.name;
+        if(!confirm(fill(t('adm.lo.sendfreeconfirm'), { name: name || email }))) return;
+        sendCoupon(email, name, 100, 'fidelite', 'Séance offerte');
+        toast(fill(t('adm.lo.sendfreeok'), { email:email }));
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-sendpct]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        var email = b.dataset.sendpct, name = b.dataset.name;
+        var row = b.closest('.adm-item__actions');
+        var pct = Math.min(99, Math.max(1, +(row.querySelector('.cl-pct').value || 10)));
+        if(!confirm(fill(t('adm.lo.sendpctconfirm'), { name: name || email, percent: pct }))) return;
+        sendCoupon(email, name, pct, 'cadeau', 'Code promo -' + pct + '%');
+        toast(fill(t('adm.lo.sendpctok'), { email:email, percent: pct }));
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-copycode]')).forEach(function(b){ b.addEventListener('click', function(){ copyText(b.dataset.copycode); toast(t('adm.n.copied')); }); });
+    [].slice.call(panel.querySelectorAll('[data-delcoupon]')).forEach(function(b){ b.addEventListener('click', function(){ if(confirm(t('adm.co.delconfirm'))) S.removeCoupon(b.dataset.delcoupon); }); });
   }
 
   /* ====================== INSTAGRAM TAB ====================== */
@@ -673,6 +836,19 @@
           '</div>'+
           '<button type="button" class="btn-mini" data-e-addur style="margin-top:8px">+ '+esc(t('adm.sv.addDur'))+'</button>'+
         '</div>'+
+        '<div><label>'+esc(t('adm.sv.offers'))+'</label>'+
+          '<div data-e-offers style="display:grid;gap:8px;margin-top:6px">'+
+            S.serviceOffers(id).map(function(o){
+              return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'+
+                '<input class="e-off-label" placeholder="'+esc(t('adm.sv.offerLabel'))+'" value="'+esc(o.label)+'" style="flex:1;min-width:160px">'+
+                '<input type="number" class="e-off-price" placeholder="€" value="'+o.price+'" style="width:72px"> €'+
+                '<span style="font-size:.78rem;color:var(--ink-2)">'+esc(t('adm.sv.offerInsteadOf'))+'</span>'+
+                '<input type="number" class="e-off-regular" placeholder="€" value="'+o.regularPrice+'" style="width:72px"> €'+
+                '<button type="button" class="btn-mini danger e-off-del">×</button></div>';
+            }).join('')+
+          '</div>'+
+          '<button type="button" class="btn-mini" data-e-addoff style="margin-top:8px">+ '+esc(t('adm.sv.addOffer'))+'</button>'+
+        '</div>'+
         '<div><label>'+esc(t('adm.sv.options'))+'</label>'+
           '<div data-e-options style="display:grid;gap:6px;margin-top:6px">'+
             S.serviceOptions(id).map(function(o){
@@ -750,6 +926,19 @@
       $('[data-e-durations]',box).appendChild(row);
     });
     [].slice.call(box.querySelectorAll('.e-dur-del')).forEach(function(b){
+      b.addEventListener('click',function(){ b.closest('div').remove(); });
+    });
+    $('[data-e-addoff]',box).addEventListener('click', function(){
+      var row = document.createElement('div'); row.style.cssText='display:flex;gap:8px;align-items:center;flex-wrap:wrap';
+      row.innerHTML='<input class="e-off-label" placeholder="'+esc(t('adm.sv.offerLabel'))+'" style="flex:1;min-width:160px">'+
+        '<input type="number" class="e-off-price" placeholder="€" style="width:72px"> €'+
+        '<span style="font-size:.78rem;color:var(--ink-2)">'+esc(t('adm.sv.offerInsteadOf'))+'</span>'+
+        '<input type="number" class="e-off-regular" placeholder="€" style="width:72px"> €'+
+        '<button type="button" class="btn-mini danger e-off-del">×</button>';
+      row.querySelector('.e-off-del').addEventListener('click',function(){ row.remove(); });
+      $('[data-e-offers]',box).appendChild(row);
+    });
+    [].slice.call(box.querySelectorAll('.e-off-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
     $('[data-e-addopt]',box).addEventListener('click', function(){
@@ -848,6 +1037,12 @@
       var benefitsEmotional = benEmotInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var idealForInputs = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt'));
       var idealFor = idealForInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
+      var offRows = [].slice.call($('[data-e-offers]',box).querySelectorAll('div'));
+      var offers = offRows.map(function(row, i){
+        var label = (row.querySelector('.e-off-label').value||'').trim();
+        return { id:'o'+i, label:label, price:+(row.querySelector('.e-off-price').value)||0,
+          regularPrice:+(row.querySelector('.e-off-regular').value)||0 };
+      }).filter(function(o){ return o.label; });
       var note = ($('[data-e-note]',box).value||'').trim();
       var catEl = box.querySelector('[data-e-category]');
       var splitLines = function(v){ return (v||'').split('\n').map(function(s){ return s.trim(); }).filter(Boolean); };
@@ -866,7 +1061,7 @@
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value, category:catEl?catEl.value:'massage',
         durations: durations.length ? durations : S.serviceDurations(id),
         description: ($('[data-e-desc]',box).value||'').trim(),
-        benefits: benefits, options: options, img:img,
+        benefits: benefits, options: options, offers: offers, img:img,
         benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note,
         translations: translations });
       close();
@@ -889,6 +1084,8 @@
       if(a.duration) bits.push('<span>'+a.duration+' min</span>');
       if(a.time) bits.push('<span>'+esc(a.time)+'</span>');
       if(a.price) bits.push('<span style="font-weight:700;color:var(--accent)">'+a.price+' €</span>');
+      if(a.offerLabel) bits.push('<span class="pill-tag warn">'+esc(a.offerLabel)+'</span>');
+      if(a.promoCode) bits.push('<span class="pill-tag ok">'+esc(a.promoCode)+'</span>');
       return '<div class="adm-item" style="flex-direction:column;align-items:stretch;gap:8px">'+
         '<div style="display:flex;align-items:flex-start;gap:12px">'+
           '<div class="adm-item__main" style="flex:1">'+
@@ -906,6 +1103,11 @@
             (a.confirmed
               ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.confirmed'))+'</span>'
               : '<button class="btn-mini solid" data-confirmrdv="'+a.id+'" data-email="'+esc(a.email||'')+'" data-name="'+esc(a.name||'')+'" data-service="'+esc(svcName(a.service)||'')+'" data-location="'+esc(cityName(a.city)||'')+'" data-date="'+esc(a.dateISO||'')+'" data-time="'+esc(a.time||'')+'" data-duration="'+esc(a.duration||'')+'" data-price="'+esc(a.price||'')+'">'+esc(t('adm.rdv.confirm'))+'</button>')+
+            (a.email
+              ? (a.loyaltyDone
+                  ? '<span class="pill-tag ok" style="font-size:.72rem">'+esc(t('adm.rdv.loyaltydone'))+'</span>'
+                  : '<button class="btn-mini" data-loyaltyrdv="'+a.id+'" data-email="'+esc(a.email)+'" data-name="'+esc(a.name||'')+'">'+esc(t('adm.rdv.loyalty'))+'</button>')
+              : '')+
             '<button class="btn-mini danger" data-cancelrdv="'+a.id+'">'+esc(t('adm.rdv.cancel'))+'</button>'+
           '</div>'+
         '</div>'+
@@ -1004,6 +1206,25 @@
     [].slice.call(panel.querySelectorAll('[data-cancelrdv]')).forEach(function(b){
       b.addEventListener('click', function(){
         if(confirm(t('adm.rdv.cancelconfirm'))) S.removeAppointment(b.dataset.cancelrdv);
+      });
+    });
+    [].slice.call(panel.querySelectorAll('[data-loyaltyrdv]')).forEach(function(b){
+      b.addEventListener('click', function(){
+        if(!confirm(fill(t('adm.rdv.loyaltyconfirm'), { name: b.dataset.name || b.dataset.email }))) return;
+        var res = S.addLoyaltySession(b.dataset.email, b.dataset.name);
+        S.updateAppointment(b.dataset.loyaltyrdv, { loyaltyDone: true });
+        if (res && res.earnedCoupon) {
+          fetch('/api/contact', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              type:'coupon', name: b.dataset.name||'Cliente', email:b.dataset.email, clientEmail:b.dataset.email,
+              code: res.earnedCoupon.code, percent: 100, reason:'fidelite', message:'Séance offerte fidélité'
+            })
+          }).catch(function(){});
+          toast(t('adm.rdv.loyaltyfree'));
+        } else {
+          toast(t('adm.rdv.loyaltyok'));
+        }
       });
     });
     [].slice.call(panel.querySelectorAll('[data-confirmrdv]')).forEach(function(b){
@@ -1124,6 +1345,7 @@
   function safeRun(fn) { try { fn(); } catch(e) { console.error(fn.name, e); } }
   function render(){
     safeRun(renderAppointments); safeRun(renderDates); safeRun(renderSubs); safeRun(renderReviews);
+    safeRun(renderPacks);
     safeRun(renderInsta); safeRun(renderPlaces); safeRun(renderServices); safeRun(renderSecurity);
     updateBadges();
     // NOTE: do not call ewApplyI18n() here — dynamic panels already use t().

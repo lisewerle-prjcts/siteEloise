@@ -15,6 +15,9 @@
     cities:    'ew_cities_v1',
     appts:     'ew_appointments_v1',
     services:  'ew_services_v2',   // v2: durations array replaces price+unit
+    packs:     'ew_packs_v1',
+    coupons:   'ew_coupons_v1',
+    loyalty:   'ew_loyalty_v1',
     seeded:    'ew_seeded_v1'
   };
 
@@ -30,7 +33,7 @@
     'balinais':    [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
     'deep':        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
     'drainage':    [{min:60,price:80},{min:120,price:150}],
-    'drainage-visage': [{min:60,price:80}],
+    'drainage-visage': [{min:30,price:50},{min:60,price:100}],
     'ayurvedique': [{min:60,price:70},{min:90,price:100}],
     'yoga':        [{min:60,price:65},{min:90,price:90}]
   };
@@ -57,12 +60,27 @@
       benefitsEmotional: ['Très apprécié des sportifs.', 'Aide à récupérer après des efforts importants.', 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.'],
       idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau? TMS ( Troubles musculosquelettiques) avec douleurs du dos, de nuque, aux épaules et aux trapèzes.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
-    { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/drainage-visage.png',
-      name: 'Drainage lymphatique', tag: 'Détox & légèreté',
+    { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/relaxation.png',
+      offers: [
+        { id: 'o1', label: 'Pack 5 séances', price: 600, regularPrice: 750 },
+        { id: 'o2', label: 'Pack visage 1h + corps', price: 200, regularPrice: 250 }
+      ],
+      name: 'Drainage corps', tag: 'Détox & légèreté',
       description: 'Le drainage lymphatique est une technique très douce visant à stimuler la circulation de la lymphe.',
       benefitsPhysical: ['Réduit la rétention d\'eau.', 'Diminue les sensations de jambes lourdes.', 'Favorise l\'élimination des déchets métaboliques.'],
       benefitsEmotional: ['Aide à diminuer certains gonflements.', 'Peut affiner temporairement la silhouette lorsque celle-ci est liée à la rétention hydrique.', 'Améliore l\'aspect de certaines zones congestionnées.', 'Sensation de légèreté.', 'Effet relaxant sur le système nerveux.'],
       idealFor: ['Jambes lourdes.', 'Rétention d\'eau.', 'Sensation de gonflement.', 'Personnes restant longtemps debout ou assises.'],
+      note: '', benefits: [], options: [] },
+    { id: 'drainage-visage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage-visage'], img: 'assets/drainage-visage.png',
+      offers: [
+        { id: 'o1', label: 'Pack 5 séances de 30 min', price: 200, regularPrice: 250 },
+        { id: 'o2', label: 'Pack 5 séances d\'1h', price: 400, regularPrice: 500 }
+      ],
+      name: 'Drainage visage', tag: 'Éclat & légèreté du visage',
+      description: 'Le drainage lymphatique du visage est une technique très douce visant à stimuler la circulation de la lymphe au niveau du visage.',
+      benefitsPhysical: ['Réduit les poches et gonflements du visage.', 'Favorise l\'élimination des déchets métaboliques.', 'Redonne de l\'éclat au teint.'],
+      benefitsEmotional: ['Sensation de légèreté du visage.', 'Effet relaxant sur le système nerveux.'],
+      idealFor: ['Visage gonflé au réveil.', 'Peau terne ou fatiguée.', 'Envie d\'un soin doux et relaxant.'],
       note: '', benefits: [], options: [] },
     { id: 'ayurvedique', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
       name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',
@@ -77,14 +95,7 @@
       benefitsPhysical: ['Améliore la souplesse et la mobilité.', 'Renforce les muscles profonds.', 'Améliore la posture et l\'alignement corporel.', 'Favorise une meilleure respiration.'],
       benefitsEmotional: ['Réduit le stress et l\'anxiété.', 'Favorise la pleine conscience.', 'Procure un sentiment de calme et de centrage.', 'Aide à mieux se connaître et se reconnecter à soi.'],
       idealFor: ['Débutants souhaitant découvrir le yoga.', 'Personnes cherchant à compléter leur pratique sportive.', 'Ceux qui souhaitent un accompagnement personnalisé.'],
-      note: 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.', benefits: [], options: [] },
-    { id: 'drainage-visage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage-visage'], img: 'assets/drainage-visage.png',
-      name: 'Drainage visage', tag: 'Éclat & légèreté du visage',
-      description: 'Le drainage lymphatique du visage est une technique très douce visant à stimuler la circulation de la lymphe au niveau du visage.',
-      benefitsPhysical: ['Réduit les poches et gonflements du visage.', 'Favorise l\'élimination des déchets métaboliques.', 'Redonne de l\'éclat au teint.'],
-      benefitsEmotional: ['Sensation de légèreté du visage.', 'Effet relaxant sur le système nerveux.'],
-      idealFor: ['Visage gonflé au réveil.', 'Peau terne ou fatiguée.', 'Envie d\'un soin doux et relaxant.'],
-      note: '', benefits: [], options: [] }
+      note: 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.', benefits: [], options: [] }
   ];
 
   /* ---------- low-level ---------- */
@@ -95,6 +106,21 @@
   function writeRaw(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
   function write(key, val) { writeRaw(key, val); emit(); }
   function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 7); }
+  function genCode(prefix) {
+    var chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    var s = '';
+    for (var i = 0; i < 4; i++) s += chars[Math.floor(Math.random() * chars.length)];
+    return (prefix || 'PROMO') + '-' + s;
+  }
+  function addCouponInternal(c) {
+    var list = read(KEYS.coupons, []);
+    var code;
+    do { code = genCode(c.prefix); } while (list.some(function (x) { return x.code === code; }));
+    var rec = { id: uid(), code: code, type: c.type || 'custom', percent: c.percent != null ? c.percent : 10,
+      email: (c.email || '').trim().toLowerCase(), name: (c.name || '').trim(),
+      testimonialId: c.testimonialId || '', used: false, usedAt: null, createdAt: Date.now() };
+    list.push(rec); write(KEYS.coupons, list); return rec;
+  }
   function slug(s) {
     return (s || '').toString().toLowerCase().trim()
       .normalize('NFD').replace(/[̀-ͯ]/g, '')
@@ -175,6 +201,40 @@
     }
     localStorage.setItem('ew_migrated_v5', '1');
   }
+  function purgeInternalServiceRows() {
+    if (localStorage.getItem('ew_migrated_purge_internal_v1')) return;
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch (e) {}
+    if (stored && Array.isArray(stored)) {
+      var cleaned = stored.filter(function (s) { return !(s.id && s.id.charAt(0) === '_'); });
+      if (cleaned.length !== stored.length) {
+        try { localStorage.setItem(KEYS.services, JSON.stringify(cleaned)); } catch (e) {}
+      }
+    }
+    localStorage.setItem('ew_migrated_purge_internal_v1', '1');
+  }
+  function migrateServicesOffersV1() {
+    if (localStorage.getItem('ew_migrated_offers_v1')) return;
+    var stored = null;
+    try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch (e) {}
+    if (stored && Array.isArray(stored)) {
+      // "drainage-mixte" was briefly a standalone service; it's now an offer under "drainage".
+      stored = stored.filter(function (s) { return s.id !== 'drainage-mixte'; });
+      stored.forEach(function (s) {
+        if (s.offers) return;
+        var def = null;
+        for (var i = 0; i < BUILTIN_SERVICES.length; i++) { if (BUILTIN_SERVICES[i].id === s.id) { def = BUILTIN_SERVICES[i]; break; } }
+        if (def && def.offers) s.offers = def.offers.slice();
+      });
+      // Also add any brand-new builtin service (e.g. "drainage-visage") that a stale
+      // cache predating it wouldn't otherwise pick up without a Supabase round-trip.
+      BUILTIN_SERVICES.forEach(function (def) {
+        if (!stored.some(function (s) { return s.id === def.id; })) stored.push(Object.assign({}, def));
+      });
+      try { localStorage.setItem(KEYS.services, JSON.stringify(stored)); } catch (e) {}
+    }
+    localStorage.setItem('ew_migrated_offers_v1', '1');
+  }
   function migrateServicesV2() {
     var stored = null;
     try { stored = JSON.parse(localStorage.getItem(KEYS.services)); } catch(e) {}
@@ -213,6 +273,8 @@
     migrateServicesV3();
     migrateServicesV4();
     migrateServicesV5();
+    purgeInternalServiceRows();
+    migrateServicesOffersV1();
     ensureAppointments();
     if (localStorage.getItem(KEYS.seeded)) { emit(); return; }
 
@@ -389,7 +451,8 @@
       var list = read(KEYS.appts, []);
       var rec = { id: uid(), email: (a.email || '').toLowerCase(), name: a.name || '', city: a.city || '',
         service: a.service || '', duration: a.duration || 0, price: a.price || 0,
-        dateISO: a.dateISO || '', time: a.time || '', confirmed: false, createdAt: Date.now() };
+        dateISO: a.dateISO || '', time: a.time || '', confirmed: false, createdAt: Date.now(),
+        offerLabel: a.offerLabel || '', promoCode: a.promoCode || '' };
       list.push(rec); write(KEYS.appts, list); return rec;
     },
     removeAppointment: function (id) {
@@ -407,8 +470,8 @@
     },
 
     /* services */
-    services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
-    publishedServices: function () { return API.services().filter(function (s) { return s.published !== false && s.id !== '_admin_pw'; }); },
+    services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice().filter(function (s) { return !(s.id && s.id.charAt(0) === '_'); }); },
+    publishedServices: function () { return API.services().filter(function (s) { return s.published !== false; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
     serviceName: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
       var custom = customTr(s, 'name'); if (custom) return custom;
@@ -443,6 +506,7 @@
       var custom = customTr(s, 'note'); if (custom) return custom;
       if (s && s.builtin && def && s.note && s.note === def.note) { var k = 'svc.' + id + '.note'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.note; }
       return (s && s.note) || ''; },
+    serviceOffers: function(id) { var s = API.service(id); return (s && s.offers && s.offers.length) ? s.offers.slice() : []; },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;
@@ -543,7 +607,7 @@
     },
     addTestimonial: function (t) {
       var list = read(KEYS.testi, []);
-      var rec = { id: uid(), name: (t.name || '').trim(), city: t.city || '', service: t.service || '',
+      var rec = { id: uid(), name: (t.name || '').trim(), email: (t.email || '').trim().toLowerCase(), city: t.city || '', service: t.service || '',
         rating: t.rating || 5, text: (t.text || '').trim(), lang: t.lang || (window.ewLang ? window.ewLang() : 'fr'),
         status: t.status || 'pending', createdAt: Date.now() };
       list.push(rec); write(KEYS.testi, list); return rec;
@@ -580,6 +644,81 @@
       if (c.dateId) API.updateDate(c.dateId, { notified: true });
     },
 
+    /* packs (forfaits) */
+    packs: function () { return read(KEYS.packs, []); },
+    packsForEmail: function (email) {
+      email = (email || '').toLowerCase();
+      return read(KEYS.packs, []).filter(function (p) { return (p.email || '').toLowerCase() === email; });
+    },
+    addPack: function (p) {
+      var list = read(KEYS.packs, []);
+      var rec = { id: uid(), email: (p.email || '').trim().toLowerCase(), name: (p.name || '').trim(),
+        service: p.service || 'drainage', sessionsTotal: p.sessionsTotal || 5, sessionsUsed: 0,
+        price: p.price || 0, createdAt: Date.now() };
+      list.push(rec); write(KEYS.packs, list); return rec;
+    },
+    usePackSession: function (id) {
+      var list = read(KEYS.packs, []);
+      list.forEach(function (p) { if (p.id === id && p.sessionsUsed < p.sessionsTotal) p.sessionsUsed++; });
+      write(KEYS.packs, list);
+    },
+    unusePackSession: function (id) {
+      var list = read(KEYS.packs, []);
+      list.forEach(function (p) { if (p.id === id && p.sessionsUsed > 0) p.sessionsUsed--; });
+      write(KEYS.packs, list);
+    },
+    removePack: function (id) {
+      write(KEYS.packs, read(KEYS.packs, []).filter(function (p) { return p.id !== id; }));
+    },
+
+    /* coupons */
+    coupons: function () { return read(KEYS.coupons, []); },
+    couponByCode: function (code) {
+      code = (code || '').trim().toUpperCase();
+      if (!code) return null;
+      return read(KEYS.coupons, []).filter(function (c) { return c.code === code; })[0] || null;
+    },
+    hasCouponType: function (email, type) {
+      email = (email || '').toLowerCase();
+      if (!email) return false;
+      return read(KEYS.coupons, []).some(function (c) { return c.type === type && (c.email || '').toLowerCase() === email; });
+    },
+    addCoupon: function (c) { return addCouponInternal(c); },
+    redeemCoupon: function (code) {
+      var list = read(KEYS.coupons, []);
+      code = (code || '').trim().toUpperCase();
+      var rec = null;
+      list.forEach(function (c) { if (c.code === code) { c.used = true; c.usedAt = Date.now(); rec = c; } });
+      write(KEYS.coupons, list); return rec;
+    },
+    removeCoupon: function (id) {
+      write(KEYS.coupons, read(KEYS.coupons, []).filter(function (c) { return c.id !== id; }));
+    },
+
+    /* carte de fidélité (loyalty) — 1 point / séance effectuée, séance offerte tous les 10 points */
+    loyalty: function () { return read(KEYS.loyalty, []); },
+    loyaltyForEmail: function (email) {
+      email = (email || '').toLowerCase();
+      return read(KEYS.loyalty, []).filter(function (l) { return l.email === email; })[0] || null;
+    },
+    addLoyaltySession: function (email, name) {
+      email = (email || '').trim().toLowerCase();
+      if (!email) return null;
+      var list = read(KEYS.loyalty, []);
+      var rec = list.filter(function (l) { return l.email === email; })[0];
+      if (!rec) { rec = { id: uid(), email: email, name: name || '', sessionsCompleted: 0, rewardsIssued: 0, createdAt: Date.now() }; list.push(rec); }
+      rec.sessionsCompleted++;
+      if (name) rec.name = name;
+      var earnedCoupon = null;
+      var newRewards = Math.floor(rec.sessionsCompleted / 10);
+      if (newRewards > rec.rewardsIssued) {
+        rec.rewardsIssued = newRewards;
+        earnedCoupon = addCouponInternal({ type: 'loyalty-free', percent: 100, email: email, name: rec.name, prefix: 'FIDELITE' });
+      }
+      write(KEYS.loyalty, list);
+      return { record: rec, earnedCoupon: earnedCoupon };
+    },
+
     resetAll: function () {
       Object.keys(KEYS).forEach(function (k) { localStorage.removeItem(KEYS[k]); });
       seed();
@@ -607,7 +746,10 @@
       { key: KEYS.dates,  table: 'dates'        },
       { key: KEYS.testi,  table: 'testimonials' },
       { key: KEYS.insta,  table: 'insta'        },
-      { key: KEYS.cities, table: 'cities'       }
+      { key: KEYS.cities, table: 'cities'       },
+      { key: KEYS.packs,   table: 'packs'   },
+      { key: KEYS.coupons, table: 'coupons' },
+      { key: KEYS.loyalty, table: 'loyalty' }
     ];
 
     /* ---- wrap write methods ---- */
@@ -726,6 +868,41 @@
       if (c) DB.save('cities', c);
     };
 
+    /* ---- packs ---- */
+    var _addPack = API.addPack;
+    API.addPack = function (p) { var r = _addPack.call(API, p); if (r) DB.save('packs', r); return r; };
+    var _usePack = API.usePackSession;
+    API.usePackSession = function (id) {
+      _usePack.call(API, id);
+      var p = read(KEYS.packs, []).filter(function (x) { return x.id === id; })[0];
+      if (p) DB.save('packs', p);
+    };
+    var _unusePack = API.unusePackSession;
+    API.unusePackSession = function (id) {
+      _unusePack.call(API, id);
+      var p = read(KEYS.packs, []).filter(function (x) { return x.id === id; })[0];
+      if (p) DB.save('packs', p);
+    };
+    var _remPack = API.removePack;
+    API.removePack = function (id) { _remPack.call(API, id); DB.del('packs', id); };
+
+    /* ---- coupons ---- */
+    var _addCoupon = API.addCoupon;
+    API.addCoupon = function (c) { var r = _addCoupon.call(API, c); if (r) DB.save('coupons', r); return r; };
+    var _redeemCoupon = API.redeemCoupon;
+    API.redeemCoupon = function (code) { var r = _redeemCoupon.call(API, code); if (r) DB.save('coupons', r); return r; };
+    var _remCoupon = API.removeCoupon;
+    API.removeCoupon = function (id) { _remCoupon.call(API, id); DB.del('coupons', id); };
+
+    /* ---- loyalty ---- */
+    var _addLoyalty = API.addLoyaltySession;
+    API.addLoyaltySession = function (email, name) {
+      var r = _addLoyalty.call(API, email, name);
+      if (r && r.record) DB.save('loyalty', r.record);
+      if (r && r.earnedCoupon) DB.save('coupons', r.earnedCoupon);
+      return r;
+    };
+
     /* ---- insta ---- */
     var _addInsta = API.addInsta;
     API.addInsta = function (p) {
@@ -761,9 +938,15 @@
           if (!emailEntry.email) DB.save('services', { id: '_admin_email', email: emailVal });
         }
       }
-      // Merge non-password service rows into local store
-      // DB.load already unwraps data, so each row IS the service object
-      var svcRows = (rows || []).filter(function(r) { return r.id && r.id !== '_admin_pw' && r.id !== '_admin_email'; });
+      // Merge non-internal service rows into local store. Any id starting with "_"
+      // (other than the two recognized keys above) is a stray internal row — self-heal
+      // by deleting it from Supabase so it can't leak into the public services list.
+      (rows || []).forEach(function (r) {
+        if (r.id && r.id.charAt(0) === '_' && r.id !== '_admin_pw' && r.id !== '_admin_email') DB.del('services', r.id);
+        // "drainage-mixte" was briefly a standalone service; it's now an offer under "drainage".
+        if (r.id === 'drainage-mixte') DB.del('services', r.id);
+      });
+      var svcRows = (rows || []).filter(function(r) { return r.id && r.id.charAt(0) !== '_' && r.id !== 'drainage-mixte'; });
       if (svcRows.length) {
         // Same rule as cities: builtins always stay (overridden if edited),
         // custom services come entirely from Supabase so deletions actually stick.
