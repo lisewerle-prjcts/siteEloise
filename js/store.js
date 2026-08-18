@@ -506,7 +506,10 @@
       var custom = customTr(s, 'note'); if (custom) return custom;
       if (s && s.builtin && def && s.note && s.note === def.note) { var k = 'svc.' + id + '.note'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.note; }
       return (s && s.note) || ''; },
-    serviceOffers: function(id) { var s = API.service(id); return (s && s.offers && s.offers.length) ? s.offers.slice() : []; },
+    serviceOffers: function(id) { var s = API.service(id); if (!s || !s.offers || !s.offers.length) return [];
+      var custom = customTr(s, 'offerLabels');
+      if (custom) return s.offers.map(function(o, i) { return custom[i] ? Object.assign({}, o, { label: custom[i] }) : Object.assign({}, o); });
+      return s.offers.slice(); },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;

@@ -801,6 +801,7 @@
       '<div class="adm-sub">'+esc(label)+'</div>'+
       '<div><label>'+esc(t('adm.sv.name'))+'</label><input class="e-'+lang+'-name" value="'+esc(tr.name||'')+'"></div>'+
       '<div><label>'+esc(t('adm.sv.tag'))+'</label><input class="e-'+lang+'-tag" value="'+esc(tr.tag||'')+'"></div>'+
+      ((s.offers && s.offers.length) ? '<div><label>'+esc(t('adm.sv.offers'))+' — '+esc(t('adm.sv.onePerLine'))+'</label><textarea class="e-'+lang+'-offers" style="min-height:60px">'+esc(joinLines(tr.offerLabels))+'</textarea></div>' : '')+
       '<div><label>'+esc(t('adm.sv.description'))+'</label><textarea class="e-'+lang+'-desc" style="min-height:80px">'+esc(tr.description||'')+'</textarea></div>'+
       '<div><label>'+esc(t('adm.sv.benefitsPhysical'))+' — '+esc(t('adm.sv.onePerLine'))+'</label><textarea class="e-'+lang+'-physical" style="min-height:70px">'+esc(joinLines(tr.benefitsPhysical))+'</textarea></div>'+
       '<div><label>'+esc(t('adm.sv.benefitsEmotional'))+' — '+esc(t('adm.sv.onePerLine'))+'</label><textarea class="e-'+lang+'-emotional" style="min-height:70px">'+esc(joinLines(tr.benefitsEmotional))+'</textarea></div>'+
@@ -1000,8 +1001,9 @@
       var physItems = [].slice.call($('[data-e-ben-phys]',box).querySelectorAll('.e-ben-phys-txt')).map(function(i){ return i.value; });
       var emotItems = [].slice.call($('[data-e-ben-emot]',box).querySelectorAll('.e-ben-emot-txt')).map(function(i){ return i.value; });
       var idealItems = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt')).map(function(i){ return i.value; });
+      var offerItems = [].slice.call($('[data-e-offers]',box).querySelectorAll('.e-off-label')).map(function(i){ return i.value; });
       var note = $('[data-e-note]',box).value;
-      var texts = [name, tag, desc].concat(physItems, emotItems, idealItems, [note]);
+      var texts = [name, tag, desc].concat(physItems, emotItems, idealItems, offerItems, [note]);
       fetch('/api/translate', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ texts: texts })
@@ -1016,6 +1018,9 @@
           $('.e-'+lang+'-physical',box).value = physItems.map(function(){ return arr[i++] || ''; }).join('\n');
           $('.e-'+lang+'-emotional',box).value = emotItems.map(function(){ return arr[i++] || ''; }).join('\n');
           $('.e-'+lang+'-idealfor',box).value = idealItems.map(function(){ return arr[i++] || ''; }).join('\n');
+          var offersEl = $('.e-'+lang+'-offers',box);
+          if (offersEl) offersEl.value = offerItems.map(function(){ return arr[i++] || ''; }).join('\n');
+          else i += offerItems.length;
           $('.e-'+lang+'-note',box).value = arr[i++] || '';
         });
         statusEl.textContent = t('adm.sv.translateDone');
@@ -1048,6 +1053,7 @@
       var splitLines = function(v){ return (v||'').split('\n').map(function(s){ return s.trim(); }).filter(Boolean); };
       var translations = {};
       ['de','en'].forEach(function(lang){
+        var offersEl = $('.e-'+lang+'-offers',box);
         translations[lang] = {
           name: ($('.e-'+lang+'-name',box).value||'').trim(),
           tag: ($('.e-'+lang+'-tag',box).value||'').trim(),
@@ -1055,6 +1061,7 @@
           benefitsPhysical: splitLines($('.e-'+lang+'-physical',box).value),
           benefitsEmotional: splitLines($('.e-'+lang+'-emotional',box).value),
           idealFor: splitLines($('.e-'+lang+'-idealfor',box).value),
+          offerLabels: offersEl ? splitLines(offersEl.value) : [],
           note: ($('.e-'+lang+'-note',box).value||'').trim()
         };
       });
