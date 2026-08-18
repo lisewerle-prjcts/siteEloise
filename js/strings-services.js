@@ -86,7 +86,7 @@ Object.assign(window.I18N.fr, {
   'sv.price.yoga.d': 'En privé ou en petit groupe.',
 
   // soin cards — full content (description, bienfaits, idéal pour, note)
-  'svc.thai.desc': 'Aussi appelé massage thaï traditionnel. Il se pratique habillé, dans des vêtements amples et confortables, sur futon au sol, avec de nombreux étirements passifs pour le receveur.',
+  'svc.thai.desc': 'Aussi appelé massage thaï traditionnel, le " Yoga pour paresseux". Il se pratique habillé, dans des vêtements amples et confortables, sur futon au sol, avec de nombreux étirements passifs pour le receveur.',
   'svc.thai.physical.0': 'Augmente la souplesse.',
   'svc.thai.physical.1': 'Améliore la mobilité articulaire.',
   'svc.thai.physical.2': 'Débloque certaines tensions musculaires.',
@@ -100,7 +100,7 @@ Object.assign(window.I18N.fr, {
   'svc.thai.idealfor.1': 'Pratiquants de yoga ou d’activités corporelles.',
   'svc.thai.idealfor.2': 'Ceux qui ressentent un manque de mobilité ou de fluidité dans le corps.',
 
-  'svc.balinais.desc': 'Le massage balinais est un merveilleux mélange d’influences indonésiennes, indiennes et chinoises. (Mélange d’huile d’amande douce et de coco fractionné)',
+  'svc.balinais.desc': 'Le massage balinais est un merveilleux mélange d’influences indonésiennes, indiennes et chinoises. Donné avec un mélange d’huile d’amande douce et de coco fractionné.',
   'svc.balinais.physical.0': 'Détend les muscles tout en stimulant la circulation.',
   'svc.balinais.physical.1': 'Améliore la souplesse.',
   'svc.balinais.physical.2': 'Réduit les tensions corporelles.',
@@ -112,18 +112,18 @@ Object.assign(window.I18N.fr, {
   'svc.balinais.idealfor.1': 'Ceux qui trouvent l’Abhyanga trop doux et le Deep Tissue trop intense.',
   'svc.balinais.note': 'Il alterne mouvements enveloppants, pétrissages, étirements doux et pressions énergétiques.',
 
-  'svc.deep.desc': 'Le Deep Tissue est un massage occidental ciblant les couches musculaires profondes et les fascias. (Mélange d’huile d’amande douce et de coco fractionné)',
+  'svc.deep.desc': 'Le Deep Tissue est un massage occidental ciblant les couches musculaires profondes et les fascias. Réalisé avec un mélange d’huile d’amande douce et d’huile de coco fractionné.',
   'svc.deep.physical.0': 'Relâche les tensions musculaires chroniques.',
   'svc.deep.physical.1': 'Améliore la mobilité.',
   'svc.deep.physical.2': 'Diminue les douleurs liées aux contractures.',
-  'svc.deep.physical.3': 'Travaille les adhérences fasciales.',
+  'svc.deep.physical.3': 'Travaille les adhérences des fascias.',
   'svc.deep.physical.4': 'Favorise une meilleure posture.',
   'svc.deep.emotional.0': 'Très apprécié des sportifs.',
   'svc.deep.emotional.1': 'Aide à récupérer après des efforts importants.',
   'svc.deep.emotional.2': 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.',
   'svc.deep.idealfor.0': 'Sportifs.',
   'svc.deep.idealfor.1': 'Personnes souffrant de tensions musculaires persistantes.',
-  'svc.deep.idealfor.2': 'Travail de bureau avec douleurs du dos, nuque et épaules.',
+  'svc.deep.idealfor.2': 'Travail de bureau? TMS ( Troubles musculosquelettiques) avec douleurs du dos, de nuque, aux épaules et aux trapèzes.',
   'svc.deep.note': 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.',
 
   'svc.drainage.desc': 'Le drainage lymphatique est une technique très douce visant à stimuler la circulation de la lymphe.',
@@ -140,7 +140,7 @@ Object.assign(window.I18N.fr, {
   'svc.drainage.idealfor.2': 'Sensation de gonflement.',
   'svc.drainage.idealfor.3': 'Personnes restant longtemps debout ou assises.',
 
-  'svc.ayurvedique.desc': 'L’Abhyanga est un massage traditionnel issu de l’Inde et de l’Ayurvéda. Il est généralement réalisé avec une grande quantité d’huile (de sésame chaude de préférence).',
+  'svc.ayurvedique.desc': 'L’Abhyanga est un massage traditionnel issu de l’Inde et de l’Ayurvéda. Il est généralement réalisé avec une grande quantité d’huile de sésame chaude.',
   'svc.ayurvedique.physical.0': 'Détend profondément les muscles et les articulations.',
   'svc.ayurvedique.physical.1': 'Améliore la circulation sanguine.',
   'svc.ayurvedique.physical.2': 'Nourrit et assouplit la peau.',
@@ -151,7 +151,7 @@ Object.assign(window.I18N.fr, {
   'svc.ayurvedique.emotional.2': 'Procure une sensation de sécurité et d’ancrage.',
   'svc.ayurvedique.emotional.3': 'Favorise l’équilibre émotionnel.',
   'svc.ayurvedique.emotional.4': 'Selon l’Ayurvéda, aide à harmoniser les doshas (Vata, Pitta, Kapha).',
-  'svc.ayurvedique.idealfor.0': 'Personnes stressées, anxieuses ou en surcharge mentale.',
+  'svc.ayurvedique.idealfor.0': 'Personne stressée, anxieuse ou en surcharge mentale.',
   'svc.ayurvedique.idealfor.1': 'Accompagnement du burn-out ou de la fatigue chronique.',
   'svc.ayurvedique.idealfor.2': 'Recherche de détente profonde et de reconnexion à soi.',
 
@@ -167,6 +167,7 @@ Object.assign(window.I18N.fr, {
   'svc.yoga.idealfor.0': 'Débutants souhaitant découvrir le yoga.',
   'svc.yoga.idealfor.1': 'Personnes cherchant à compléter leur pratique sportive.',
   'svc.yoga.idealfor.2': 'Ceux qui souhaitent un accompagnement personnalisé.',
+  'svc.yoga.note': 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.',
 });
 
 Object.assign(window.I18N.de, {
@@ -243,7 +244,7 @@ Object.assign(window.I18N.de, {
   'sv.price.yoga.d': 'Privat oder in kleiner Gruppe.',
 
   // soin cards — full content (description, bienfaits, idéal pour, note)
-  'svc.thai.desc': 'Auch traditionelle Thai-Massage genannt. Sie wird bekleidet, in weiter und bequemer Kleidung, auf einem Futon am Boden praktiziert, mit zahlreichen passiven Dehnungen für die empfangende Person.',
+  'svc.thai.desc': 'Auch traditionelle Thai-Massage genannt, das „Yoga für Faule“. Sie wird bekleidet, in weiter und bequemer Kleidung, auf einem Futon am Boden praktiziert, mit zahlreichen passiven Dehnungen für die empfangende Person.',
   'svc.thai.physical.0': 'Erhöht die Beweglichkeit.',
   'svc.thai.physical.1': 'Verbessert die Gelenkmobilität.',
   'svc.thai.physical.2': 'Löst bestimmte Muskelverspannungen.',
@@ -257,7 +258,7 @@ Object.assign(window.I18N.de, {
   'svc.thai.idealfor.1': 'Yoga-Praktizierende oder Menschen mit aktiver Körperpraxis.',
   'svc.thai.idealfor.2': 'Diejenigen, die einen Mangel an Beweglichkeit oder Flüssigkeit im Körper spüren.',
 
-  'svc.balinais.desc': 'Die balinesische Massage ist eine wundervolle Mischung aus indonesischen, indischen und chinesischen Einflüssen. (Mischung aus süßem Mandelöl und fraktioniertem Kokosöl)',
+  'svc.balinais.desc': 'Die balinesische Massage ist eine wundervolle Mischung aus indonesischen, indischen und chinesischen Einflüssen. Durchgeführt mit einer Mischung aus süßem Mandelöl und fraktioniertem Kokosöl.',
   'svc.balinais.physical.0': 'Entspannt die Muskeln und regt zugleich die Durchblutung an.',
   'svc.balinais.physical.1': 'Verbessert die Geschmeidigkeit.',
   'svc.balinais.physical.2': 'Reduziert körperliche Verspannungen.',
@@ -269,18 +270,18 @@ Object.assign(window.I18N.de, {
   'svc.balinais.idealfor.1': 'Diejenigen, denen Abhyanga zu sanft und Deep Tissue zu intensiv ist.',
   'svc.balinais.note': 'Sie kombiniert umhüllende Bewegungen, Knetungen, sanfte Dehnungen und energetische Druckpunkte.',
 
-  'svc.deep.desc': 'Deep Tissue ist eine westliche Massageform, die auf die tiefen Muskelschichten und Faszien abzielt. (Mischung aus süßem Mandelöl und fraktioniertem Kokosöl)',
+  'svc.deep.desc': 'Deep Tissue ist eine westliche Massageform, die auf die tiefen Muskelschichten und Faszien abzielt. Durchgeführt mit einer Mischung aus süßem Mandelöl und fraktioniertem Kokosöl.',
   'svc.deep.physical.0': 'Löst chronische Muskelverspannungen.',
   'svc.deep.physical.1': 'Verbessert die Beweglichkeit.',
   'svc.deep.physical.2': 'Verringert Schmerzen durch Muskelverhärtungen.',
-  'svc.deep.physical.3': 'Bearbeitet faszale Verklebungen.',
+  'svc.deep.physical.3': 'Bearbeitet Verklebungen der Faszien.',
   'svc.deep.physical.4': 'Fördert eine bessere Körperhaltung.',
   'svc.deep.emotional.0': 'Bei Sportlern sehr beliebt.',
   'svc.deep.emotional.1': 'Unterstützt die Erholung nach intensiver körperlicher Belastung.',
   'svc.deep.emotional.2': 'Kann bestimmte Nacken-, Lenden- oder Rückenschmerzen durch Muskelverspannungen lindern.',
   'svc.deep.idealfor.0': 'Sportler.',
   'svc.deep.idealfor.1': 'Menschen mit anhaltenden Muskelverspannungen.',
-  'svc.deep.idealfor.2': 'Büroarbeit mit Schmerzen in Rücken, Nacken und Schultern.',
+  'svc.deep.idealfor.2': 'Büroarbeit? Muskuloskelettale Beschwerden (Rücken-, Nacken-, Schulter- und Trapezschmerzen).',
   'svc.deep.note': 'Die Massage kann intensiv und stellenweise leicht unangenehm sein, sollte aber nie unerträglich sein.',
 
   'svc.drainage.desc': 'Die Lymphdrainage ist eine sehr sanfte Technik, die den Lymphfluss anregen soll.',
@@ -297,7 +298,7 @@ Object.assign(window.I18N.de, {
   'svc.drainage.idealfor.2': 'Schwellungsgefühl.',
   'svc.drainage.idealfor.3': 'Menschen, die lange stehen oder sitzen.',
 
-  'svc.ayurvedique.desc': 'Abhyanga ist eine traditionelle Massage aus Indien und dem Ayurveda. Sie wird meist mit einer großzügigen Menge Öl durchgeführt (vorzugsweise warmes Sesamöl).',
+  'svc.ayurvedique.desc': 'Abhyanga ist eine traditionelle Massage aus Indien und dem Ayurveda. Sie wird meist mit einer großzügigen Menge warmem Sesamöl durchgeführt.',
   'svc.ayurvedique.physical.0': 'Entspannt Muskeln und Gelenke tiefgehend.',
   'svc.ayurvedique.physical.1': 'Verbessert die Blutzirkulation.',
   'svc.ayurvedique.physical.2': 'Nährt und geschmeidigt die Haut.',
@@ -308,7 +309,7 @@ Object.assign(window.I18N.de, {
   'svc.ayurvedique.emotional.2': 'Vermittelt ein Gefühl von Sicherheit und Erdung.',
   'svc.ayurvedique.emotional.3': 'Fördert das emotionale Gleichgewicht.',
   'svc.ayurvedique.emotional.4': 'Hilft laut Ayurveda, die Doshas (Vata, Pitta, Kapha) zu harmonisieren.',
-  'svc.ayurvedique.idealfor.0': 'Gestresste, ängstliche oder mental überlastete Menschen.',
+  'svc.ayurvedique.idealfor.0': 'Gestresste, ängstliche oder mental überlastete Person.',
   'svc.ayurvedique.idealfor.1': 'Begleitend bei Burn-out oder chronischer Erschöpfung.',
   'svc.ayurvedique.idealfor.2': 'Auf der Suche nach tiefer Entspannung und Selbstverbindung.',
 
@@ -324,6 +325,7 @@ Object.assign(window.I18N.de, {
   'svc.yoga.idealfor.0': 'Einsteiger, die Yoga entdecken möchten.',
   'svc.yoga.idealfor.1': 'Menschen, die ihre sportliche Praxis ergänzen möchten.',
   'svc.yoga.idealfor.2': 'Diejenigen, die eine persönliche Begleitung wünschen.',
+  'svc.yoga.note': 'Individueller Unterricht auf Basis Ihrer Beschwerden und Anliegen, um Ihnen Schritt für Schritt zu helfen, Flexibilität und Beweglichkeit zurückzugewinnen, Ihren Körper zu stärken und Ihre Ausdauer zu entwickeln.',
 });
 
 Object.assign(window.I18N.en, {
@@ -400,7 +402,7 @@ Object.assign(window.I18N.en, {
   'sv.price.yoga.d': 'One-to-one or in a small group.',
 
   // soin cards — full content (description, bienfaits, idéal pour, note)
-  'svc.thai.desc': 'Also known as traditional Thai massage. It is practised fully clothed, in loose and comfortable clothing, on a futon on the floor, with many passive stretches for the receiver.',
+  'svc.thai.desc': 'Also known as traditional Thai massage, the “Yoga for lazy people”. It is practised fully clothed, in loose and comfortable clothing, on a futon on the floor, with many passive stretches for the receiver.',
   'svc.thai.physical.0': 'Increases flexibility.',
   'svc.thai.physical.1': 'Improves joint mobility.',
   'svc.thai.physical.2': 'Releases certain muscular tensions.',
@@ -414,7 +416,7 @@ Object.assign(window.I18N.en, {
   'svc.thai.idealfor.1': 'Yoga practitioners or those with an active body practice.',
   'svc.thai.idealfor.2': 'Those who feel a lack of mobility or fluidity in the body.',
 
-  'svc.balinais.desc': 'Balinese massage is a wonderful blend of Indonesian, Indian and Chinese influences. (Blend of sweet almond oil and fractionated coconut oil)',
+  'svc.balinais.desc': 'Balinese massage is a wonderful blend of Indonesian, Indian and Chinese influences. Given with a blend of sweet almond oil and fractionated coconut oil.',
   'svc.balinais.physical.0': 'Relaxes the muscles while stimulating circulation.',
   'svc.balinais.physical.1': 'Improves flexibility.',
   'svc.balinais.physical.2': 'Reduces bodily tension.',
@@ -426,18 +428,18 @@ Object.assign(window.I18N.en, {
   'svc.balinais.idealfor.1': 'Those who find Abhyanga too gentle and Deep Tissue too intense.',
   'svc.balinais.note': 'It alternates enveloping movements, kneading, gentle stretches and energetic pressure points.',
 
-  'svc.deep.desc': 'Deep Tissue is a Western massage technique targeting the deep muscle layers and fascia. (Blend of sweet almond oil and fractionated coconut oil)',
+  'svc.deep.desc': 'Deep Tissue is a Western massage technique targeting the deep muscle layers and fascia. Performed with a blend of sweet almond oil and fractionated coconut oil.',
   'svc.deep.physical.0': 'Releases chronic muscular tension.',
   'svc.deep.physical.1': 'Improves mobility.',
   'svc.deep.physical.2': 'Reduces pain linked to muscle knots.',
-  'svc.deep.physical.3': 'Works on fascial adhesions.',
+  'svc.deep.physical.3': 'Works on adhesions in the fascia.',
   'svc.deep.physical.4': 'Promotes better posture.',
   'svc.deep.emotional.0': 'Very popular with athletes.',
   'svc.deep.emotional.1': 'Helps recovery after intense physical effort.',
   'svc.deep.emotional.2': 'Can ease certain neck, lower back or upper back pain linked to muscular tension.',
   'svc.deep.idealfor.0': 'Athletes.',
   'svc.deep.idealfor.1': 'People with persistent muscular tension.',
-  'svc.deep.idealfor.2': 'Office work with back, neck and shoulder pain.',
+  'svc.deep.idealfor.2': 'Office work? Musculoskeletal disorders (MSDs) with pain in the back, neck, shoulders and trapezius.',
   'svc.deep.note': 'The massage can be intense and at times slightly uncomfortable, but it should never be unbearable.',
 
   'svc.drainage.desc': 'Lymphatic drainage is a very gentle technique aimed at stimulating lymph circulation.',
@@ -454,7 +456,7 @@ Object.assign(window.I18N.en, {
   'svc.drainage.idealfor.2': 'A feeling of swelling.',
   'svc.drainage.idealfor.3': 'People who stand or sit for long periods.',
 
-  'svc.ayurvedique.desc': 'Abhyanga is a traditional massage from India and Ayurveda. It is usually performed with a generous amount of oil (preferably warm sesame oil).',
+  'svc.ayurvedique.desc': 'Abhyanga is a traditional massage from India and Ayurveda. It is usually performed with a generous amount of warm sesame oil.',
   'svc.ayurvedique.physical.0': 'Deeply relaxes the muscles and joints.',
   'svc.ayurvedique.physical.1': 'Improves blood circulation.',
   'svc.ayurvedique.physical.2': 'Nourishes and softens the skin.',
@@ -465,7 +467,7 @@ Object.assign(window.I18N.en, {
   'svc.ayurvedique.emotional.2': 'Provides a feeling of security and grounding.',
   'svc.ayurvedique.emotional.3': 'Promotes emotional balance.',
   'svc.ayurvedique.emotional.4': 'According to Ayurveda, helps harmonise the doshas (Vata, Pitta, Kapha).',
-  'svc.ayurvedique.idealfor.0': 'Stressed, anxious or mentally overloaded people.',
+  'svc.ayurvedique.idealfor.0': 'A stressed, anxious or mentally overloaded person.',
   'svc.ayurvedique.idealfor.1': 'Support for burnout or chronic fatigue.',
   'svc.ayurvedique.idealfor.2': 'Those seeking deep relaxation and reconnection with themselves.',
 
@@ -481,4 +483,5 @@ Object.assign(window.I18N.en, {
   'svc.yoga.idealfor.0': 'Beginners wanting to discover yoga.',
   'svc.yoga.idealfor.1': 'People looking to complement their sports practice.',
   'svc.yoga.idealfor.2': 'Those wanting personalised guidance.',
+  'svc.yoga.note': 'Personalised classes based on your conditions and concerns, to help you regain flexibility and mobility, strengthen your body and build endurance, step by step.',
 });
