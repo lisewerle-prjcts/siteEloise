@@ -631,6 +631,21 @@
     [].slice.call(panel.querySelectorAll('[data-downsvc]')).forEach(function(b){ b.addEventListener('click', function(){ if(S.reorderService) S.reorderService(b.dataset.downsvc, 1); }); });
   }
 
+  function translateBlock(lang, label, s){
+    var tr = (s.translations && s.translations[lang]) || {};
+    var joinLines = function(arr){ return (arr||[]).join('\n'); };
+    return '<div data-e-lang-'+lang+' style="border-top:1px solid var(--line);padding-top:16px">'+
+      '<div class="adm-sub">'+esc(label)+'</div>'+
+      '<div><label>'+esc(t('adm.sv.name'))+'</label><input class="e-'+lang+'-name" value="'+esc(tr.name||'')+'"></div>'+
+      '<div><label>'+esc(t('adm.sv.tag'))+'</label><input class="e-'+lang+'-tag" value="'+esc(tr.tag||'')+'"></div>'+
+      '<div><label>'+esc(t('adm.sv.description'))+'</label><textarea class="e-'+lang+'-desc" style="min-height:80px">'+esc(tr.description||'')+'</textarea></div>'+
+      '<div><label>'+esc(t('adm.sv.benefitsPhysical'))+' — '+esc(t('adm.sv.onePerLine'))+'</label><textarea class="e-'+lang+'-physical" style="min-height:70px">'+esc(joinLines(tr.benefitsPhysical))+'</textarea></div>'+
+      '<div><label>'+esc(t('adm.sv.benefitsEmotional'))+' — '+esc(t('adm.sv.onePerLine'))+'</label><textarea class="e-'+lang+'-emotional" style="min-height:70px">'+esc(joinLines(tr.benefitsEmotional))+'</textarea></div>'+
+      '<div><label>'+esc(t('adm.sv.idealFor'))+' — '+esc(t('adm.sv.onePerLine'))+'</label><textarea class="e-'+lang+'-idealfor" style="min-height:70px">'+esc(joinLines(tr.idealFor))+'</textarea></div>'+
+      '<div><label>'+esc(t('adm.sv.note'))+'</label><textarea class="e-'+lang+'-note" style="min-height:60px">'+esc(tr.note||'')+'</textarea></div>'+
+    '</div>';
+  }
+
   function openServiceEdit(id){
     var s = S.service(id); if(!s) return;
     ensureModal();
@@ -639,8 +654,8 @@
     box.innerHTML =
       '<h3>'+esc(t('adm.sv.editTitle'))+'</h3>'+
       '<div class="adm-form" style="margin-top:10px">'+
-        '<div><label>'+esc(t('adm.sv.name'))+'</label><input data-e-name value="'+esc(S.serviceName(id))+'"></div>'+
-        '<div><label>'+esc(t('adm.sv.tag'))+'</label><input data-e-tag value="'+esc(S.serviceTag(id))+'"></div>'+
+        '<div><label>'+esc(t('adm.sv.name'))+'</label><input data-e-name value="'+esc(s.name||'')+'"></div>'+
+        '<div><label>'+esc(t('adm.sv.tag'))+'</label><input data-e-tag value="'+esc(s.tag||'')+'"></div>'+
         '<div><label>'+esc(t('adm.sv.category'))+'</label><select data-e-category>'+
           ['massage','drainage','yoga'].map(function(c){
             var sel = (s.category||'massage')===c?' selected':'';
@@ -669,10 +684,10 @@
           '<button type="button" class="btn-mini" data-e-addopt style="margin-top:6px">+ '+esc(t('adm.sv.addOption'))+'</button>'+
         '</div>'+
         '<div><label>'+esc(t('adm.sv.description'))+'</label>'+
-          '<textarea data-e-desc style="min-height:100px">'+esc(S.serviceDescription(id))+'</textarea></div>'+
+          '<textarea data-e-desc style="min-height:100px">'+esc(s.description||'')+'</textarea></div>'+
         '<div><label>'+esc(t('adm.sv.benefits'))+'</label>'+
           '<div data-e-benefits style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceBenefits(id).map(function(b){
+            (s.benefits||[]).map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-ben-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-ben-del">×</button></div>';
@@ -682,7 +697,7 @@
         '</div>'+
         '<div><label>'+esc(t('adm.sv.benefitsPhysical'))+'</label>'+
           '<div data-e-ben-phys style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceBenefitsPhysical(id).map(function(b){
+            (s.benefitsPhysical||[]).map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-ben-phys-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-ben-phys-del">×</button></div>';
@@ -692,7 +707,7 @@
         '</div>'+
         '<div><label>'+esc(t('adm.sv.benefitsEmotional'))+'</label>'+
           '<div data-e-ben-emot style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceBenefitsEmotional(id).map(function(b){
+            (s.benefitsEmotional||[]).map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-ben-emot-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-ben-emot-del">×</button></div>';
@@ -702,7 +717,7 @@
         '</div>'+
         '<div><label>'+esc(t('adm.sv.idealFor'))+'</label>'+
           '<div data-e-idealfor style="display:grid;gap:6px;margin-top:6px">'+
-            S.serviceIdealFor(id).map(function(b){
+            (s.idealFor||[]).map(function(b){
               return '<div style="display:flex;gap:8px;align-items:center">'+
                 '<input class="e-idealfor-txt" value="'+esc(b)+'" style="flex:1">'+
                 '<button type="button" class="btn-mini danger e-idealfor-del">×</button></div>';
@@ -711,7 +726,13 @@
           '<button type="button" class="btn-mini" data-e-addidealfor style="margin-top:6px">+ '+esc(t('adm.sv.addBenefit'))+'</button>'+
         '</div>'+
         '<div><label>'+esc(t('adm.sv.note'))+'</label>'+
-          '<textarea data-e-note style="min-height:80px">'+esc(S.serviceNote(id))+'</textarea></div>'+
+          '<textarea data-e-note style="min-height:80px">'+esc(s.note||'')+'</textarea></div>'+
+        '<div style="border-top:1px solid var(--line);padding-top:16px">'+
+          '<button type="button" class="btn-mini" data-e-translate>🌐 '+esc(t('adm.sv.translate'))+'</button> '+
+          '<span data-e-translate-status style="font-size:.8rem;color:var(--ink-3)"></span>'+
+        '</div>'+
+        translateBlock('de', 'Allemand', s) +
+        translateBlock('en', 'Anglais', s) +
         '<div><label>'+esc(t('adm.sv.img'))+'</label><select data-e-asset>'+
           ASSETS.map(function(a){ return '<option value="'+a+'"'+(a===s.img?' selected':'')+'>'+esc(a.replace('assets/','').replace('.png',''))+'</option>'; }).join('')+'</select></div>'+
         '<div><label>'+esc(t('adm.sv.url'))+'</label><input data-e-url placeholder="https://…" value="'+esc(customUrl)+'"></div>'+
@@ -781,6 +802,36 @@
     [].slice.call(box.querySelectorAll('.e-idealfor-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+    $('[data-e-translate]',box).addEventListener('click', function(){
+      var statusEl = $('[data-e-translate-status]',box);
+      statusEl.textContent = t('adm.sv.translating');
+      var name = $('[data-e-name]',box).value;
+      var tag = $('[data-e-tag]',box).value;
+      var desc = $('[data-e-desc]',box).value;
+      var physItems = [].slice.call($('[data-e-ben-phys]',box).querySelectorAll('.e-ben-phys-txt')).map(function(i){ return i.value; });
+      var emotItems = [].slice.call($('[data-e-ben-emot]',box).querySelectorAll('.e-ben-emot-txt')).map(function(i){ return i.value; });
+      var idealItems = [].slice.call($('[data-e-idealfor]',box).querySelectorAll('.e-idealfor-txt')).map(function(i){ return i.value; });
+      var note = $('[data-e-note]',box).value;
+      var texts = [name, tag, desc].concat(physItems, emotItems, idealItems, [note]);
+      fetch('/api/translate', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ texts: texts })
+      }).then(function(r){ return r.json(); }).then(function(data){
+        if (!data || data.error) { statusEl.textContent = t('adm.sv.translateError') + (data && data.error ? ' (' + data.error + ')' : ''); return; }
+        ['de','en'].forEach(function(lang){
+          var arr = data[lang] || [];
+          var i = 0;
+          $('.e-'+lang+'-name',box).value = arr[i++] || '';
+          $('.e-'+lang+'-tag',box).value = arr[i++] || '';
+          $('.e-'+lang+'-desc',box).value = arr[i++] || '';
+          $('.e-'+lang+'-physical',box).value = physItems.map(function(){ return arr[i++] || ''; }).join('\n');
+          $('.e-'+lang+'-emotional',box).value = emotItems.map(function(){ return arr[i++] || ''; }).join('\n');
+          $('.e-'+lang+'-idealfor',box).value = idealItems.map(function(){ return arr[i++] || ''; }).join('\n');
+          $('.e-'+lang+'-note',box).value = arr[i++] || '';
+        });
+        statusEl.textContent = t('adm.sv.translateDone');
+      }).catch(function(){ statusEl.textContent = t('adm.sv.translateError'); });
+    });
     $('[data-e-save]',box).addEventListener('click', function(){
       var img = ($('[data-e-url]',box).value||'').trim() || $('[data-e-asset]',box).value;
       var rows = [].slice.call($('[data-e-durations]',box).querySelectorAll('div'));
@@ -799,11 +850,25 @@
       var idealFor = idealForInputs.map(function(i){ return i.value.trim(); }).filter(Boolean);
       var note = ($('[data-e-note]',box).value||'').trim();
       var catEl = box.querySelector('[data-e-category]');
+      var splitLines = function(v){ return (v||'').split('\n').map(function(s){ return s.trim(); }).filter(Boolean); };
+      var translations = {};
+      ['de','en'].forEach(function(lang){
+        translations[lang] = {
+          name: ($('.e-'+lang+'-name',box).value||'').trim(),
+          tag: ($('.e-'+lang+'-tag',box).value||'').trim(),
+          description: ($('.e-'+lang+'-desc',box).value||'').trim(),
+          benefitsPhysical: splitLines($('.e-'+lang+'-physical',box).value),
+          benefitsEmotional: splitLines($('.e-'+lang+'-emotional',box).value),
+          idealFor: splitLines($('.e-'+lang+'-idealfor',box).value),
+          note: ($('.e-'+lang+'-note',box).value||'').trim()
+        };
+      });
       S.updateService(id, { name:$('[data-e-name]',box).value, tag:$('[data-e-tag]',box).value, category:catEl?catEl.value:'massage',
         durations: durations.length ? durations : S.serviceDurations(id),
         description: ($('[data-e-desc]',box).value||'').trim(),
         benefits: benefits, options: options, img:img,
-        benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note });
+        benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note,
+        translations: translations });
       close();
     });
   }
