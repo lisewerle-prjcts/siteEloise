@@ -30,6 +30,7 @@
     'balinais':    [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
     'deep':        [{min:60,price:70},{min:75,price:85},{min:90,price:100}],
     'drainage':    [{min:60,price:80},{min:120,price:150}],
+    'drainage-visage': [{min:60,price:80}],
     'ayurvedique': [{min:60,price:70},{min:90,price:100}],
     'yoga':        [{min:60,price:65},{min:90,price:90}]
   };
@@ -76,7 +77,14 @@
       benefitsPhysical: ['Améliore la souplesse et la mobilité.', 'Renforce les muscles profonds.', 'Améliore la posture et l\'alignement corporel.', 'Favorise une meilleure respiration.'],
       benefitsEmotional: ['Réduit le stress et l\'anxiété.', 'Favorise la pleine conscience.', 'Procure un sentiment de calme et de centrage.', 'Aide à mieux se connaître et se reconnecter à soi.'],
       idealFor: ['Débutants souhaitant découvrir le yoga.', 'Personnes cherchant à compléter leur pratique sportive.', 'Ceux qui souhaitent un accompagnement personnalisé.'],
-      note: 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.', benefits: [], options: [] }
+      note: 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.', benefits: [], options: [] },
+    { id: 'drainage-visage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage-visage'], img: 'assets/drainage-visage.png',
+      name: 'Drainage visage', tag: 'Éclat & légèreté du visage',
+      description: 'Le drainage lymphatique du visage est une technique très douce visant à stimuler la circulation de la lymphe au niveau du visage.',
+      benefitsPhysical: ['Réduit les poches et gonflements du visage.', 'Favorise l\'élimination des déchets métaboliques.', 'Redonne de l\'éclat au teint.'],
+      benefitsEmotional: ['Sensation de légèreté du visage.', 'Effet relaxant sur le système nerveux.'],
+      idealFor: ['Visage gonflé au réveil.', 'Peau terne ou fatiguée.', 'Envie d\'un soin doux et relaxant.'],
+      note: '', benefits: [], options: [] }
   ];
 
   /* ---------- low-level ---------- */
