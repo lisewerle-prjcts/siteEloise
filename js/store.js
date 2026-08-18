@@ -253,6 +253,15 @@
     if (window.t) { var k = 'loc.' + id + '.region'; var v = window.t(k); if (v && v !== k) return v; }
     return null;
   }
+  function builtinServiceDef(id) {
+    for (var i = 0; i < BUILTIN_SERVICES.length; i++) if (BUILTIN_SERVICES[i].id === id) return BUILTIN_SERVICES[i];
+    return null;
+  }
+  function arraysEqual(a, b) {
+    if (!Array.isArray(a) || !Array.isArray(b) || a.length !== b.length) return false;
+    for (var i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
   function i18nServiceList(id, field, arr) {
     if (!window.t || !arr) return (arr || []).slice();
     return arr.map(function (fallbackText, i) {
@@ -386,28 +395,31 @@
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice(); },
     publishedServices: function () { return API.services().filter(function (s) { return s.published !== false && s.id !== '_admin_pw'; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
-    serviceName: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
+    serviceName: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
+      if (s && s.builtin && def && s.name === def.name) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
       return (s && s.name) || id; },
-    serviceTag: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
+    serviceTag: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
+      if (s && s.builtin && def && s.tag === def.tag) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
       return (s && s.tag) || ''; },
-    serviceDescription: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited && s.description) { var k = 'svc.' + id + '.desc'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.description; }
+    serviceDescription: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
+      if (s && s.builtin && def && s.description && s.description === def.description) { var k = 'svc.' + id + '.desc'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.description; }
       return (s && s.description) || ''; },
     serviceBenefits: function (id) { var s = API.service(id); return (s && s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
     serviceOptions: function (id) { var s = API.service(id); return (s && Array.isArray(s.options)) ? s.options.slice() : []; },
     serviceBenefitsPhysical: function(id) { var s = API.service(id); if (!s || !s.benefitsPhysical) return [];
-      if (s.builtin && !s.edited) return i18nServiceList(id, 'physical', s.benefitsPhysical);
+      var def = builtinServiceDef(id);
+      if (s.builtin && def && arraysEqual(s.benefitsPhysical, def.benefitsPhysical)) return i18nServiceList(id, 'physical', s.benefitsPhysical);
       return s.benefitsPhysical.slice(); },
     serviceBenefitsEmotional: function(id) { var s = API.service(id); if (!s || !s.benefitsEmotional) return [];
-      if (s.builtin && !s.edited) return i18nServiceList(id, 'emotional', s.benefitsEmotional);
+      var def = builtinServiceDef(id);
+      if (s.builtin && def && arraysEqual(s.benefitsEmotional, def.benefitsEmotional)) return i18nServiceList(id, 'emotional', s.benefitsEmotional);
       return s.benefitsEmotional.slice(); },
     serviceIdealFor: function(id) { var s = API.service(id); if (!s || !s.idealFor) return [];
-      if (s.builtin && !s.edited) return i18nServiceList(id, 'idealfor', s.idealFor);
+      var def = builtinServiceDef(id);
+      if (s.builtin && def && arraysEqual(s.idealFor, def.idealFor)) return i18nServiceList(id, 'idealfor', s.idealFor);
       return s.idealFor.slice(); },
-    serviceNote: function(id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited && s.note) { var k = 'svc.' + id + '.note'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.note; }
+    serviceNote: function(id) { var s = API.service(id); var def = builtinServiceDef(id);
+      if (s && s.builtin && def && s.note && s.note === def.note) { var k = 'svc.' + id + '.note'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.note; }
       return (s && s.note) || ''; },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
