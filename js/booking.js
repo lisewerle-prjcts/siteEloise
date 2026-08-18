@@ -406,7 +406,7 @@
       S.location = b.getAttribute('data-loc'); save(); render();
     });
     root.querySelectorAll('[data-dur]').forEach(b => b.onclick = () => { S.duration = +b.getAttribute('data-dur'); save(); render(); });
-    root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { S.option = b.getAttribute('data-opt'); save(); render(); });
+    root.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { const v = b.getAttribute('data-opt'); S.option = S.option === v ? null : v; save(); render(); });
     root.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { S.dateISO = b.getAttribute('data-day'); S.time = null; save(); render(); });
     root.querySelectorAll('[data-slot]').forEach(b => b.onclick = () => { S.time = b.getAttribute('data-slot'); save(); render(); });
 
