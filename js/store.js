@@ -41,24 +41,24 @@
   var BUILTIN_SERVICES = [
     { id: 'thai', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['thai'], img: 'assets/thai-etirement.png',
       name: 'Thaï Yoga Massage', tag: 'Étirements & énergie',
-      description: 'Aussi appelé massage thaï traditionnel. Il se pratique habillé, dans des vêtements amples et confortables, sur futon au sol, avec de nombreux étirements passifs pour le receveur.',
+      description: 'Aussi appelé massage thaï traditionnel, le " Yoga pour paresseux". Il se pratique habillé, dans des vêtements amples et confortables, sur futon au sol, avec de nombreux étirements passifs pour le receveur.',
       benefitsPhysical: ['Augmente la souplesse.', 'Améliore la mobilité articulaire.', 'Débloque certaines tensions musculaires.', 'Stimule la circulation sanguine et énergétique.'],
       benefitsEmotional: ['Travaille sur les lignes énergétiques (Sen).', 'Donne souvent une sensation de vitalité et d\'ouverture du corps.', 'Peut améliorer la respiration.', 'Favorise l\'alignement corporel.', 'Libère les tensions liées aux mauvaises postures.'],
       idealFor: ['Personnes qui aiment le mouvement.', 'Pratiquants de yoga ou d\'activités corporelles.', 'Ceux qui ressentent un manque de mobilité ou de fluidité dans le corps.'],
       note: '', benefits: [], options: [] },
     { id: 'balinais', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['balinais'], img: 'assets/soin-mains.png',
       name: 'Massage Balinais', tag: 'Enveloppant & circulatoire',
-      description: 'Le massage balinais est un merveilleux mélange d\'influences indonésiennes, indiennes et chinoises. (Mélange d\'huile d\'amande douce et de coco fractionné)',
+      description: 'Le massage balinais est un merveilleux mélange d\'influences indonésiennes, indiennes et chinoises. Donné avec un mélange d\'huile d\'amande douce et de coco fractionné.',
       benefitsPhysical: ['Détend les muscles tout en stimulant la circulation.', 'Améliore la souplesse.', 'Réduit les tensions corporelles.', 'Apporte une sensation de légèreté.'],
       benefitsEmotional: ['Favorise la détente mentale.', 'Procure une sensation de détente et d\'évasion.', 'Aide au relâchement émotionnel.'],
       idealFor: ['Personnes recherchant un équilibre entre détente et tonicité.', 'Ceux qui trouvent l\'Abhyanga trop doux et le Deep Tissue trop intense.'],
       note: 'Il alterne mouvements enveloppants, pétrissages, étirements doux et pressions énergétiques.', benefits: [], options: [] },
     { id: 'deep', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['deep'], img: 'assets/relaxation.png',
       name: 'Deep Tissue', tag: 'Tensions profondes',
-      description: 'Le Deep Tissue est un massage occidental ciblant les couches musculaires profondes et les fascias. (Mélange d\'huile d\'amande douce et de coco fractionné)',
-      benefitsPhysical: ['Relâche les tensions musculaires chroniques.', 'Améliore la mobilité.', 'Diminue les douleurs liées aux contractures.', 'Travaille les adhérences fasciales.', 'Favorise une meilleure posture.'],
+      description: 'Le Deep Tissue est un massage occidental ciblant les couches musculaires profondes et les fascias. Réalisé avec un mélange d\'huile d\'amande douce et d\'huile de coco fractionné.',
+      benefitsPhysical: ['Relâche les tensions musculaires chroniques.', 'Améliore la mobilité.', 'Diminue les douleurs liées aux contractures.', 'Travaille les adhérences des fascias.', 'Favorise une meilleure posture.'],
       benefitsEmotional: ['Très apprécié des sportifs.', 'Aide à récupérer après des efforts importants.', 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.'],
-      idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau avec douleurs du dos, nuque et épaules.'],
+      idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau? TMS ( Troubles musculosquelettiques) avec douleurs du dos, de nuque, aux épaules et aux trapèzes.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
     { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/relaxation.png',
       offers: [
@@ -84,10 +84,10 @@
       note: '', benefits: [], options: [] },
     { id: 'ayurvedique', builtin: true, published: true, category: 'massage', durations: DEFAULT_DURATIONS['ayurvedique'], img: 'assets/thai-dos.png',
       name: 'Ayurvédique & Abhyanga', tag: 'Chaleureux & nourrissant',
-      description: 'L\'Abhyanga est un massage traditionnel issu de l\'Inde et de l\'Ayurvéda. Il est généralement réalisé avec une grande quantité d\'huile (de sésame chaude de préférence).',
+      description: 'L\'Abhyanga est un massage traditionnel issu de l\'Inde et de l\'Ayurvéda. Il est généralement réalisé avec une grande quantité d\'huile de sésame chaude.',
       benefitsPhysical: ['Détend profondément les muscles et les articulations.', 'Améliore la circulation sanguine.', 'Nourrit et assouplit la peau.', 'Favorise un meilleur sommeil.', 'Soutient la récupération en cas de fatigue physique.'],
       benefitsEmotional: ['Apaise le système nerveux.', 'Réduit le stress et l\'anxiété.', 'Procure une sensation de sécurité et d\'ancrage.', 'Favorise l\'équilibre émotionnel.', 'Selon l\'Ayurvéda, aide à harmoniser les doshas (Vata, Pitta, Kapha).'],
-      idealFor: ['Personnes stressées, anxieuses ou en surcharge mentale.', 'Accompagnement du burn-out ou de la fatigue chronique.', 'Recherche de détente profonde et de reconnexion à soi.'],
+      idealFor: ['Personne stressée, anxieuse ou en surcharge mentale.', 'Accompagnement du burn-out ou de la fatigue chronique.', 'Recherche de détente profonde et de reconnexion à soi.'],
       note: '', benefits: [], options: [] },
     { id: 'yoga', builtin: true, published: true, category: 'yoga', durations: DEFAULT_DURATIONS['yoga'], img: 'assets/yoga-equilibre.png',
       name: 'Yoga personnalisé', tag: 'Mobilité & souffle',
@@ -95,7 +95,7 @@
       benefitsPhysical: ['Améliore la souplesse et la mobilité.', 'Renforce les muscles profonds.', 'Améliore la posture et l\'alignement corporel.', 'Favorise une meilleure respiration.'],
       benefitsEmotional: ['Réduit le stress et l\'anxiété.', 'Favorise la pleine conscience.', 'Procure un sentiment de calme et de centrage.', 'Aide à mieux se connaître et se reconnecter à soi.'],
       idealFor: ['Débutants souhaitant découvrir le yoga.', 'Personnes cherchant à compléter leur pratique sportive.', 'Ceux qui souhaitent un accompagnement personnalisé.'],
-      note: '', benefits: [], options: [] }
+      note: 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.', benefits: [], options: [] }
   ];
 
   /* ---------- low-level ---------- */
@@ -323,6 +323,30 @@
     if (window.t) { var k = 'loc.' + id + '.region'; var v = window.t(k); if (v && v !== k) return v; }
     return null;
   }
+  function builtinServiceDef(id) {
+    for (var i = 0; i < BUILTIN_SERVICES.length; i++) if (BUILTIN_SERVICES[i].id === id) return BUILTIN_SERVICES[i];
+    return null;
+  }
+  // Admin-provided translation for a service field (via the "Traduire" tool), highest priority.
+  function customTr(s, field) {
+    var lang = window.ewLang ? window.ewLang() : 'fr';
+    if (lang === 'fr' || !s || !s.translations) return null;
+    var tr = s.translations[lang];
+    if (!tr) return null;
+    var v = tr[field];
+    if (Array.isArray(v)) return v.length ? v : null;
+    return v ? v : null;
+  }
+  function i18nServiceList(id, field, arr, defArr) {
+    if (!arr) return [];
+    return arr.map(function (val, i) {
+      if (!defArr || defArr[i] !== val) return val; // item customized — keep as-is, don't guess a translation
+      if (!window.t) return val;
+      var k = 'svc.' + id + '.' + field + '.' + i;
+      var v = window.t(k);
+      return (v && v !== k) ? v : val;
+    });
+  }
 
   /* ---------- public API ---------- */
   var API = {
@@ -449,19 +473,39 @@
     services: function () { return read(KEYS.services, BUILTIN_SERVICES).slice().filter(function (s) { return !(s.id && s.id.charAt(0) === '_'); }); },
     publishedServices: function () { return API.services().filter(function (s) { return s.published !== false; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
-    serviceName: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
+    serviceName: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
+      var custom = customTr(s, 'name'); if (custom) return custom;
+      if (s && s.builtin && def && s.name === def.name) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
       return (s && s.name) || id; },
-    serviceTag: function (id) { var s = API.service(id);
-      if (s && s.builtin && !s.edited) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
+    serviceTag: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
+      var custom = customTr(s, 'tag'); if (custom) return custom;
+      if (s && s.builtin && def && s.tag === def.tag) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
       return (s && s.tag) || ''; },
-    serviceDescription: function (id) { var s = API.service(id); return (s && s.description) || ''; },
+    serviceDescription: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
+      var custom = customTr(s, 'description'); if (custom) return custom;
+      if (s && s.builtin && def && s.description && s.description === def.description) { var k = 'svc.' + id + '.desc'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.description; }
+      return (s && s.description) || ''; },
     serviceBenefits: function (id) { var s = API.service(id); return (s && s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
     serviceOptions: function (id) { var s = API.service(id); return (s && Array.isArray(s.options)) ? s.options.slice() : []; },
-    serviceBenefitsPhysical: function(id) { var s = API.service(id); return (s && s.benefitsPhysical) ? s.benefitsPhysical.slice() : []; },
-    serviceBenefitsEmotional: function(id) { var s = API.service(id); return (s && s.benefitsEmotional) ? s.benefitsEmotional.slice() : []; },
-    serviceIdealFor: function(id) { var s = API.service(id); return (s && s.idealFor) ? s.idealFor.slice() : []; },
-    serviceNote: function(id) { var s = API.service(id); return (s && s.note) || ''; },
+    serviceBenefitsPhysical: function(id) { var s = API.service(id); if (!s || !s.benefitsPhysical) return [];
+      var custom = customTr(s, 'benefitsPhysical'); if (custom) return custom;
+      var def = builtinServiceDef(id);
+      if (s.builtin && def) return i18nServiceList(id, 'physical', s.benefitsPhysical, def.benefitsPhysical);
+      return s.benefitsPhysical.slice(); },
+    serviceBenefitsEmotional: function(id) { var s = API.service(id); if (!s || !s.benefitsEmotional) return [];
+      var custom = customTr(s, 'benefitsEmotional'); if (custom) return custom;
+      var def = builtinServiceDef(id);
+      if (s.builtin && def) return i18nServiceList(id, 'emotional', s.benefitsEmotional, def.benefitsEmotional);
+      return s.benefitsEmotional.slice(); },
+    serviceIdealFor: function(id) { var s = API.service(id); if (!s || !s.idealFor) return [];
+      var custom = customTr(s, 'idealFor'); if (custom) return custom;
+      var def = builtinServiceDef(id);
+      if (s.builtin && def) return i18nServiceList(id, 'idealfor', s.idealFor, def.idealFor);
+      return s.idealFor.slice(); },
+    serviceNote: function(id) { var s = API.service(id); var def = builtinServiceDef(id);
+      var custom = customTr(s, 'note'); if (custom) return custom;
+      if (s && s.builtin && def && s.note && s.note === def.note) { var k = 'svc.' + id + '.note'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.note; }
+      return (s && s.note) || ''; },
     serviceOffers: function(id) { var s = API.service(id); return (s && s.offers && s.offers.length) ? s.offers.slice() : []; },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
