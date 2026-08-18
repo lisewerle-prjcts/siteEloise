@@ -109,6 +109,12 @@ Object.assign(window.I18N.de, {
   'rv.step.4': 'Kontaktdaten',
   'rv.step.5': 'Bestätigung',
 
+  'rv.pack.cat': 'Angebote & Pakete',
+  'rv.pack.offerLabel': '{label} — {price}€ statt {regular}€',
+  'rv.pack.note': 'Dieses Angebot wird mit Eloïse vor Ort bestätigt — die Zahlung erfolgt vor Ort.',
+  'rv.pack.short': 'Angebot',
+  'rv.sum.discount': 'Rabatt',
+
   'rv.s1.title': 'Welche Behandlung wünschen Sie?',
   'rv.s1.sub': 'Wählen Sie eine Leistung, um zu beginnen.',
   'rv.cat.massage': 'Massagen',
@@ -190,6 +196,12 @@ Object.assign(window.I18N.en, {
   'rv.step.3': 'Date & time',
   'rv.step.4': 'Your details',
   'rv.step.5': 'Confirmation',
+
+  'rv.pack.cat': 'Offers & packs',
+  'rv.pack.offerLabel': '{label} — {price}€ instead of {regular}€',
+  'rv.pack.note': 'This offer will be confirmed with Eloïse — payment is on site.',
+  'rv.pack.short': 'Offer',
+  'rv.sum.discount': 'Discount',
 
   'rv.s1.title': 'Which treatment would you like?',
   'rv.s1.sub': 'Select a service to begin.',
