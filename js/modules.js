@@ -183,7 +183,7 @@
   }
 
   /* -------------------- soins (home grid) -------------------- */
-  var SVC_ANCHOR = { thai: '#thai', bali: '#balinais', deep: '#deep', lymph: '#drainage', ayur: '#ayurvedique', yoga: '#yoga' };
+  var SVC_ANCHOR = { thai: '#thai', balinais: '#balinais', deep: '#deep', drainage: '#drainage', ayurvedique: '#ayurvedique', yoga: '#yoga' };
   function renderSoins() {
     var host = document.querySelector('[data-soins]');
     if (!host) return;
