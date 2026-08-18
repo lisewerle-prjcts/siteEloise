@@ -168,6 +168,18 @@ Object.assign(window.I18N.fr, {
   'svc.yoga.idealfor.1': 'Personnes cherchant à compléter leur pratique sportive.',
   'svc.yoga.idealfor.2': 'Ceux qui souhaitent un accompagnement personnalisé.',
   'svc.yoga.note': 'Cours personnalisé sur base de vos pathologies et problématiques, pour vous aider à retrouver flexibilité, mobilité, renforcer votre corps et développer votre endurance, pas à pas.',
+
+  'svc.drainage-visage.name': 'Drainage visage',
+  'svc.drainage-visage.tag': 'Éclat & légèreté du visage',
+  'svc.drainage-visage.desc': 'Le drainage lymphatique du visage est une technique très douce visant à stimuler la circulation de la lymphe au niveau du visage.',
+  'svc.drainage-visage.physical.0': 'Réduit les poches et gonflements du visage.',
+  'svc.drainage-visage.physical.1': 'Favorise l’élimination des déchets métaboliques.',
+  'svc.drainage-visage.physical.2': 'Redonne de l’éclat au teint.',
+  'svc.drainage-visage.emotional.0': 'Sensation de légèreté du visage.',
+  'svc.drainage-visage.emotional.1': 'Effet relaxant sur le système nerveux.',
+  'svc.drainage-visage.idealfor.0': 'Visage gonflé au réveil.',
+  'svc.drainage-visage.idealfor.1': 'Peau terne ou fatiguée.',
+  'svc.drainage-visage.idealfor.2': 'Envie d’un soin doux et relaxant.',
 });
 
 Object.assign(window.I18N.de, {
@@ -326,6 +338,18 @@ Object.assign(window.I18N.de, {
   'svc.yoga.idealfor.1': 'Menschen, die ihre sportliche Praxis ergänzen möchten.',
   'svc.yoga.idealfor.2': 'Diejenigen, die eine persönliche Begleitung wünschen.',
   'svc.yoga.note': 'Individueller Unterricht auf Basis Ihrer Beschwerden und Anliegen, um Ihnen Schritt für Schritt zu helfen, Flexibilität und Beweglichkeit zurückzugewinnen, Ihren Körper zu stärken und Ihre Ausdauer zu entwickeln.',
+
+  'svc.drainage-visage.name': 'Gesichtsdrainage',
+  'svc.drainage-visage.tag': 'Ausstrahlung & Leichtigkeit fürs Gesicht',
+  'svc.drainage-visage.desc': 'Die Lymphdrainage des Gesichts ist eine sehr sanfte Technik, die den Lymphfluss im Gesicht anregen soll.',
+  'svc.drainage-visage.physical.0': 'Reduziert Schwellungen und Tränensäcke im Gesicht.',
+  'svc.drainage-visage.physical.1': 'Fördert die Ausscheidung von Stoffwechselabfällen.',
+  'svc.drainage-visage.physical.2': 'Verleiht dem Teint neuen Glanz.',
+  'svc.drainage-visage.emotional.0': 'Gefühl von Leichtigkeit im Gesicht.',
+  'svc.drainage-visage.emotional.1': 'Entspannende Wirkung auf das Nervensystem.',
+  'svc.drainage-visage.idealfor.0': 'Geschwollenes Gesicht beim Aufwachen.',
+  'svc.drainage-visage.idealfor.1': 'Fahle oder müde Haut.',
+  'svc.drainage-visage.idealfor.2': 'Lust auf eine sanfte, entspannende Behandlung.',
 });
 
 Object.assign(window.I18N.en, {
@@ -484,4 +508,16 @@ Object.assign(window.I18N.en, {
   'svc.yoga.idealfor.1': 'People looking to complement their sports practice.',
   'svc.yoga.idealfor.2': 'Those wanting personalised guidance.',
   'svc.yoga.note': 'Personalised classes based on your conditions and concerns, to help you regain flexibility and mobility, strengthen your body and build endurance, step by step.',
+
+  'svc.drainage-visage.name': 'Face Drainage',
+  'svc.drainage-visage.tag': 'Radiance & lightness for the face',
+  'svc.drainage-visage.desc': 'Facial lymphatic drainage is a very gentle technique aimed at stimulating lymph circulation in the face.',
+  'svc.drainage-visage.physical.0': 'Reduces facial puffiness and swelling.',
+  'svc.drainage-visage.physical.1': 'Supports the elimination of metabolic waste.',
+  'svc.drainage-visage.physical.2': 'Restores radiance to the complexion.',
+  'svc.drainage-visage.emotional.0': 'A feeling of lightness in the face.',
+  'svc.drainage-visage.emotional.1': 'A relaxing effect on the nervous system.',
+  'svc.drainage-visage.idealfor.0': 'A puffy face upon waking.',
+  'svc.drainage-visage.idealfor.1': 'Dull or tired skin.',
+  'svc.drainage-visage.idealfor.2': 'Wanting a gentle, relaxing treatment.',
 });
