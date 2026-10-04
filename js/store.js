@@ -557,8 +557,16 @@
       return (s && s.note) || ''; },
     serviceOffers: function(id) { var s = API.service(id); if (!s || !s.offers || !s.offers.length) return [];
       var custom = customTr(s, 'offerLabels');
-      if (custom) return s.offers.map(function(o, i) { return custom[i] ? Object.assign({}, o, { label: custom[i] }) : Object.assign({}, o); });
-      return s.offers.slice(); },
+      var def = s.builtin ? builtinServiceDef(id) : null;
+      return s.offers.map(function(o, i) {
+        // unchanged builtin label → strings-services.js; customised label → admin translation
+        var d = def && def.offers && def.offers[i];
+        if (d && d.label === o.label && window.t) {
+          var k = 'svc.' + id + '.offer.' + i, v = window.t(k);
+          if (v && v !== k) return Object.assign({}, o, { label: v });
+        }
+        return custom && custom[i] ? Object.assign({}, o, { label: custom[i] }) : Object.assign({}, o);
+      }); },
     reorderService: function (id, delta) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
       var idx = -1;

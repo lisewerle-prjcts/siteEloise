@@ -74,6 +74,12 @@ Object.assign(window.I18N.fr, {
 
   'home.cta.title': 'Prête à relâcher les tensions ?',
   'home.cta.text': 'Réservez votre séance en quelques instants — choisissez le soin, le lieu et le créneau qui vous conviennent.',
+  'insta.cap.1': 'Thaï Yoga Massage au grand air 🌿',
+  'insta.cap.2': 'Respirer, revenir à soi.',
+  'insta.cap.3': 'Drainage du visage, éclat naturel ✨',
+  'insta.cap.4': 'Trouver son équilibre, un souffle à la fois.',
+  'insta.cap.5': 'Le relâchement, jusqu’au bout des doigts.',
+  'insta.cap.6': 'Ouvrir le corps, libérer le mental.',
 });
 
 Object.assign(window.I18N.de, {
@@ -93,7 +99,7 @@ Object.assign(window.I18N.de, {
   'home.intro.link': 'Mein Weg & meine Haltung',
 
   'home.serv.eyebrow': 'Signatur-Behandlungen',
-  'home.serv.title': 'Massagen, gewählt für Ihr Gleichgewicht.',
+  'home.serv.title': "Massagen für Ihr inneres Gleichgewicht.",
   'home.serv.text': 'Jede Sitzung richtet sich nach Ihren aktuellen Bedürfnissen — tiefe Entspannung, Durchblutung, Beweglichkeit.',
 
   'svc.thai.name': 'Thai-Yoga-Massage',
@@ -132,7 +138,7 @@ Object.assign(window.I18N.de, {
 
   'home.testi.eyebrow': 'Stimmen',
   'home.testi.title': 'Momente, die guttun.',
-  'testi.1.q': 'Eine Auszeit außerhalb der Zeit. Ich ging leicht, entspannt und mit klarem Geist. Eloïses Hände sind von seltener Genauigkeit.',
+  'testi.1.q': "Eine zeitlose Auszeit. Ich ging leicht, entspannt und mit klarem Geist. Eloïses Hände sind von seltener Genauigkeit.",
   'testi.1.n': 'Camille R.',
   'testi.1.r': 'Thai-Yoga-Massage',
   'testi.2.q': 'Die Lymphdrainage hat meinen Alltag wirklich verändert. Eloïse erklärt alles sanft und hört auf den Körper.',
@@ -149,6 +155,12 @@ Object.assign(window.I18N.de, {
 
   'home.cta.title': 'Bereit, Spannungen loszulassen?',
   'home.cta.text': 'Buchen Sie Ihre Sitzung in wenigen Augenblicken — wählen Sie Behandlung, Ort und passenden Termin.',
+  'insta.cap.1': 'Thai-Yoga-Massage unter freiem Himmel 🌿',
+  'insta.cap.2': 'Atmen, zu sich zurückkehren.',
+  'insta.cap.3': 'Gesichtsdrainage, natürliche Ausstrahlung ✨',
+  'insta.cap.4': 'Das Gleichgewicht finden, Atemzug für Atemzug.',
+  'insta.cap.5': 'Loslassen, bis in die Fingerspitzen.',
+  'insta.cap.6': 'Den Körper öffnen, den Geist befreien.',
 });
 
 Object.assign(window.I18N.en, {
@@ -174,19 +186,19 @@ Object.assign(window.I18N.en, {
   'svc.thai.name': 'Thai Yoga Massage',
   'svc.thai.tag': 'Stretching & energy',
   'svc.balinais.name': 'Balinese Massage',
-  'svc.balinais.tag': 'Enveloping & circulatory',
+  'svc.balinais.tag': "Enveloping & invigorating",
   'svc.deep.name': 'Deep Tissue',
   'svc.deep.tag': 'Deep tension',
   'svc.drainage.name': 'Lymphatic drainage',
   'svc.drainage.tag': 'Detox & lightness',
-  'svc.ayurvedique.name': 'Ayurvedic & Abhyanga',
+  'svc.ayurvedique.name': "Ayurveda & Abhyanga",
   'svc.ayurvedique.tag': 'Warm & nourishing',
   'svc.yoga.name': 'Personalised yoga',
   'svc.yoga.tag': 'Mobility & breath',
 
   'home.approach.eyebrow': 'The approach',
   'home.approach.title': 'Bringing every layer of our being back into harmony.',
-  'home.approach.text': 'Body, mind, emotions, energy, the subtle: finding their balance is to live in perfect symbiosis and taste more serenity.',
+  'home.approach.text': "Body, mind, emotions, energy, the subtle: finding their balance means living in perfect symbiosis and enjoying more serenity.",
   'home.approach.b1.t': 'The body',
   'home.approach.b1.d': 'Release physical tension and restore mobility.',
   'home.approach.b2.t': 'The nervous system',
@@ -207,7 +219,7 @@ Object.assign(window.I18N.en, {
 
   'home.testi.eyebrow': 'In their words',
   'home.testi.title': 'Moments that do you good.',
-  'testi.1.q': 'A parenthesis outside of time. I left light, my body relaxed and my mind clear. Eloïse’s hands have a rare precision.',
+  'testi.1.q': "A timeless pause. I left feeling light, my body relaxed and my mind clear. Eloïse’s hands have a rare precision.",
   'testi.1.n': 'Camille R.',
   'testi.1.r': 'Thai Yoga Massage',
   'testi.2.q': 'The lymphatic drainage truly changed my daily life. Eloïse explains everything gently and listens to the body.',
@@ -224,4 +236,10 @@ Object.assign(window.I18N.en, {
 
   'home.cta.title': 'Ready to release tension?',
   'home.cta.text': 'Book your session in moments — choose the treatment, location and time slot that suit you.',
+  'insta.cap.1': 'Thai Yoga Massage in the open air 🌿',
+  'insta.cap.2': 'Breathe, come back to yourself.',
+  'insta.cap.3': 'Facial drainage, natural radiance ✨',
+  'insta.cap.4': 'Finding balance, one breath at a time.',
+  'insta.cap.5': 'Letting go, right to the fingertips.',
+  'insta.cap.6': 'Open the body, free the mind.',
 });

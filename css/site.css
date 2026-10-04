@@ -209,7 +209,7 @@ body[data-theme="dark"] .brand .mark img{ filter: brightness(1.18) saturate(.95)
   text-transform: uppercase; color: var(--ink-2); margin-top: 4px; font-weight: 600; }
 
 .nav-links{ display: flex; align-items: center; gap: clamp(14px, 2vw, 34px); }
-.nav-links a{ font-weight: 500; font-size: .96rem; color: var(--ink); position: relative; padding: 6px 0; transition: color .3s; }
+.nav-links a{ font-weight: 500; font-size: .96rem; color: var(--ink); position: relative; padding: 6px 0; transition: color .3s; white-space: nowrap; }
 .nav-links a::after{ content:''; position:absolute; left:0; bottom:0; height:1.5px; width:100%; background: var(--accent);
   transform: scaleX(0); transform-origin:left; transition: transform .4s cubic-bezier(.2,.7,.3,1); }
 .nav-links a:hover{ color: var(--accent); }

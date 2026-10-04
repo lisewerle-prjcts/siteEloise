@@ -88,7 +88,7 @@ Object.assign(window.I18N.en, {
   'ab.story.eyebrow': 'My commitment',
   'ab.story.p1': 'Taking responsibility for your wellbeing is nurturing your health. Understanding your needs, your body and your mind is essential to building new habits that positively shape your daily life.',
   'ab.story.p2': 'Bringing every layer of our being back into harmony — body, mind, emotions, energy, the subtle — lets us live in perfect symbiosis and brings more contentment and serenity.',
-  'ab.story.p3': 'Taking time for yourself through a personalised yoga practice. Allowing yourself a massage to release tension, let energy flow and clear blockages. It is offering yourself plenty of love and a regulated nervous system — towards a global sense of wellbeing in every part of your life.',
+  'ab.story.p3': "Taking time for yourself through a personalised yoga practice. Allowing yourself a massage to release tension, let energy flow and clear blockages. It means offering yourself plenty of love and a regulated nervous system — for an overall sense of wellbeing in every part of your life.",
   'ab.story.quote': '“A person who is happy and at peace does good all around them.”',
 
   'ab.journey.eyebrow': 'My path',

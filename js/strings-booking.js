@@ -110,7 +110,7 @@ Object.assign(window.I18N.de, {
   'rv.step.5': 'Bestätigung',
 
   'rv.pack.cat': 'Angebote & Pakete',
-  'rv.pack.offerLabel': '{label} — {price}€ statt {regular}€',
+  'rv.pack.offerLabel': "{label} — {price} € statt {regular} €",
   'rv.pack.note': 'Dieses Angebot wird mit Eloïse vor Ort bestätigt — die Zahlung erfolgt vor Ort.',
   'rv.pack.short': 'Angebot',
   'rv.sum.discount': 'Rabatt',
@@ -155,7 +155,7 @@ Object.assign(window.I18N.de, {
   'rv.sum.loc': 'Ort',
   'rv.sum.when': 'Datum',
   'rv.sum.duration': 'Dauer',
-  'rv.sum.total': 'Geschätzt gesamt',
+  'rv.sum.total': "Voraussichtlicher Gesamtbetrag",
   'rv.sum.empty': 'Offen',
 
   'rv.back': 'Zurück',
@@ -171,7 +171,7 @@ Object.assign(window.I18N.de, {
   'rv.gift.badge': 'Gutschein',
   'rv.gift.note': 'Sie verschenken diese Sitzung. Geben Sie Ihre Daten an: Der Gutschein wird Ihnen zugeschickt.',
 
-  'rv.alert.eyebrow': 'Termin-Alerts',
+  'rv.alert.eyebrow': "Terminbenachrichtigungen",
   'rv.alert.title': 'Werden Sie benachrichtigt, sobald ein Termin frei wird.',
   'rv.alert.text': 'Wählen Sie einen oder mehrere Orte: Ich schreibe Ihnen, sobald neue Termine in meinen Kalender kommen.',
   'rv.alert.loc': 'Zu beobachtende Orte',
@@ -179,11 +179,19 @@ Object.assign(window.I18N.de, {
   'rv.alert.freq': 'Häufigkeit',
   'rv.alert.freq.instant': 'Bei jedem neuen Termin',
   'rv.alert.freq.weekly': 'Eine Zusammenfassung pro Woche',
-  'rv.alert.submit': 'Alerts aktivieren',
-  'rv.alert.done.title': 'Alerts aktiviert',
+  'rv.alert.submit': "Benachrichtigungen aktivieren",
+  'rv.alert.done.title': "Benachrichtigungen aktiviert",
   'rv.alert.done.text': 'Notiert. Ich benachrichtige Sie, sobald ein Termin frei wird für:',
-  'rv.alert.done.again': 'Alerts ändern',
+  'rv.alert.done.again': "Benachrichtigungen ändern",
   'rv.alert.pickloc': 'Bitte mindestens einen Ort wählen.',
+  // added: previously missing translations
+  'rv.promo.label': 'Rabattcode',
+  'rv.promo.ph': 'z. B. MERCI-4F2K',
+  'rv.promo.apply': 'Anwenden',
+  'rv.promo.applied': 'Code angewendet: -{percent}%',
+  'rv.promo.free': 'Code angewendet: Gratis-Sitzung',
+  'rv.promo.invalid': 'Ungültiger Code.',
+  'rv.promo.used': 'Dieser Code wurde bereits verwendet.',
 });
 
 Object.assign(window.I18N.en, {
@@ -198,7 +206,7 @@ Object.assign(window.I18N.en, {
   'rv.step.5': 'Confirmation',
 
   'rv.pack.cat': 'Offers & packs',
-  'rv.pack.offerLabel': '{label} — {price}€ instead of {regular}€',
+  'rv.pack.offerLabel': "{label} — €{price} instead of €{regular}",
   'rv.pack.note': 'This offer will be confirmed with Eloïse — payment is on site.',
   'rv.pack.short': 'Offer',
   'rv.sum.discount': 'Discount',
@@ -232,7 +240,7 @@ Object.assign(window.I18N.en, {
   'rv.f.last': 'Last name',
   'rv.f.email': 'Email',
   'rv.f.phone': 'Phone',
-  'rv.f.notes': 'A word for Eloïse (optional)',
+  'rv.f.notes': "A note for Eloïse (optional)",
   'rv.f.notes.ph': 'A request, an area to ease, a first time…',
   'rv.f.consent': 'I agree to be contacted about this appointment.',
   'rv.req': 'This field is required',
@@ -272,4 +280,12 @@ Object.assign(window.I18N.en, {
   'rv.alert.done.text': 'Noted. I’ll let you know as soon as a slot opens for:',
   'rv.alert.done.again': 'Edit my alerts',
   'rv.alert.pickloc': 'Please choose at least one location.',
+  // added: previously missing translations
+  'rv.promo.label': 'Promo code',
+  'rv.promo.ph': 'e.g. MERCI-4F2K',
+  'rv.promo.apply': 'Apply',
+  'rv.promo.applied': 'Code applied: -{percent}%',
+  'rv.promo.free': 'Code applied: free session',
+  'rv.promo.invalid': 'Invalid code.',
+  'rv.promo.used': 'This code has already been used.',
 });
