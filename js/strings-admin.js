@@ -201,7 +201,7 @@ Object.assign(window.I18N.fr, {
   'adm.rdv.loyaltydone': 'Fidélité comptée',
   'adm.rdv.loyaltyconfirm': 'Compter cette séance pour la carte de fidélité de {name} ?',
   'adm.rdv.loyaltyok': 'Séance comptée pour la carte de fidélité.',
-  'adm.rdv.loyaltyfree': 'Séance offerte débloquée ! Un code a été envoyé à la cliente.',
+  'adm.rdv.loyaltyfree': 'Séance offerte débloquée ! Un code a été envoyé à la personne.',
 
   /* reviews → coupon reward */
   'adm.r.rewardsent': 'Bon de -10% envoyé à {email}.',
@@ -211,7 +211,7 @@ Object.assign(window.I18N.fr, {
   /* cartes & forfaits tab */
   'adm.tab.packs': 'Cartes & forfaits',
   'adm.pk.add': 'Créer un forfait',
-  'adm.pk.name': 'Nom de la cliente',
+  'adm.pk.name': 'Nom de la personne',
   'adm.pk.email': 'E-mail',
   'adm.pk.service': 'Soin concerné',
   'adm.pk.sessions': 'Nombre de séances',
@@ -225,8 +225,8 @@ Object.assign(window.I18N.fr, {
   'adm.pk.undo': 'Annuler une séance',
   'adm.pk.del': 'Supprimer',
   'adm.pk.delconfirm': 'Supprimer ce forfait ?',
-  'adm.lo.title': 'Clientes — nombre de rendez-vous',
-  'adm.lo.none': 'Aucune cliente avec un rendez-vous enregistré pour le moment.',
+  'adm.lo.title': 'Clientèle — nombre de rendez-vous',
+  'adm.lo.none': 'Aucune personne avec un rendez-vous enregistré pour le moment.',
   'adm.lo.sessions': 'rdv',
   'adm.lo.sendfree': 'Séance offerte',
   'adm.lo.sendfreeconfirm': 'Envoyer un code séance offerte à {name} par e-mail ?',

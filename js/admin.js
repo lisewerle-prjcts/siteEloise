@@ -388,7 +388,7 @@
         fetch('/api/contact', {
           method:'POST', headers:{'Content-Type':'application/json'},
           body: JSON.stringify({
-            type:'coupon', name: r.name||'Cliente', email:r.email, clientEmail:r.email,
+            type:'coupon', name: r.name||'', email:r.email, clientEmail:r.email,
             code:coupon.code, percent:coupon.percent, reason:'avis', message:'Bon de réduction avis'
           })
         }).catch(function(){});
@@ -405,7 +405,7 @@
     fetch('/api/contact', {
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
-        type:'coupon', name: name||'Cliente', email:email, clientEmail:email,
+        type:'coupon', name: name||'', email:email, clientEmail:email,
         code: coupon.code, percent: percent, reason: reason||'cadeau', message: message||'Code promo'
       })
     }).catch(function(){});
@@ -1236,7 +1236,7 @@
           fetch('/api/contact', {
             method:'POST', headers:{'Content-Type':'application/json'},
             body: JSON.stringify({
-              type:'coupon', name: b.dataset.name||'Cliente', email:b.dataset.email, clientEmail:b.dataset.email,
+              type:'coupon', name: b.dataset.name||'', email:b.dataset.email, clientEmail:b.dataset.email,
               code: res.earnedCoupon.code, percent: 100, reason:'fidelite', message:'Séance offerte fidélité'
             })
           }).catch(function(){});

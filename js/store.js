@@ -57,8 +57,8 @@
       name: 'Deep Tissue', tag: 'Tensions profondes',
       description: 'Le Deep Tissue est un massage occidental ciblant les couches musculaires profondes et les fascias. Réalisé avec un mélange d\'huile d\'amande douce et d\'huile de coco fractionné.',
       benefitsPhysical: ['Relâche les tensions musculaires chroniques.', 'Améliore la mobilité.', 'Diminue les douleurs liées aux contractures.', 'Travaille les adhérences des fascias.', 'Favorise une meilleure posture.'],
-      benefitsEmotional: ['Très apprécié des sportifs.', 'Aide à récupérer après des efforts importants.', 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.'],
-      idealFor: ['Sportifs.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau? TMS ( Troubles musculosquelettiques) avec douleurs du dos, de nuque, aux épaules et aux trapèzes.'],
+      benefitsEmotional: ['Très apprécié des personnes sportives.', 'Aide à récupérer après des efforts importants.', 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.'],
+      idealFor: ['Personnes sportives.', 'Personnes souffrant de tensions musculaires persistantes.', 'Travail de bureau? TMS ( Troubles musculosquelettiques) avec douleurs du dos, de nuque, aux épaules et aux trapèzes.'],
       note: 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.', benefits: [], options: [] },
     { id: 'drainage', builtin: true, published: true, category: 'drainage', durations: DEFAULT_DURATIONS['drainage'], img: 'assets/relaxation.png',
       offers: [
@@ -358,9 +358,21 @@
   }
   // A builtin service field that holds the German/English builtin wording instead of
   // the French one was saved from a translated page view — restore the French default.
+  // Builtin wording that was later reworded (gender-neutral phrasing): old → new.
+  var RENAMED_BUILTIN_TEXT = {
+    'Très apprécié des sportifs.': 'Très apprécié des personnes sportives.',
+    'Sportifs.': 'Personnes sportives.'
+  };
   function repairServiceLangs(svc) {
     var def = builtinServiceDef(svc.id); if (!def || !window.I18N) return false;
     var changed = false;
+    SVC_LIST_FIELDS.forEach(function (f) {
+      if (!Array.isArray(svc[f[0]])) return;
+      svc[f[0]] = svc[f[0]].map(function (val) {
+        if (RENAMED_BUILTIN_TEXT[val]) { changed = true; return RENAMED_BUILTIN_TEXT[val]; }
+        return val;
+      });
+    });
     function foreign(val, key) {
       return !!val && ['de', 'en'].some(function (l) { var v = builtinStr(l, svc.id, key); return v && v !== builtinStr('fr', svc.id, key) && v === val; });
     }

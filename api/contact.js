@@ -34,7 +34,7 @@ module.exports = async function handler(req, res) {
           <p style="color:#F0DECF;margin:6px 0 0;font-size:14px">Eloïse Werle — eloisewerle.com</p>
         </div>
         <div style="background:#FDFAF5;padding:32px 40px;border:1px solid #E8E0D5;border-top:none;border-radius:0 0 12px 12px">
-          <p style="font-size:1.05rem;margin:0 0 24px">Bonjour ${name},<br><br>${introText}</p>
+          <p style="font-size:1.05rem;margin:0 0 24px">Bonjour${name ? ' ' + name : ''},<br><br>${introText}</p>
           <div style="text-align:center;padding:20px;background:#F5F0E8;border-radius:10px;margin-bottom:24px">
             <div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;color:#7C6E5F;margin-bottom:8px">Votre code</div>
             <div style="font-family:Georgia,serif;font-size:28px;font-weight:700;color:#C8B89A;letter-spacing:.06em">${code}</div>
