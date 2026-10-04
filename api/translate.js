@@ -26,6 +26,8 @@ module.exports = async function handler(req, res) {
     nonEmpty.forEach(function (txt) { params.append('text', txt); });
     params.append('target_lang', targetLang);
     params.append('source_lang', 'FR');
+    // the site addresses visitors formally ("Sie"), keep DeepL consistent with it
+    if (targetLang === 'DE') params.append('formality', 'prefer_more');
 
     const r = await fetch('https://' + host + '/v2/translate', {
       method: 'POST',

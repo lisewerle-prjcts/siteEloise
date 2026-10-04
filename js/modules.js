@@ -98,11 +98,15 @@
     var host = document.querySelector('[data-insta]');
     if (!host) return;
     var posts = S.insta().slice(0, 6);
+    // default captions are translated; captions written by Eloïse are shown as-is
+    var capKeys = {};
+    for (var n = 1; n <= 6; n++) { var fr = window.I18N && window.I18N.fr['insta.cap.' + n]; if (fr) capKeys[fr] = 'insta.cap.' + n; }
+    function caption(c) { return capKeys[c] && window.t ? window.t(capKeys[c]) : c; }
     host.innerHTML = posts.map(function (p) {
       return '<a class="insta-cell" href="' + IG + '" target="_blank" rel="noopener" aria-label="Instagram @elo_aum">' +
         '<img src="' + esc(p.img) + '" alt="" loading="lazy">' +
         '<span class="insta-cell__ig">' + IG_SVG + '</span>' +
-        (p.caption ? '<span class="insta-cell__cap">' + esc(p.caption) + '</span>' : '') +
+        (p.caption ? '<span class="insta-cell__cap">' + esc(caption(p.caption)) + '</span>' : '') +
         '</a>';
     }).join('');
   }

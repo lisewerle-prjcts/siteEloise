@@ -121,10 +121,10 @@ Object.assign(window.I18N.fr, {
   'svc.deep.physical.2': 'Diminue les douleurs liées aux contractures.',
   'svc.deep.physical.3': 'Travaille les adhérences des fascias.',
   'svc.deep.physical.4': 'Favorise une meilleure posture.',
-  'svc.deep.emotional.0': 'Très apprécié des sportifs.',
+  'svc.deep.emotional.0': 'Très apprécié des personnes sportives.',
   'svc.deep.emotional.1': 'Aide à récupérer après des efforts importants.',
   'svc.deep.emotional.2': 'Peut améliorer certaines douleurs cervicales, lombaires ou dorsales liées aux tensions musculaires.',
-  'svc.deep.idealfor.0': 'Sportifs.',
+  'svc.deep.idealfor.0': 'Personnes sportives.',
   'svc.deep.idealfor.1': 'Personnes souffrant de tensions musculaires persistantes.',
   'svc.deep.idealfor.2': 'Travail de bureau? TMS ( Troubles musculosquelettiques) avec douleurs du dos, de nuque, aux épaules et aux trapèzes.',
   'svc.deep.note': 'Le massage peut être intense et parfois légèrement inconfortable par moments, mais il ne devrait jamais être insupportable.',
@@ -183,6 +183,10 @@ Object.assign(window.I18N.fr, {
   'svc.drainage-visage.idealfor.0': 'Visage gonflé au réveil.',
   'svc.drainage-visage.idealfor.1': 'Peau terne ou fatiguée.',
   'svc.drainage-visage.idealfor.2': 'Envie d’un soin doux et relaxant.',
+  'svc.drainage.offer.0': 'Pack 5 séances',
+  'svc.drainage.offer.1': 'Pack visage 1h + corps',
+  'svc.drainage-visage.offer.0': 'Pack 5 séances de 30 min',
+  'svc.drainage-visage.offer.1': 'Pack 5 séances d\'1h',
 });
 
 Object.assign(window.I18N.de, {
@@ -196,7 +200,7 @@ Object.assign(window.I18N.de, {
   'sv.bienfaits.label': 'Wirkung',
 
   'sv.pack.badge': 'Angebot',
-  'sv.pack.text': '{label} : {price}€ statt {regular}€',
+  'sv.pack.text': '{label}: {price} € statt {regular} €',
 
   'sv.thai.long': 'Am Boden auf einer Matte ausgeführt, verbindet die Thai-Yoga-Massage Druckpunkte, assistiertes Dehnen und sanfte Mobilisation. Ein „passives Yoga“, das Spannungen löst, Gelenke öffnet und den Energiefluss entlang der Körperlinien anregt.',
   'sv.thai.b1': 'Löst tiefe Muskelspannungen',
@@ -294,10 +298,10 @@ Object.assign(window.I18N.de, {
   'svc.deep.physical.2': 'Verringert Schmerzen durch Muskelverhärtungen.',
   'svc.deep.physical.3': 'Bearbeitet Verklebungen der Faszien.',
   'svc.deep.physical.4': 'Fördert eine bessere Körperhaltung.',
-  'svc.deep.emotional.0': 'Bei Sportlern sehr beliebt.',
+  'svc.deep.emotional.0': "Bei sportlich aktiven Menschen sehr beliebt.",
   'svc.deep.emotional.1': 'Unterstützt die Erholung nach intensiver körperlicher Belastung.',
   'svc.deep.emotional.2': 'Kann bestimmte Nacken-, Lenden- oder Rückenschmerzen durch Muskelverspannungen lindern.',
-  'svc.deep.idealfor.0': 'Sportler.',
+  'svc.deep.idealfor.0': "Sportlich aktive Menschen.",
   'svc.deep.idealfor.1': 'Menschen mit anhaltenden Muskelverspannungen.',
   'svc.deep.idealfor.2': 'Büroarbeit? Muskuloskelettale Beschwerden (Rücken-, Nacken-, Schulter- und Trapezschmerzen).',
   'svc.deep.note': 'Die Massage kann intensiv und stellenweise leicht unangenehm sein, sollte aber nie unerträglich sein.',
@@ -327,9 +331,9 @@ Object.assign(window.I18N.de, {
   'svc.ayurvedique.emotional.2': 'Vermittelt ein Gefühl von Sicherheit und Erdung.',
   'svc.ayurvedique.emotional.3': 'Fördert das emotionale Gleichgewicht.',
   'svc.ayurvedique.emotional.4': 'Hilft laut Ayurveda, die Doshas (Vata, Pitta, Kapha) zu harmonisieren.',
-  'svc.ayurvedique.idealfor.0': 'Gestresste, ängstliche oder mental überlastete Person.',
+  'svc.ayurvedique.idealfor.0': "Gestresste, ängstliche oder mental überlastete Menschen.",
   'svc.ayurvedique.idealfor.1': 'Begleitend bei Burn-out oder chronischer Erschöpfung.',
-  'svc.ayurvedique.idealfor.2': 'Auf der Suche nach tiefer Entspannung und Selbstverbindung.',
+  'svc.ayurvedique.idealfor.2': "Menschen auf der Suche nach tiefer Entspannung und Verbindung zu sich selbst.",
 
   'svc.yoga.desc': 'Yoga-Sitzung, angepasst an Ihre Bedürfnisse, Ihr Niveau und Ihre aktuellen Ziele.',
   'svc.yoga.physical.0': 'Verbessert Beweglichkeit und Mobilität.',
@@ -340,7 +344,7 @@ Object.assign(window.I18N.de, {
   'svc.yoga.emotional.1': 'Fördert Achtsamkeit.',
   'svc.yoga.emotional.2': 'Vermittelt ein Gefühl von Ruhe und Zentrierung.',
   'svc.yoga.emotional.3': 'Hilft, sich selbst besser kennenzulernen und mit sich in Verbindung zu treten.',
-  'svc.yoga.idealfor.0': 'Einsteiger, die Yoga entdecken möchten.',
+  'svc.yoga.idealfor.0': "Menschen, die Yoga neu entdecken möchten.",
   'svc.yoga.idealfor.1': 'Menschen, die ihre sportliche Praxis ergänzen möchten.',
   'svc.yoga.idealfor.2': 'Diejenigen, die eine persönliche Begleitung wünschen.',
   'svc.yoga.note': 'Individueller Unterricht auf Basis Ihrer Beschwerden und Anliegen, um Ihnen Schritt für Schritt zu helfen, Flexibilität und Beweglichkeit zurückzugewinnen, Ihren Körper zu stärken und Ihre Ausdauer zu entwickeln.',
@@ -356,6 +360,14 @@ Object.assign(window.I18N.de, {
   'svc.drainage-visage.idealfor.0': 'Geschwollenes Gesicht beim Aufwachen.',
   'svc.drainage-visage.idealfor.1': 'Fahle oder müde Haut.',
   'svc.drainage-visage.idealfor.2': 'Lust auf eine sanfte, entspannende Behandlung.',
+  // added: previously missing translations
+  'sv.ben.physical': 'Körperliche Wirkung',
+  'sv.ben.emotional': 'Emotionale & energetische Wirkung',
+  'sv.ben.idealfor': 'Ideal bei',
+  'svc.drainage.offer.0': '5er-Paket',
+  'svc.drainage.offer.1': 'Paket Gesicht 1 Std. + Körper',
+  'svc.drainage-visage.offer.0': '5er-Paket (je 30 Min.)',
+  'svc.drainage-visage.offer.1': '5er-Paket (je 1 Std.)',
 });
 
 Object.assign(window.I18N.en, {
@@ -369,7 +381,7 @@ Object.assign(window.I18N.en, {
   'sv.bienfaits.label': 'Benefits',
 
   'sv.pack.badge': 'Offer',
-  'sv.pack.text': '{label}: {price}€ instead of {regular}€',
+  'sv.pack.text': '{label}: €{price} instead of €{regular}',
 
   'sv.thai.long': 'Performed on a mat on the floor, Thai Yoga Massage blends pressure, assisted stretches and gentle mobilisation. A true “passive yoga” that releases tension, opens the joints and revives the flow of energy along the body’s lines.',
   'sv.thai.b1': 'Releases deep muscular tension',
@@ -398,7 +410,7 @@ Object.assign(window.I18N.en, {
   'sv.drain.b4': 'A lasting sense of lightness',
   'sv.drain.note': 'Face or body. Allow 2 h for face and body together.',
 
-  'sv.ayur.long': 'Ayurvedic & Abhyanga: a nourishing treatment with warm oil in continuous, enveloping movements. It warms the body, nourishes the skin and invites a deep letting-go.',
+  'sv.ayur.long': "Ayurveda & Abhyanga: a nourishing treatment with warm oil in continuous, enveloping movements. It warms the body, nourishes the skin and invites a deep letting-go.",
   'sv.ayur.b1': 'Nourishes skin and tissues',
   'sv.ayur.b2': 'Warms and relaxes the whole body',
   'sv.ayur.b3': 'Encourages restorative sleep',
@@ -411,7 +423,7 @@ Object.assign(window.I18N.en, {
   'sv.yoga.b4': 'Calms the mind and the breath',
 
   'sv.ben.eyebrow': 'The benefits of massage',
-  'sv.ben.title': 'What touch repairs within you.',
+  'sv.ben.title': "What touch heals within you.",
   'sv.ben.1': 'Deep relaxation of body and mind.',
   'sv.ben.2': 'Release of physical, mental and emotional tension.',
   'sv.ben.3': 'Stimulation of the lymphatic system and elimination of toxins.',
@@ -435,7 +447,7 @@ Object.assign(window.I18N.en, {
   'sv.price.yoga.d': 'One-to-one or in a small group.',
 
   // soin cards — full content (description, bienfaits, idéal pour, note)
-  'svc.thai.desc': 'Also known as traditional Thai massage, the “Yoga for lazy people”. It is practised fully clothed, in loose and comfortable clothing, on a futon on the floor, with many passive stretches for the receiver.',
+  'svc.thai.desc': "Also known as traditional Thai massage, the “yoga for lazy people”. It is practised fully clothed, in loose and comfortable clothing, on a futon on the floor, with many passive stretches for the person receiving it.",
   'svc.thai.physical.0': 'Increases flexibility.',
   'svc.thai.physical.1': 'Improves joint mobility.',
   'svc.thai.physical.2': 'Releases certain muscular tensions.',
@@ -457,7 +469,7 @@ Object.assign(window.I18N.en, {
   'svc.balinais.emotional.0': 'Promotes mental relaxation.',
   'svc.balinais.emotional.1': 'Provides a sense of relaxation and escape.',
   'svc.balinais.emotional.2': 'Helps with emotional release.',
-  'svc.balinais.idealfor.0': 'People looking for a balance between relaxation and tone.',
+  'svc.balinais.idealfor.0': "People looking for a balance between relaxation and vitality.",
   'svc.balinais.idealfor.1': 'Those who find Abhyanga too gentle and Deep Tissue too intense.',
   'svc.balinais.note': 'It alternates enveloping movements, kneading, gentle stretches and energetic pressure points.',
 
@@ -500,9 +512,9 @@ Object.assign(window.I18N.en, {
   'svc.ayurvedique.emotional.2': 'Provides a feeling of security and grounding.',
   'svc.ayurvedique.emotional.3': 'Promotes emotional balance.',
   'svc.ayurvedique.emotional.4': 'According to Ayurveda, helps harmonise the doshas (Vata, Pitta, Kapha).',
-  'svc.ayurvedique.idealfor.0': 'A stressed, anxious or mentally overloaded person.',
+  'svc.ayurvedique.idealfor.0': "Stressed, anxious or mentally overloaded people.",
   'svc.ayurvedique.idealfor.1': 'Support for burnout or chronic fatigue.',
-  'svc.ayurvedique.idealfor.2': 'Those seeking deep relaxation and reconnection with themselves.',
+  'svc.ayurvedique.idealfor.2': "People seeking deep relaxation and reconnection with themselves.",
 
   'svc.yoga.desc': 'A yoga session tailored to your needs, level and current goals.',
   'svc.yoga.physical.0': 'Improves flexibility and mobility.',
@@ -529,4 +541,12 @@ Object.assign(window.I18N.en, {
   'svc.drainage-visage.idealfor.0': 'A puffy face upon waking.',
   'svc.drainage-visage.idealfor.1': 'Dull or tired skin.',
   'svc.drainage-visage.idealfor.2': 'Wanting a gentle, relaxing treatment.',
+  // added: previously missing translations
+  'sv.ben.physical': 'Physical benefits',
+  'sv.ben.emotional': 'Emotional & energetic benefits',
+  'sv.ben.idealfor': 'Ideal for',
+  'svc.drainage.offer.0': '5-session package',
+  'svc.drainage.offer.1': 'Package: 1h face + body',
+  'svc.drainage-visage.offer.0': '5-session package (30 min)',
+  'svc.drainage-visage.offer.1': '5-session package (1h)',
 });

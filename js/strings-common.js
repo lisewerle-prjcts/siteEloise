@@ -60,6 +60,14 @@ Object.assign(window.I18N.fr, {
   'rv.cat.yoga': 'Yoga',
   'adm.footer.link': 'Espace Eloïse',
   'footer.privacy': 'Politique de confidentialité',
+  'alt.portrait': 'Portrait d’Eloïse Werle',
+  'alt.thaiSession': 'Eloïse en séance de Thaï Yoga Massage',
+  'alt.outdoorMassage': 'Séance de massage en extérieur sous les palmiers',
+  'alt.meditation': 'Eloïse Werle en méditation',
+  'alt.relaxation': 'Moment de relaxation profonde',
+  'alt.meditation2': 'Eloïse en méditation',
+  'alt.yogaSunset': 'Pratique de yoga au coucher du soleil',
+  'alt.wellbeing': 'Soin bien-être',
 });
 
 Object.assign(window.I18N.de, {
@@ -104,7 +112,7 @@ Object.assign(window.I18N.de, {
   'footer.nav': 'Navigation',
   'footer.care': 'Behandlungen',
   'footer.places': 'Praxisorte',
-  'footer.news': 'Wohlfühl-Brief',
+  'footer.news': "Wohlfühl-Newsletter",
   'footer.news.text': 'Rituale, freie Termine und sanfte Impulse — einmal pro Saison.',
   'footer.rights': 'Alle Rechte vorbehalten.',
   'footer.legal': 'Impressum',
@@ -121,6 +129,14 @@ Object.assign(window.I18N.de, {
   'rv.cat.yoga': 'Yoga',
   'adm.footer.link': 'Eloïse-Bereich',
   'footer.privacy': 'Datenschutz',
+  'alt.portrait': 'Porträt von Eloïse Werle',
+  'alt.thaiSession': 'Eloïse bei einer Thai-Yoga-Massage',
+  'alt.outdoorMassage': 'Massage im Freien unter Palmen',
+  'alt.meditation': 'Eloïse Werle in Meditation',
+  'alt.relaxation': 'Moment tiefer Entspannung',
+  'alt.meditation2': 'Eloïse in Meditation',
+  'alt.yogaSunset': 'Yogapraxis bei Sonnenuntergang',
+  'alt.wellbeing': 'Wohlfühlbehandlung',
 });
 
 Object.assign(window.I18N.en, {
@@ -128,7 +144,7 @@ Object.assign(window.I18N.en, {
   'brand.sub': 'Massage & Yoga',
 
   'meta.title.home': 'Eloïse Werle — Massage & Yoga · Wellbeing care',
-  'meta.title.services': 'The treatments — Eloïse Werle · Massage & Yoga',
+  'meta.title.services': "Treatments — Eloïse Werle · Massage & Yoga",
   'meta.title.about': 'About — Eloïse Werle · Massage & Yoga',
   'meta.title.booking': 'Book a session — Eloïse Werle',
   'meta.title.contact': 'Contact — Eloïse Werle · Massage & Yoga',
@@ -182,4 +198,12 @@ Object.assign(window.I18N.en, {
   'rv.cat.yoga': 'Yoga',
   'adm.footer.link': 'Eloïse Space',
   'footer.privacy': 'Privacy policy',
+  'alt.portrait': 'Portrait of Eloïse Werle',
+  'alt.thaiSession': 'Eloïse giving a Thai Yoga Massage',
+  'alt.outdoorMassage': 'Outdoor massage session under palm trees',
+  'alt.meditation': 'Eloïse Werle meditating',
+  'alt.relaxation': 'A moment of deep relaxation',
+  'alt.meditation2': 'Eloïse meditating',
+  'alt.yogaSunset': 'Yoga practice at sunset',
+  'alt.wellbeing': 'Wellbeing treatment',
 });

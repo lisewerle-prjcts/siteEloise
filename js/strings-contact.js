@@ -37,7 +37,7 @@ Object.assign(window.I18N.fr, {
 
 Object.assign(window.I18N.de, {
   'ct.hero.eyebrow': 'Kontakt',
-  'ct.hero.title': 'Schreiben wir uns.',
+  'ct.hero.title': "Bleiben wir in Kontakt.",
   'ct.hero.text': 'Eine Frage zu einer Behandlung, ein besonderer Wunsch, ein Geschenk? Ich antworte Ihnen gern.',
 
   'ct.info.email': 'E-Mail',
@@ -71,7 +71,7 @@ Object.assign(window.I18N.de, {
 
 Object.assign(window.I18N.en, {
   'ct.hero.eyebrow': 'Contact',
-  'ct.hero.title': 'Let’s be in touch.',
+  'ct.hero.title': "Let’s get in touch.",
   'ct.hero.text': 'A question about a treatment, a special request, a gift to offer? I’ll gladly reply.',
 
   'ct.info.email': 'Email',

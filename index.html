@@ -36,6 +36,12 @@ body[data-hero="C"] .hero-C{ display:block; }
 .hero-A p{ color:#F4ECE0; font-size:clamp(1.06rem,1.7vw,1.32rem); max-width:46ch; text-shadow:0 1px 16px rgba(20,12,4,.4); }
 .hero-A .cta-row{ margin-top:34px; }
 
+@media (max-width:620px){
+  .hero-A{ min-height:min(88svh,760px); }
+  .hero-A .scrim{ background:linear-gradient(180deg, rgba(20,14,8,.22) 0%, rgba(20,14,8,.32) 40%, rgba(20,14,8,.68) 100%); }
+  .hero-A .eyebrow{ letter-spacing:.18em; }
+}
+
 /* B — editorial split */
 .hero-B__grid{ display:grid; grid-template-columns:1.04fr .96fr; gap:clamp(34px,6vw,86px);
   align-items:center; min-height:min(86vh,840px); padding-block:clamp(48px,7vw,96px); }
@@ -84,7 +90,7 @@ body[data-hero="C"] .hero-C{ display:block; }
   <section class="hero">
     <!-- A : full bleed -->
     <div class="hero-A">
-      <div class="hero-A__bg"><img src="assets/thai-parc.png" alt="Séance de massage en extérieur sous les palmiers"></div>
+      <div class="hero-A__bg"><img src="assets/thai-parc.png" alt="Séance de massage en extérieur sous les palmiers" data-i18n-alt="alt.outdoorMassage"></div>
       <div class="scrim"></div>
       <div class="wrap">
         <div class="hero-A__content">
@@ -111,7 +117,7 @@ body[data-hero="C"] .hero-C{ display:block; }
         </div>
       </div>
       <div class="hero-B__media">
-        <img src="assets/eloise-meditation.png" alt="Eloïse Werle en méditation">
+        <img src="assets/eloise-meditation.png" alt="Eloïse Werle en méditation" data-i18n-alt="alt.meditation">
         <span class="badge" data-i18n="brand.sub">Massage & Yoga</span>
       </div>
     </div></div></div>
@@ -149,7 +155,7 @@ body[data-hero="C"] .hero-C{ display:block; }
     <div class="wrap">
       <div class="split">
         <div class="media media--arch ratio-portrait reveal">
-          <img src="assets/relaxation.png" alt="Moment de relaxation profonde">
+          <img src="assets/relaxation.png" alt="Moment de relaxation profonde" data-i18n-alt="alt.relaxation">
         </div>
         <div class="split__text reveal" data-d="1">
           <div class="head">
@@ -193,7 +199,7 @@ body[data-hero="C"] .hero-C{ display:block; }
           <p style="color:rgba(244,242,230,.86)" data-i18n="home.approach.text">Corps, esprit, émotions, énergie, subtil : retrouver l’équilibre entre eux, c’est vivre en parfaite symbiose et goûter à plus de sérénité.</p>
         </div>
         <div class="media media--arch-soft ratio-square reveal" data-d="1">
-          <img src="assets/eloise-meditation.png" alt="Eloïse en méditation" style="object-position:50% 22%">
+          <img src="assets/eloise-meditation.png" alt="Eloïse en méditation" data-i18n-alt="alt.meditation2" style="object-position:50% 22%">
         </div>
       </div>
       <div class="approach-grid">
@@ -210,7 +216,7 @@ body[data-hero="C"] .hero-C{ display:block; }
     <div class="wrap">
       <div class="split split--media-left">
         <div class="media media--arch yoga-media reveal">
-          <img src="assets/yoga-equilibre.png" alt="Pratique de yoga au coucher du soleil" style="object-position:50% 40%">
+          <img src="assets/yoga-equilibre.png" alt="Pratique de yoga au coucher du soleil" data-i18n-alt="alt.yogaSunset" style="object-position:50% 40%">
         </div>
         <div class="split__text reveal" data-d="1">
           <div class="head">
@@ -311,7 +317,7 @@ body[data-hero="C"] .hero-C{ display:block; }
   <section class="section--tight">
     <div class="wrap">
       <div class="gift reveal">
-        <div class="gift__media"><img src="assets/soin-mains.png" alt="Soin bien-être"></div>
+        <div class="gift__media"><img src="assets/soin-mains.png" alt="Soin bien-être" data-i18n-alt="alt.wellbeing"></div>
         <div class="gift__body">
           <span class="eyebrow" data-i18n="home.gift.eyebrow">Carte-cadeau</span>
           <h2 data-i18n="home.gift.title">Offrez un moment de bien-être.</h2>

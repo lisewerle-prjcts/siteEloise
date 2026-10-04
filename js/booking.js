@@ -335,7 +335,7 @@
     const lab = t('rv.f.' + name) + (req ? ' *' : '');
     if (type === 'textarea') {
       return `<div class="field full" data-field="${name}"><label>${lab}</label>
-        <textarea data-input="${name}" data-i18n-ph="rv.f.notes.ph">${f[name] || ''}</textarea></div>`;
+        <textarea data-input="${name}" placeholder="${t('rv.f.notes.ph')}">${f[name] || ''}</textarea></div>`;
     }
     return `<div class="field" data-field="${name}"><label>${lab}</label>
       <input type="${type}" data-input="${name}" value="${val}">
@@ -579,7 +579,7 @@
         <div class="alerts__media"><img src="assets/thai-parc.png" alt=""></div>
         <div>
           <div class="alerts__form" data-alert-form>
-            <span class="eyebrow" data-i18n="rv.alert.eyebrow">Alertes créneaux</span>
+            <span class="eyebrow">${t('rv.alert.eyebrow')}</span>
             <h2 style="font-family:var(--display);font-weight:400;font-size:clamp(1.7rem,3vw,2.4rem);line-height:1.1;margin:12px 0 10px">${t('rv.alert.title')}</h2>
             <p style="color:var(--ink-2)">${t('rv.alert.text')}</p>
             <div class="alerts__lab">${t('rv.alert.loc')}</div>

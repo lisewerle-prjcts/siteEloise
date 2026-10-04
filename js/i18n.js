@@ -45,6 +45,11 @@
       const v = t(k);
       if (v != null) el.setAttribute('placeholder', v);
     });
+    root.querySelectorAll('[data-i18n-alt]').forEach(el => {
+      const k = el.getAttribute('data-i18n-alt');
+      const v = t(k);
+      if (v != null && v !== k) el.setAttribute('alt', v);
+    });
     root.querySelectorAll('[data-i18n-aria]').forEach(el => {
       const k = el.getAttribute('data-i18n-aria');
       const v = t(k);

@@ -166,6 +166,7 @@
     el.classList.add('ew-editing');
     el.setAttribute('contenteditable', 'true');
     el.focus();
+    var original = el.textContent.trim();
 
     function save() {
       el.removeAttribute('contenteditable');
@@ -173,10 +174,24 @@
       var svcId = el.getAttribute('data-svc-id');
       var field = el.getAttribute('data-svc-field');
       var val = el.textContent.trim();
-      if (svcId && field && S && S.updateService) {
-        var patch = {}; patch[field] = val;
-        S.updateService(svcId, patch);
+      if (!svcId || !field || !S || !S.updateService || !val || val === original) return;
+      var svc = S.service(svcId); if (!svc) return;
+      var lang = window.ewLang ? window.ewLang() : 'fr';
+      if (lang !== 'fr') {
+        // The page shows the German/English wording: store it as that translation,
+        // never over the French text.
+        var translations = JSON.parse(JSON.stringify(svc.translations || {}));
+        if (!translations[lang]) translations[lang] = {};
+        translations[lang][field] = val;
+        var tpatch = { translations: translations };
+        if (!svc.translationsSrc && S.serviceFrSnapshot) tpatch.translationsSrc = S.serviceFrSnapshot(svcId);
+        S.updateService(svcId, tpatch);
+        return;
       }
+      var patch = {}; patch[field] = val;
+      S.updateService(svcId, patch);
+      // French wording changed → refresh the German/English versions.
+      if (S.translateService) S.translateService(svcId);
     }
     el.addEventListener('blur', save, { once: true });
     el.addEventListener('keydown', function (ev) {
