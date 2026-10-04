@@ -36,6 +36,12 @@ body[data-hero="C"] .hero-C{ display:block; }
 .hero-A p{ color:#F4ECE0; font-size:clamp(1.06rem,1.7vw,1.32rem); max-width:46ch; text-shadow:0 1px 16px rgba(20,12,4,.4); }
 .hero-A .cta-row{ margin-top:34px; }
 
+@media (max-width:620px){
+  .hero-A{ min-height:min(88svh,760px); }
+  .hero-A .scrim{ background:linear-gradient(180deg, rgba(20,14,8,.22) 0%, rgba(20,14,8,.32) 40%, rgba(20,14,8,.68) 100%); }
+  .hero-A .eyebrow{ letter-spacing:.18em; }
+}
+
 /* B — editorial split */
 .hero-B__grid{ display:grid; grid-template-columns:1.04fr .96fr; gap:clamp(34px,6vw,86px);
   align-items:center; min-height:min(86vh,840px); padding-block:clamp(48px,7vw,96px); }

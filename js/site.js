@@ -106,7 +106,7 @@
           <h4 data-i18n="footer.news">Lettre du bien-être</h4>
           <p style="color:#C2B49E;margin-bottom:14px" data-i18n="footer.news.text">Rituels, créneaux et inspirations douces, une fois par saison.</p>
           <form class="news-form" data-newsletter>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="news-form__names">
               <input type="text" name="firstName" data-i18n-ph="news.firstname.ph" placeholder="Prénom">
               <input type="text" name="lastName" data-i18n-ph="news.lastname.ph" placeholder="Nom">
             </div>
@@ -200,7 +200,7 @@
       <h3>${esc(t('news.modal.title'))}</h3>
       <p class="ew-modal__lead">${esc(t('news.modal.text'))}</p>
       <form class="news-form news-form--modal" data-submodal>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div class="news-form__names">
           <input type="text" name="firstName" placeholder="${esc(t('news.firstname.ph'))}">
           <input type="text" name="lastName" placeholder="${esc(t('news.lastname.ph'))}">
         </div>
