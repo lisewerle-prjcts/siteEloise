@@ -348,6 +348,52 @@
     });
   }
 
+  /* ---------- service translations ---------- */
+  var SVC_TEXT_FIELDS = [['name','name'], ['tag','tag'], ['description','desc'], ['note','note']];
+  var SVC_LIST_FIELDS = [['benefitsPhysical','physical'], ['benefitsEmotional','emotional'], ['idealFor','idealfor']];
+  function builtinStr(lang, id, key) {
+    var d = window.I18N && window.I18N[lang];
+    var k = 'svc.' + id + '.' + key;
+    return (d && typeof d[k] === 'string') ? d[k] : null;
+  }
+  // A builtin service field that holds the German/English builtin wording instead of
+  // the French one was saved from a translated page view — restore the French default.
+  function repairServiceLangs(svc) {
+    var def = builtinServiceDef(svc.id); if (!def || !window.I18N) return false;
+    var changed = false;
+    function foreign(val, key) {
+      return !!val && ['de', 'en'].some(function (l) { var v = builtinStr(l, svc.id, key); return v && v !== builtinStr('fr', svc.id, key) && v === val; });
+    }
+    SVC_TEXT_FIELDS.forEach(function (f) {
+      if (foreign(svc[f[0]], f[1])) { svc[f[0]] = def[f[0]]; changed = true; }
+    });
+    SVC_LIST_FIELDS.forEach(function (f) {
+      if (!Array.isArray(svc[f[0]]) || !def[f[0]]) return;
+      svc[f[0]] = svc[f[0]].map(function (val, i) {
+        if (foreign(val, f[1] + '.' + i) && def[f[0]][i]) { changed = true; return def[f[0]][i]; }
+        return val;
+      });
+    });
+    return changed;
+  }
+  // Snapshot of the French wording; translations are stale when it no longer matches.
+  function serviceFrSnapshot(svc) {
+    return JSON.stringify([svc.name || '', svc.tag || '', svc.description || '', svc.note || '',
+      svc.benefitsPhysical || [], svc.benefitsEmotional || [], svc.idealFor || [],
+      (svc.offers || []).map(function (o) { return o.label || ''; })]);
+  }
+  function serviceNeedsTranslation(svc) {
+    if (!svc || svc.id.charAt(0) === '_') return false;
+    if (svc.builtin && !svc.edited) return false; // builtin wording is translated in strings-services.js
+    var tr = svc.translations || {};
+    var missing = ['de', 'en'].some(function (l) {
+      var x = tr[l];
+      return !x || (svc.name && !x.name) || (svc.description && !x.description);
+    });
+    if (missing) return true;
+    return !!svc.translationsSrc && svc.translationsSrc !== serviceFrSnapshot(svc);
+  }
+
   /* ---------- public API ---------- */
   var API = {
     onChange: function (fn) { listeners.push(fn); return function () {
@@ -474,37 +520,40 @@
     publishedServices: function () { return API.services().filter(function (s) { return s.published !== false; }); },
     service: function (id) { var l = read(KEYS.services, BUILTIN_SERVICES); for (var i = 0; i < l.length; i++) if (l[i].id === id) return l[i]; return null; },
     serviceName: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
-      var custom = customTr(s, 'name'); if (custom) return custom;
       if (s && s.builtin && def && s.name === def.name) { var k = 'svc.' + id + '.name'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.name || id); }
+      var custom = customTr(s, 'name'); if (custom) return custom;
       return (s && s.name) || id; },
     serviceTag: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
-      var custom = customTr(s, 'tag'); if (custom) return custom;
       if (s && s.builtin && def && s.tag === def.tag) { var k = 'svc.' + id + '.tag'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : (s.tag || ''); }
+      var custom = customTr(s, 'tag'); if (custom) return custom;
       return (s && s.tag) || ''; },
     serviceDescription: function (id) { var s = API.service(id); var def = builtinServiceDef(id);
-      var custom = customTr(s, 'description'); if (custom) return custom;
       if (s && s.builtin && def && s.description && s.description === def.description) { var k = 'svc.' + id + '.desc'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.description; }
+      var custom = customTr(s, 'description'); if (custom) return custom;
       return (s && s.description) || ''; },
     serviceBenefits: function (id) { var s = API.service(id); return (s && s.benefits && s.benefits.length) ? s.benefits.slice() : []; },
     serviceOptions: function (id) { var s = API.service(id); return (s && Array.isArray(s.options)) ? s.options.slice() : []; },
     serviceBenefitsPhysical: function(id) { var s = API.service(id); if (!s || !s.benefitsPhysical) return [];
-      var custom = customTr(s, 'benefitsPhysical'); if (custom) return custom;
       var def = builtinServiceDef(id);
+      if (s.builtin && def && JSON.stringify(s.benefitsPhysical) === JSON.stringify(def.benefitsPhysical)) return i18nServiceList(id, 'physical', s.benefitsPhysical, def.benefitsPhysical);
+      var custom = customTr(s, 'benefitsPhysical'); if (custom) return custom;
       if (s.builtin && def) return i18nServiceList(id, 'physical', s.benefitsPhysical, def.benefitsPhysical);
       return s.benefitsPhysical.slice(); },
     serviceBenefitsEmotional: function(id) { var s = API.service(id); if (!s || !s.benefitsEmotional) return [];
-      var custom = customTr(s, 'benefitsEmotional'); if (custom) return custom;
       var def = builtinServiceDef(id);
+      if (s.builtin && def && JSON.stringify(s.benefitsEmotional) === JSON.stringify(def.benefitsEmotional)) return i18nServiceList(id, 'emotional', s.benefitsEmotional, def.benefitsEmotional);
+      var custom = customTr(s, 'benefitsEmotional'); if (custom) return custom;
       if (s.builtin && def) return i18nServiceList(id, 'emotional', s.benefitsEmotional, def.benefitsEmotional);
       return s.benefitsEmotional.slice(); },
     serviceIdealFor: function(id) { var s = API.service(id); if (!s || !s.idealFor) return [];
-      var custom = customTr(s, 'idealFor'); if (custom) return custom;
       var def = builtinServiceDef(id);
+      if (s.builtin && def && JSON.stringify(s.idealFor) === JSON.stringify(def.idealFor)) return i18nServiceList(id, 'idealfor', s.idealFor, def.idealFor);
+      var custom = customTr(s, 'idealFor'); if (custom) return custom;
       if (s.builtin && def) return i18nServiceList(id, 'idealfor', s.idealFor, def.idealFor);
       return s.idealFor.slice(); },
     serviceNote: function(id) { var s = API.service(id); var def = builtinServiceDef(id);
-      var custom = customTr(s, 'note'); if (custom) return custom;
       if (s && s.builtin && def && s.note && s.note === def.note) { var k = 'svc.' + id + '.note'; var v = window.t ? window.t(k) : k; return (v && v !== k) ? v : s.note; }
+      var custom = customTr(s, 'note'); if (custom) return custom;
       return (s && s.note) || ''; },
     serviceOffers: function(id) { var s = API.service(id); if (!s || !s.offers || !s.offers.length) return [];
       var custom = customTr(s, 'offerLabels');
@@ -567,6 +616,48 @@
       var list = read(KEYS.services, BUILTIN_SERVICES);
       list.forEach(function (s) { if (s.id === id) { Object.assign(s, patch); if (s.builtin) s.edited = true; } });
       write(KEYS.services, list);
+    },
+    serviceFrSnapshot: function (id) { var s = API.service(id); return s ? serviceFrSnapshot(s) : ''; },
+    serviceNeedsTranslation: function (id) { return serviceNeedsTranslation(API.service(id)); },
+    // Fills translations.de / translations.en from the French wording: builtin wording
+    // reuses strings-services.js, anything customised goes through /api/translate (DeepL).
+    translateService: function (id) {
+      var s = API.service(id); if (!s) return Promise.resolve(false);
+      var def = s.builtin ? builtinServiceDef(id) : null;
+      var slots = []; // { lang-independent: field, index?, key, text }
+      SVC_TEXT_FIELDS.forEach(function (f) {
+        slots.push({ field: f[0], key: f[1], text: s[f[0]] || '', same: !!def && s[f[0]] === def[f[0]] });
+      });
+      SVC_LIST_FIELDS.forEach(function (f) {
+        (s[f[0]] || []).forEach(function (val, i) {
+          slots.push({ field: f[0], index: i, key: f[1] + '.' + i, text: val || '',
+            same: !!def && !!def[f[0]] && def[f[0]][i] === val });
+        });
+      });
+      (s.offers || []).forEach(function (o, i) { slots.push({ field: 'offerLabels', index: i, text: o.label || '', same: false }); });
+      var toSend = slots.filter(function (sl) { return sl.text && !(sl.same && builtinStr('de', id, sl.key) && builtinStr('en', id, sl.key)); });
+      var req = toSend.length
+        ? fetch('/api/translate', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ texts: toSend.map(function (sl) { return sl.text; }) }) })
+            .then(function (r) { return r.json(); })
+        : Promise.resolve({ de: [], en: [] });
+      return req.then(function (data) {
+        if (!data || data.error || !data.de || !data.en) return false;
+        toSend.forEach(function (sl, i) { sl.de = data.de[i] || ''; sl.en = data.en[i] || ''; });
+        var translations = {};
+        ['de', 'en'].forEach(function (l) {
+          var tr = { name: '', tag: '', description: '', note: '', benefitsPhysical: [], benefitsEmotional: [], idealFor: [], offerLabels: [] };
+          slots.forEach(function (sl) {
+            var v = sl.text ? (sl[l] !== undefined ? sl[l] : (builtinStr(l, id, sl.key) || sl.text)) : '';
+            if (sl.index === undefined) tr[sl.field] = v; else tr[sl.field][sl.index] = v;
+          });
+          translations[l] = tr;
+        });
+        var cur = API.service(id);
+        if (!cur || serviceFrSnapshot(cur) !== serviceFrSnapshot(s)) return false; // edited meanwhile
+        API.updateService(id, { translations: translations, translationsSrc: serviceFrSnapshot(cur) });
+        return true;
+      }).catch(function () { return false; });
     },
     setServicePublished: function (id, on) {
       var list = read(KEYS.services, BUILTIN_SERVICES);
@@ -960,6 +1051,10 @@
         });
         svcRows.forEach(function (svc) {
           if (!merged.some(function (m) { return m.id === svc.id; })) merged.push(svc);
+        });
+        var isAdminPage = /admin\.html/.test(window.location.pathname);
+        merged.forEach(function (svc) {
+          if (repairServiceLangs(svc) && isAdminPage) DB.save('services', svc);
         });
         try { localStorage.setItem(KEYS.services, JSON.stringify(merged)); } catch(e) {}
         emit();

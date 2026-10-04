@@ -992,6 +992,9 @@
     [].slice.call(box.querySelectorAll('.e-idealfor-del')).forEach(function(b){
       b.addEventListener('click',function(){ b.closest('div').remove(); });
     });
+    var trFields = function(){ return [].slice.call(box.querySelectorAll('[data-e-lang-de] input, [data-e-lang-de] textarea, [data-e-lang-en] input, [data-e-lang-en] textarea')).map(function(el){ return el.value; }).join('\u0001'); };
+    var trBaseline = trFields();
+    var frBefore = S.serviceFrSnapshot ? S.serviceFrSnapshot(id) : '';
     $('[data-e-translate]',box).addEventListener('click', function(){
       var statusEl = $('[data-e-translate-status]',box);
       statusEl.textContent = t('adm.sv.translating');
@@ -1071,6 +1074,15 @@
         benefits: benefits, options: options, offers: offers, img:img,
         benefitsPhysical: benefitsPhysical, benefitsEmotional: benefitsEmotional, idealFor: idealFor, note: note,
         translations: translations });
+      if (S.serviceFrSnapshot) {
+        var frAfter = S.serviceFrSnapshot(id);
+        if (trFields() !== trBaseline) {
+          // translations filled in this form (by hand or with the button): keep them as-is
+          S.updateService(id, { translationsSrc: frAfter });
+        } else if (frAfter !== frBefore || S.serviceNeedsTranslation(id)) {
+          S.translateService(id);
+        }
+      }
       close();
     });
   }
@@ -1371,8 +1383,25 @@
     });
     setTab('rdv');
     if(authed()) showApp();
-    window.addEventListener('ew:datachange', function(){ if(authed()) render(); });
+    window.addEventListener('ew:datachange', function(){ if(authed()) render(); scheduleAutoTranslate(); });
     window.addEventListener('ew:langchange', function(){ if(authed()) render(); });
+    scheduleAutoTranslate();
+  }
+
+  /* Services whose French wording was customised but has no (or outdated) German/English
+     version get translated automatically, once per wording and session. */
+  var autoTried = {}, autoTimer = null;
+  function scheduleAutoTranslate(){
+    clearTimeout(autoTimer);
+    autoTimer = setTimeout(function(){
+      if(!authed() || !S.serviceNeedsTranslation) return;
+      S.services().forEach(function(s){
+        var key = s.id + '|' + S.serviceFrSnapshot(s.id);
+        if(autoTried[key] || !S.serviceNeedsTranslation(s.id)) return;
+        autoTried[key] = true;
+        S.translateService(s.id);
+      });
+    }, 2500);
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', init);
   else init();
